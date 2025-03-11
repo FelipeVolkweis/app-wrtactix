@@ -1,0 +1,42 @@
+syntax = "proto3";
+
+import "coach_common.proto";
+import "common.proto";
+
+package Coach;
+option go_package = "proto/pb;pb";
+
+service CoachDetection {
+    rpc Send(stream Detection) returns (Common.Empty) {}
+    rpc Receive(Common.Empty) returns (stream Detection) {}
+}
+
+message Detection {
+    repeated Player bluePlayers = 1;
+    repeated Player yellowPlayers = 2;
+    Ball ball = 3;
+    TeamColor teamColor = 4;
+}
+
+enum TeamColor {
+    YELLOW = 0;
+    BLUE = 1;
+    NONE = 2;
+}
+
+message Player {
+    int32 id = 1;
+    int32 team = 2;
+
+    Common.Position position = 3;
+    Common.Velocity velocity = 4;
+
+    float orientation = 5;
+
+    bool hasBallPossession = 6;
+}
+
+message Ball {
+    Common.Position position = 1;
+    Common.Velocity velocity = 2;
+}

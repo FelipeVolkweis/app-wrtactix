@@ -1,0 +1,39 @@
+syntax = "proto3";
+
+import "coach_common.proto";
+import "common.proto";
+
+package Coach;
+option go_package = "proto/pb;pb";
+
+service CoachGeometry {
+    rpc Send(Field) returns (Common.Empty) {}
+    rpc Receive(Common.Empty) returns (Field) {}
+}
+
+message Goal {
+    // Posts positions
+    Common.Position leftPost = 1;
+    Common.Position rightPost = 2;
+
+    // Goal depth
+    float depth = 3;
+
+    // Goal area information
+    float areaLength = 4;
+    float areaWidth = 5;
+    float areaRoundedRadius = 6;
+}
+
+message Field {
+    Common.Position fieldTopRightCorner = 1;
+    Common.Position fieldTopLeftCorner = 2;
+    Common.Position fieldBottomLeftCorner = 3;
+    Common.Position fieldBottomRightCorner = 4;
+    Common.Position fieldCenter = 5;
+    Goal leftGoal = 6;
+    Goal rightGoal = 7;
+    Common.Position leftPenaltyMark = 8;
+    Common.Position rightPenaltyMark = 9;
+    float fieldCenterRadius = 10;
+}

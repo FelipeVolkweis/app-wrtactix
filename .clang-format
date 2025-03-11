@@ -1,0 +1,36 @@
+BasedOnStyle: LLVM
+IndentWidth: 4
+AccessModifierOffset: -4
+SpaceBeforeParens: ControlStatementsExceptControlMacros
+PointerAlignment: Right
+AllowShortFunctionsOnASingleLine: Empty
+BreakBeforeBraces: Attach
+ColumnLimit: 120
+SeparateDefinitionBlocks: Always
+IncludeIsMainSourceRegex: '([.]cc)$'
+IncludeIsMainRegex: '([.]hh)$'
+
+IncludeBlocks: Regroup
+# Groups: Qt, OpenGL, standard libraries, external libraries, <other>, GEARSystem, WRCoach
+IncludeCategories:
+  # Qt Libraries
+  - Regex:      ^<Q
+    Priority:   1
+  # OpenGL Libraries
+  - Regex:      ^[<|"]gl
+    Priority:   2
+  # GEARSystem Libraries
+  - Regex:      ^<GEARSystem
+    Priority:   6
+  # WRCoach Libraries
+  - Regex:      ^<WRCoach
+    Priority:   7
+  # Libraries that contain slashes, used mainly for generic external libraries
+  - Regex:      /
+    Priority:   4
+  # Standard libraries
+  - Regex:      <c|\.h[>|"]$
+    Priority:   3
+  # Other matches
+  - Regex:      .+
+    Priority:   5

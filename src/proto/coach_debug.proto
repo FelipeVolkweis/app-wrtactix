@@ -1,0 +1,27 @@
+syntax = "proto3";
+package Coach;
+
+import "coach_common.proto";
+import "common.proto";
+
+option go_package = "proto/pb;pb";
+
+service CoachDebug {
+    rpc Send(stream DebugInfo) returns (Common.Empty) {}
+    rpc Receive(Common.Empty) returns (stream DebugInfo) {}
+}
+
+message DebugInfo {
+    repeated FreeAngles freeAngles = 1;
+}
+
+message FreeAngles {
+    repeated AngleInterval angles = 1;
+    Common.Position observer = 2;
+    float radius = 3;
+}
+
+message AngleInterval {
+    float min = 1;
+    float max = 2;
+}
