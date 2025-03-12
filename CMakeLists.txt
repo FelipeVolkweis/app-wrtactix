@@ -9,26 +9,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
-find_package(Qt6 COMPONENTS Core Network Concurrent REQUIRED)
-find_package(gRPC CONFIG REQUIRED)
-find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
 # CMake policy: let AUTOMOC and AUTOUIC process header files that end with a .hh extension
 cmake_policy(SET CMP0100 NEW)
 
-# Setting `SRC_DIR` as `src` folder absolute path
-set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
+find_package(Qt6 COMPONENTS Core Network Concurrent REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
+find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${SRC_DIR}/3rdparty/proto)
-execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${SRC_DIR}/proto)
+# Setting `src_dir` as `src` folder absolute path
+set(src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
+execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${src_dir}/3rdparty/proto)
+execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${src_dir}/proto)
 
 # Finding source and header files from disk
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${SRC_DIR}/*.c ${SRC_DIR}/*.cpp ${SRC_DIR}/*.cc)
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS ${SRC_DIR}/*.h ${SRC_DIR}/*.hpp ${SRC_DIR}/*.hh)
+file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${src_dir}/*.c ${src_dir}/*.cpp ${src_dir}/*.cc)
+file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS ${src_dir}/*.h ${src_dir}/*.hpp ${src_dir}/*.hh)
 
 # Adding the source, header and resource files to the target compilation
-set(RESOURCE_FILES)
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS} ${RESOURCE_FILES})
+add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 
 # Linking necessary libraries
 target_link_libraries(
@@ -38,14 +38,14 @@ target_link_libraries(
 )
 
 # Adding `src` directory to the include path
-target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR})
+target_include_directories(${PROJECT_NAME} PRIVATE ${src_dir})
 
-target_compile_options(${PROJECT_NAME} PRIVATE "-isystem" "${SRC_DIR}/3rdparty")
+target_compile_options(${PROJECT_NAME} PRIVATE "-isystem" "${src_dir}/3rdparty")
 target_compile_options(${PROJECT_NAME} PRIVATE "-w" "-Wno-everything")
 
 # Define Debug/Release specific flags
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
-if(build_type STREQUAL "RELEASE")
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
     target_compile_definitions(
       ${PROJECT_NAME} 
       PUBLIC QT_NO_DEBUG_OUTPUT QT_NO_INFO_OUTPUT QT_NO_WARNING_OUTPUT
@@ -54,5 +54,5 @@ endif()
 
 target_compile_definitions(
   ${PROJECT_NAME}
-  PUBLIC DEFAULT_CONFIG_FILEPATH="${SRC_DIR}/WRCoach/const/config/config.toml"
+  PUBLIC DEFAULT_CONFIG_FILEPATH="${src_dir}/WRCoach/const/config/config.toml"
 )
