@@ -13,7 +13,7 @@ set(CMAKE_AUTOUIC ON)
 # CMake policy: let AUTOMOC and AUTOUIC process header files that end with a .hh extension
 cmake_policy(SET CMP0100 NEW)
 
-find_package(Qt6 COMPONENTS Core Network Concurrent REQUIRED)
+find_package(Qt6 COMPONENTS Core Network Concurrent Test REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -33,7 +33,7 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 # Linking necessary libraries
 target_link_libraries(
   ${PROJECT_NAME}
-  Qt6::Network Qt6::Core Qt6::Concurrent
+  Qt6::Network Qt6::Core Qt6::Concurrent Qt6::Test
   omniORB4 omnithread protobuf GEARSystem gRPC::grpc++ Eigen3::Eigen
 )
 

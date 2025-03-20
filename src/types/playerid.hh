@@ -3,7 +3,6 @@
 
 #include <QtGlobal>
 
-namespace Types {
 class PlayerID {
 public:
     PlayerID(quint8 teamNum, quint8 playerNum) : teamNum_(teamNum), playerNum_(playerNum) {}
@@ -20,6 +19,5 @@ private:
     quint8 teamNum_;
     quint8 playerNum_;
 };
-} // namespace Types
 
 #endif

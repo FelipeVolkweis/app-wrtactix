@@ -10,7 +10,7 @@
 namespace Agent {
 class SSLAgent : BaseAgent {
 public:
-    SSLAgent(Types::PlayerID id);
+    SSLAgent(PlayerID id);
 
     void observe();
     void listen();
@@ -18,7 +18,7 @@ public:
     void act();
 
 private:
-    Types::PlayerID id_;
+    PlayerID id_;
 
     QQueue<BaseCommand *> commands_;
 };
