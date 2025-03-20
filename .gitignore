@@ -156,3 +156,7 @@ dependencies/
 /logs
 
 cmake-build-debug/
+
+/data/**/*.bin
+/data/**/*.dat
+/data/**/*.png

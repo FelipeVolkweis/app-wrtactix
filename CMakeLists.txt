@@ -19,6 +19,7 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 # Path configuration
 set(src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(test_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests)
+set(data_dir ${CMAKE_CURRENT_SOURCE_DIR}/data)
 
 # Protocol Buffer generation
 execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${src_dir}/3rdparty/proto)
@@ -105,6 +106,33 @@ target_include_directories(${PROJECT_NAME}_tests PRIVATE
 )
 
 add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
+
+# ------------------------------------------------------------
+# Data Generators (Binaries for .cc files under the data folder)
+# ------------------------------------------------------------
+file(GLOB_RECURSE DATA_SOURCES
+    CONFIGURE_DEPENDS
+    ${data_dir}/*.cc
+)
+
+foreach(data_source ${DATA_SOURCES})
+    get_filename_component(target_name ${data_source} NAME_WE)
+
+    get_filename_component(data_source_dir ${data_source} DIRECTORY)
+
+    add_executable(${target_name} ${data_source})
+
+    target_link_libraries(${target_name} ${PROJECT_NAME}_lib)
+
+    target_include_directories(${target_name} PRIVATE
+        ${src_dir}
+    )
+
+    set_target_properties(${target_name} PROPERTIES
+        RUNTIME_OUTPUT_DIRECTORY ${data_source_dir}
+        OUTPUT_NAME ${target_name}.bin 
+    )
+endforeach()
 
 # ------------------------------------------------------------
 # Build Configuration
