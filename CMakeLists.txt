@@ -1,58 +1,122 @@
 cmake_minimum_required(VERSION 3.16.0)
 
-# Setting project configs
+# Project setup
 project(WRTactix LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# Setting Qt-specific configs
+# Qt configuration
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
+cmake_policy(SET CMP0100 NEW)  # Process .hh headers for Qt
 
-# CMake policy: let AUTOMOC and AUTOUIC process header files that end with a .hh extension
-cmake_policy(SET CMP0100 NEW)
-
+# Dependency finding
 find_package(Qt6 COMPONENTS Core Network Concurrent Test REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
-# Setting `src_dir` as `src` folder absolute path
+# Path configuration
 set(src_dir ${CMAKE_CURRENT_SOURCE_DIR}/src)
+set(test_dir ${CMAKE_CURRENT_SOURCE_DIR}/tests)
 
+# Protocol Buffer generation
 execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${src_dir}/3rdparty/proto)
 execute_process(COMMAND sh protoc.sh WORKING_DIRECTORY ${src_dir}/proto)
 
-# Finding source and header files from disk
-file(GLOB_RECURSE SOURCES CONFIGURE_DEPENDS ${src_dir}/*.c ${src_dir}/*.cpp ${src_dir}/*.cc)
-file(GLOB_RECURSE HEADERS CONFIGURE_DEPENDS ${src_dir}/*.h ${src_dir}/*.hpp ${src_dir}/*.hh)
+# ------------------------------------------------------------
+# Main Library (shared between app and tests)
+# ------------------------------------------------------------
+file(GLOB_RECURSE LIB_SOURCES
+    CONFIGURE_DEPENDS
+    ${src_dir}/*.c
+    ${src_dir}/*.cpp
+    ${src_dir}/*.cc
+)
+list(REMOVE_ITEM LIB_SOURCES "${src_dir}/main.cc")  # Remove main entry point
 
-# Adding the source, header and resource files to the target compilation
-add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
-
-# Linking necessary libraries
-target_link_libraries(
-  ${PROJECT_NAME}
-  Qt6::Network Qt6::Core Qt6::Concurrent Qt6::Test
-  omniORB4 omnithread protobuf GEARSystem gRPC::grpc++ Eigen3::Eigen
+file(GLOB_RECURSE LIB_HEADERS
+    CONFIGURE_DEPENDS
+    ${src_dir}/*.h
+    ${src_dir}/*.hpp
+    ${src_dir}/*.hh
 )
 
-# Adding `src` directory to the include path
-target_include_directories(${PROJECT_NAME} PRIVATE ${src_dir})
+add_library(${PROJECT_NAME}_lib STATIC
+    ${LIB_SOURCES}
+    ${LIB_HEADERS}
+)
 
-target_compile_options(${PROJECT_NAME} PRIVATE "-isystem" "${src_dir}/3rdparty")
-target_compile_options(${PROJECT_NAME} PRIVATE "-w" "-Wno-everything")
+target_include_directories(${PROJECT_NAME}_lib PRIVATE
+    ${src_dir}
+    ${src_dir}/3rdparty
+)
 
-# Define Debug/Release specific flags
+target_link_libraries(${PROJECT_NAME}_lib
+    Qt6::Network
+    Qt6::Core
+    Qt6::Concurrent
+    omniORB4
+    omnithread
+    protobuf
+    GEARSystem
+    gRPC::grpc++
+    Eigen3::Eigen
+)
+
+target_compile_options(${PROJECT_NAME}_lib PRIVATE
+    -isystem ${src_dir}/3rdparty
+    -w
+    -Wno-everything
+)
+
+# ------------------------------------------------------------
+# Main Executable
+# ------------------------------------------------------------
+add_executable(${PROJECT_NAME}
+    ${src_dir}/main.cc
+)
+
+target_link_libraries(${PROJECT_NAME}
+    ${PROJECT_NAME}_lib
+)
+
+# ------------------------------------------------------------
+# Test Executable
+# ------------------------------------------------------------
+enable_testing()
+
+file(GLOB_RECURSE TEST_SOURCES
+    CONFIGURE_DEPENDS
+    ${test_dir}/*.cc
+)
+
+add_executable(${PROJECT_NAME}_tests
+    ${TEST_SOURCES}
+)
+
+target_link_libraries(${PROJECT_NAME}_tests
+    ${PROJECT_NAME}_lib
+    Qt6::Test
+)
+
+target_include_directories(${PROJECT_NAME}_tests PRIVATE
+    ${src_dir}
+)
+
+add_test(NAME ${PROJECT_NAME}_tests COMMAND ${PROJECT_NAME}_tests)
+
+# ------------------------------------------------------------
+# Build Configuration
+# ------------------------------------------------------------
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -g")
+
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    target_compile_definitions(
-      ${PROJECT_NAME} 
-      PUBLIC QT_NO_DEBUG_OUTPUT QT_NO_INFO_OUTPUT QT_NO_WARNING_OUTPUT
+    target_compile_definitions(${PROJECT_NAME}_lib
+        PUBLIC QT_NO_DEBUG_OUTPUT QT_NO_INFO_OUTPUT QT_NO_WARNING_OUTPUT
     )
 endif()
 
-target_compile_definitions(
-  ${PROJECT_NAME}
-  PUBLIC DEFAULT_CONFIG_FILEPATH="${src_dir}/WRCoach/const/config/config.toml"
+target_compile_definitions(${PROJECT_NAME}_lib
+    PUBLIC DEFAULT_CONFIG_FILEPATH="${src_dir}/WRCoach/const/config/config.toml"
 )
