@@ -1,5 +1,7 @@
 #include "potentialfield.hh"
 
+#include <iostream>
+
 #define EPS 1e-5
 
 PotentialField::PotentialField(float kAtt, float kRep, float minRadiusForRepulsiveForce, float conicQuadraticThreshold)
@@ -12,8 +14,11 @@ void PotentialField::addRepulsiveForce(const Vec2 &obstacle) {
         return;
     }
 
+    auto qq = 1.0f / minRadiusForRepulsiveForce_ + EPS;
+    auto dd = 1.0f / distance;
+
     auto potentialForce =
-        kRep_ * (1 / minRadiusForRepulsiveForce_ - 1 / distance) * 1 / (distance * distance) * (origin_ - obstacle);
+        kRep_ * (qq - dd) * (1.0f / (distance * distance)) * (obstacle - origin_);
 
     addForce(potentialForce);
 }

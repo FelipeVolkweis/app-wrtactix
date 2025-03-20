@@ -1,38 +1,73 @@
 #include <QRandomGenerator>
 #include <iostream>
 #include <QVector>
+#include <QFile>
+#include <QTextStream>
 
 using namespace std;
 
 #include "algorithm/pathplanner/potentialfield/potentialfield.hh"
 
-int main() {
-    float katt = 0.1;
-    float krep = 1000000.0;
-    float minRad = 1000.0;
-    float threshhold = 90.0;
-    float step = 100.0;
-    float epsilon = 50.0;
-    int maxIt = 100;
+#define MM2M 0.001
 
-    int nObstacles = 12;
+int main() {
+    float katt = 1.0;
+    float krep = 0.1;
+    float minRad = 0.2;
+    float threshhold = 0.5;
+    float step = 0.1;
+    float epsilon = 0.05;
+    int maxIt = 1000;
+
+    int nObstacles = 100;
+
+    QString filename("obstacles.dat");
+    QString filename2("path.dat");
+
+    QFile file(filename);
+    QFile file2(filename2);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        cout << "Could not open file " << filename.toStdString() << endl;
+        return 1;
+    }
+
+    if (!file2.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        cout << "Could not open file " << filename2.toStdString() << endl;
+        return 1;
+    }
+
+    QTextStream out(&file);
+    QTextStream out2(&file2);
 
     PotentialField pf(katt, krep, minRad, threshhold);
     
-    Vec2 origin(QRandomGenerator::global()->bounded(0, 9000), QRandomGenerator::global()->bounded(0, 6000));
-    Vec2 goal(QRandomGenerator::global()->bounded(0, 9000), QRandomGenerator::global()->bounded(0, 6000));
+    Vec2 origin(QRandomGenerator::global()->bounded(0, 9000) * MM2M, QRandomGenerator::global()->bounded(0, 6000) * MM2M);
+    Vec2 goal(QRandomGenerator::global()->bounded(0, 9000) * MM2M, QRandomGenerator::global()->bounded(0, 6000) * MM2M);
+    // Vec2 origin(3, 2.1);
+    // Vec2 goal(6, 1.9);
     Vec2 force = pf.getForce();
 
     QVector<Vec2> obstacles;
+    // obstacles.push_back(Vec2(6, 2));
+    // out << obstacles[0][0];
+    // out << " ";
+    // out << obstacles[0][1];
+    // out << "\n";
     for (int i = 0; i < nObstacles; i++) {
-        auto o = Vec2(QRandomGenerator::global()->bounded(0, 9000), QRandomGenerator::global()->bounded(0, 6000));
+        auto o = Vec2(QRandomGenerator::global()->bounded(0, 9000) * MM2M, QRandomGenerator::global()->bounded(0, 6000) * MM2M);
         obstacles.push_back(o);
-        cout << o.transpose() << endl;
+        out << o[0];
+        out << " ";
+        out << o[1];
+        out << "\n";
     }
 
-    cout << endl;
+    out2 << origin[0];
+    out2 << " ";
+    out2 << origin[1];
+    out2 << "\n";
 
-    cout << origin.transpose() << endl;
     int it = 0;
     QVector<Vec2> previousPositions;
 
@@ -50,9 +85,20 @@ int main() {
 
         origin += force.normalized() * step;
 
-        cout << origin.transpose() << endl;
+        out2 << origin[0];
+        out2 << " ";
+        out2 << origin[1];
+        out2 << "\n";
         it++;
     }
+
+    out2 << goal[0];
+    out2 << " ";
+    out2 << goal[1];
+    out2 << "\n";
+
+    file.close();
+    file2.close();
 
     return 0;
 }
