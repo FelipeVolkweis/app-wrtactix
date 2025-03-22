@@ -57,6 +57,7 @@ target_link_libraries(${PROJECT_NAME}_lib
     Qt6::Network
     Qt6::Core
     Qt6::Concurrent
+    Qt6::Test
     omniORB4
     omnithread
     protobuf
