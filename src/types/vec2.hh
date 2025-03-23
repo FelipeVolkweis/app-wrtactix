@@ -5,4 +5,6 @@
 
 using Vec2 = Eigen::Vector2f;
 
+static const Vec2 NULL_VEC;
+
 #endif

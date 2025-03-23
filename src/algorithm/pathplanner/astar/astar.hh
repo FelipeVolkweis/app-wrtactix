@@ -1,11 +1,12 @@
 #ifndef ASTAR_HH
 #define ASTAR_HH
 
-#include <QVector>
 #include <QFile>
+#include <QVector>
+
+#include "types/vec2.hh"
 
 #include "astargrid.hh"
-#include "types/vec2.hh"
 
 class AStar {
 public:
@@ -16,9 +17,11 @@ public:
     float h(const Node &a, const Node &b);
 
     void writeGridToFile(QFile *file);
+
 private:
     QVector<Vec2> reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current);
-    QVector<Vec2> reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current, const Vec2 &start, const Vec2 &end);
+    QVector<Vec2> reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current, const Vec2 &start,
+                                  const Vec2 &end);
     float manhattanDistance(const Node &a, const Node &b);
     float chebyshevDistance(const Node &a, const Node &b);
     float euclideanDistance(const Node &a, const Node &b);

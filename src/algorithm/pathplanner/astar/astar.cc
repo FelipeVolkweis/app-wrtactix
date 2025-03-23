@@ -6,12 +6,11 @@
 
 class AStar::Node {
 public:
-    int x, y; 
+    int x, y;
     float g;
     float h;
 
-    Node(int x = 0, int y = 0, float g = 0, float h = 0)
-        : x(x), y(y), g(g), h(h) {}
+    Node(int x = 0, int y = 0, float g = 0, float h = 0) : x(x), y(y), g(g), h(h) {}
 
     bool operator==(const Node &other) const {
         return x == other.x && y == other.y;
@@ -20,7 +19,7 @@ public:
     const float f() const {
         return g + h;
     }
-};  
+};
 
 AStar::AStar() {}
 
@@ -71,13 +70,10 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
     open.push(startNode);
     g[startNode] = 0;
 
-    QVector<QPair<int, int>> directions = {
-        {0, 1}, {0, -1}, {1, 0}, {-1, 0}, 
-        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
-    };
+    QVector<QPair<int, int>> directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
 
     Node closestNode = startNode;
-    float closestDistance = h(startNode, endNode); 
+    float closestDistance = h(startNode, endNode);
     int its = 0;
     while (!open.empty() && its < maxIts_) {
         auto current = open.top();
@@ -94,7 +90,8 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
             return reconstructPath(cameFrom, current, start, end);
         }
 
-        if (current.g > g[current]) continue; 
+        if (current.g > g[current])
+            continue;
 
         for (const auto &d : directions) {
             auto x = current.x + d.first;
@@ -138,7 +135,8 @@ QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const No
     return path;
 }
 
-QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current, const Vec2 &start, const Vec2 &end) {
+QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current, const Vec2 &start,
+                                     const Vec2 &end) {
     QVector<Vec2> path;
     Node tmp = current;
 
@@ -152,7 +150,6 @@ QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const No
 
     return path;
 }
-
 
 inline size_t qHash(const AStar::Node &key, size_t seed = 0) {
     return qHash(key.x, seed) ^ qHash(key.y, seed);
@@ -169,7 +166,7 @@ void AStar::writeGridToFile(QFile *file) {
         for (int j = 0; j < grid_.height(); j++) {
             if (grid_.isObstacle(i, j)) {
                 out << i << " " << j << "\n";
-            } 
+            }
         }
     }
 

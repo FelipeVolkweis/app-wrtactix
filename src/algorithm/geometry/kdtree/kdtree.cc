@@ -1,3 +1,5 @@
+#include "algorithm/geometry/twod/twod.hh"
+
 #include "kdtree.hh"
 
 KDNode::KDNode(const Vec2 &point, KDNode *parent) : point_(point), parent_(parent) {
@@ -16,22 +18,24 @@ KDNode::~KDNode() {
     delete right_;
 }
 
-void KDNode::insert(const Vec2 &point) {
-    insert_(point, 0);
+KDNode *KDNode::insert(const Vec2 &point) {
+    return insert_(point, 0);
 }
 
-void KDNode::insert_(const Vec2 &point, int axis) {
+KDNode *KDNode::insert_(const Vec2 &point, int axis) {
     if (point[axis] < point_[axis]) {
         if (left_ == nullptr) {
             left_ = new KDNode(point, this);
+            return left_;
         } else {
-            left_->insert_(point, (axis + 1) % DIMS);
+            return left_->insert_(point, (axis + 1) % DIMS);
         }
     } else {
         if (right_ == nullptr) {
             right_ = new KDNode(point, this);
+            return right_;
         } else {
-            right_->insert_(point, (axis + 1) % DIMS);
+            return right_->insert_(point, (axis + 1) % DIMS);
         }
     }
 }
@@ -51,16 +55,42 @@ KDTree::~KDTree() {
     delete root_;
 }
 
-void KDTree::insert(const Vec2 &point) {
+KDNode *KDTree::insert(const Vec2 &point) {
     if (root_ == nullptr) {
         root_ = new KDNode(point, 0);
+        return root_;
     } else {
-        root_->insert(point);
+        return root_->insert(point);
     }
 }
 
 KDNode *KDTree::nearestNeighbor(const Vec2 &target) {
     return nearestNeighbor_(root_, target, 0);
+}
+
+QVector<KDNode *> KDTree::nearestNeighbors(const Vec2 &target, float radius) {
+    QVector<KDNode *> results;
+
+    nearestNeighbors_(root_, target, radius, results, 0);
+
+    return results;
+}
+
+void KDTree::nearestNeighbors_(KDNode *root, const Vec2 &target, float radius, QVector<KDNode *> &result, int depth) {
+    if (root == nullptr)
+        return;
+
+    if (TwoD::distance(root->point(), target) <= radius) {
+        result.append(root);
+    }
+    int axis = depth % KDNode::DIMS;
+
+    if (target[axis] - radius <= root->point()[axis]) {
+        nearestNeighbors_(root->left(), target, radius, result, depth + 1);
+    }
+    if (target[axis] + radius >= root->point()[axis]) {
+        nearestNeighbors_(root->right(), target, radius, result, depth + 1);
+    }
 }
 
 KDNode *KDTree::nearestNeighbor_(KDNode *root, const Vec2 &target, int axis) {

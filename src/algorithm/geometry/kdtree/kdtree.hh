@@ -11,7 +11,7 @@ public:
     KDNode(const Vec2 &point);
     ~KDNode();
 
-    void insert(const Vec2 &point);
+    KDNode *insert(const Vec2 &point);
 
     const Vec2 &point() const {
         return point_;
@@ -32,7 +32,7 @@ public:
     static const int DIMS = 2;
 
 private:
-    void insert_(const Vec2 &point, int k);
+    KDNode *insert_(const Vec2 &point, int k);
 
     Vec2 point_;
     KDNode *left_;
@@ -46,12 +46,14 @@ public:
     KDTree(const QVector<Vec2> &points);
     ~KDTree();
 
-    void insert(const Vec2 &point);
+    KDNode *insert(const Vec2 &point);
 
     KDNode *nearestNeighbor(const Vec2 &target);
+    QVector<KDNode *> nearestNeighbors(const Vec2 &target, float radius);
 
 private:
     KDNode *nearestNeighbor_(KDNode *root, const Vec2 &target, int depth);
+    void nearestNeighbors_(KDNode *root, const Vec2 &target, float radius, QVector<KDNode *> &result, int depth);
     static KDNode *closest_(KDNode *node1, KDNode *node2, const Vec2 &target);
 
     KDNode *root_;
