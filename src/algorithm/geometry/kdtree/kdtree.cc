@@ -1,11 +1,11 @@
 #include "kdtree.hh"
 
-KDNode::KDNode(const Vec2& point, KDNode* parent) : point_(point), parent_(parent) {
+KDNode::KDNode(const Vec2 &point, KDNode *parent) : point_(point), parent_(parent) {
     left_ = nullptr;
     right_ = nullptr;
 }
 
-KDNode::KDNode(const Vec2& point) : point_(point) {
+KDNode::KDNode(const Vec2 &point) : point_(point) {
     left_ = nullptr;
     right_ = nullptr;
     parent_ = nullptr;
@@ -16,11 +16,11 @@ KDNode::~KDNode() {
     delete right_;
 }
 
-void KDNode::insert(const Vec2& point) {
+void KDNode::insert(const Vec2 &point) {
     insert_(point, 0);
 }
 
-void KDNode::insert_(const Vec2& point, int axis) {
+void KDNode::insert_(const Vec2 &point, int axis) {
     if (point[axis] < point_[axis]) {
         if (left_ == nullptr) {
             left_ = new KDNode(point, this);
@@ -40,9 +40,9 @@ KDTree::KDTree() {
     root_ = nullptr;
 }
 
-KDTree::KDTree(const QVector<Vec2>& points) {
+KDTree::KDTree(const QVector<Vec2> &points) {
     root_ = nullptr;
-    for (const Vec2& point : points) {
+    for (const Vec2 &point : points) {
         insert(point);
     }
 }
@@ -51,7 +51,7 @@ KDTree::~KDTree() {
     delete root_;
 }
 
-void KDTree::insert(const Vec2& point) {
+void KDTree::insert(const Vec2 &point) {
     if (root_ == nullptr) {
         root_ = new KDNode(point, 0);
     } else {
@@ -59,12 +59,13 @@ void KDTree::insert(const Vec2& point) {
     }
 }
 
-KDNode *KDTree::nearestNeighbor(const Vec2& target) {
+KDNode *KDTree::nearestNeighbor(const Vec2 &target) {
     return nearestNeighbor_(root_, target, 0);
 }
 
-KDNode *KDTree::nearestNeighbor_(KDNode *root, const Vec2& target, int axis) {
-    if (root == nullptr) return root;
+KDNode *KDTree::nearestNeighbor_(KDNode *root, const Vec2 &target, int axis) {
+    if (root == nullptr)
+        return root;
 
     KDNode *nextBranchToLookInto = nullptr;
     KDNode *remainingBranch = nullptr;
@@ -91,7 +92,7 @@ KDNode *KDTree::nearestNeighbor_(KDNode *root, const Vec2& target, int axis) {
     return best;
 }
 
-KDNode *KDTree::closest_(KDNode *node1, KDNode *node2, const Vec2& target) {
+KDNode *KDTree::closest_(KDNode *node1, KDNode *node2, const Vec2 &target) {
     if (node1 == nullptr) {
         return node2;
     }
@@ -105,7 +106,7 @@ KDNode *KDTree::closest_(KDNode *node1, KDNode *node2, const Vec2& target) {
 
     if (d1 < d2) {
         return node1;
-    } 
+    }
 
     return node2;
 }

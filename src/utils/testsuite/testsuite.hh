@@ -4,12 +4,11 @@
 #include <QObject>
 #include <QTest>
 
-class TestSuite: public QObject
-{
+class TestSuite : public QObject {
 public:
-     TestSuite();
+    TestSuite();
 
-     static QVector<QObject*> &suite();
+    static QVector<QObject *> &suite();
 };
 
 #endif

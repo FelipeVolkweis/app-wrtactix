@@ -1,5 +1,4 @@
 #include "potentialfield.hh"
-
 #include <iostream>
 
 #define EPS 1e-5
@@ -17,8 +16,7 @@ void PotentialField::addRepulsiveForce(const Vec2 &obstacle) {
     auto qq = 1.0f / minRadiusForRepulsiveForce_ + EPS;
     auto dd = 1.0f / distance;
 
-    auto potentialForce =
-        kRep_ * (qq - dd) * (1.0f / (distance * distance)) * (obstacle - origin_);
+    auto potentialForce = kRep_ * (qq - dd) * (1.0f / (distance * distance)) * (obstacle - origin_);
 
     addForce(potentialForce);
 }
