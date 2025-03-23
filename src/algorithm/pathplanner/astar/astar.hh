@@ -2,13 +2,12 @@
 #define ASTAR_HH
 
 #include <QFile>
-#include <QVector>
 
-#include "types/vec2.hh"
+#include "algorithm/pathplanner/pathplanner.hh"
 
 #include "astargrid.hh"
 
-class AStar {
+class AStar : public PathPlanner {
 public:
     class Node;
 

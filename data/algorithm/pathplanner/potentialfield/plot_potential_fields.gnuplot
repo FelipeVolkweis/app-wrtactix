@@ -3,25 +3,27 @@ set output 'potential_fields.png'
 
 set title "Potential Fields Navigation Algorithm"
 
-set xrange [0:9]
-set yrange [0:6]
+# Set the range to represent the field from (-4.5, -3) to (4.5, 3)
+set xrange [-4.5:4.5]
+set yrange [-3:3]
 
 set size ratio -1
 
-set grid
-
+# Read the start and goal points from path.dat
 first_point = system("head -n 1 path.dat")
-last_point = system("tail -n 1 path.dat") 
+second_point = system("head -n 2 path.dat | tail -n 1")
 
-y_start = real(word(first_point, 2))  
-x_start = real(word(first_point, 1))  
-x_goal = real(word(last_point, 1))    
-y_goal = real(word(last_point, 2))    
+x_start = real(word(first_point, 1))
+y_start = real(word(first_point, 2))
+x_goal = real(word(second_point, 1))
+y_goal = real(word(second_point, 2))
 
+# Set labels for start and goal points
 set label "Start" at x_start,y_start point pt 7 ps 2 lc rgb "blue"
 set label "Goal" at x_goal,y_goal point pt 7 ps 2 lc rgb "green"
 
-R = 0.09  # Replace with your obstacle radius
-set style circle radius R
-plot 'obstacles.dat' using 1:2 with circles lc rgb "red" notitle, \
-     'path.dat' using 1:2 every ::1::(system("wc -l < path.dat")-2) with lines lc rgb "blue" title "Path"
+R = 0.09  # Obstacle radius
+
+# Function to plot rectangles
+plot 'obstacles.dat' using 1:2:(R) with circles lc rgb "red" notitle, \
+     'path.dat' every ::2 using 1:2 with lines lc rgb "blue" title "Path"

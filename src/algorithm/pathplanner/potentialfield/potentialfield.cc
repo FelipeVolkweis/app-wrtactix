@@ -1,11 +1,13 @@
+#include "algorithm/geometry/kdtree/kdtree.hh"
+
 #include "potentialfield.hh"
-#include <iostream>
 
 #define EPS 1e-5
 
-PotentialField::PotentialField(float kAtt, float kRep, float minRadiusForRepulsiveForce, float conicQuadraticThreshold)
+PotentialField::PotentialField(float kAtt, float kRep, float minRadiusForRepulsiveForce, float conicQuadraticThreshold,
+                               float epsilon)
     : kAtt_(kAtt), kRep_(kRep), minRadiusForRepulsiveForce_(minRadiusForRepulsiveForce),
-      conicQuadraticThreshold_(conicQuadraticThreshold) {}
+      conicQuadraticThreshold_(conicQuadraticThreshold), epsilon_(epsilon) {}
 
 void PotentialField::addRepulsiveForce(const Vec2 &obstacle) {
     auto distance = (obstacle - origin_).norm() + EPS;
@@ -37,15 +39,55 @@ void PotentialField::addForce(const Vec2 &force) {
     resultantForce_ += force;
 }
 
-void PotentialField::setGoFromOriginToGoal(const Vec2 &origin, const Vec2 &goal) {
-    origin_ = origin;
-    goal_ = goal;
-}
-
 Vec2 PotentialField::getForce() const {
     return resultantForce_;
 }
 
 void PotentialField::reset() {
     resultantForce_ = Vec2(0, 0);
+}
+
+QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
+    QVector<Vec2> path;
+    origin_ = start;
+    goal_ = end;
+
+    int it = 0;
+
+    KDTree tree;
+    for (auto &o : obstacles) {
+        tree.insert(o);
+    }
+
+    Vec2 force;
+    path.append(origin_);
+    do {
+        reset();
+        for (const auto &obstacle : obstacles) {
+            addRepulsiveForce(obstacle);
+        }
+        addAttractiveForce();
+
+        force = getForce();
+
+        origin_ += force.normalized() * stepSize_;
+        path.append(origin_);
+        it++;
+    } while (resultantForce_.norm() > epsilon_ && it < maxIts_);
+
+    return path;
+}
+
+float PotentialField::findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
+    reset();
+
+    origin_ = start;
+    goal_ = end;
+
+    for (const auto &obstacle : obstacles) {
+        addRepulsiveForce(obstacle);
+    }
+    addAttractiveForce();
+
+    return resultantForce_.norm();
 }

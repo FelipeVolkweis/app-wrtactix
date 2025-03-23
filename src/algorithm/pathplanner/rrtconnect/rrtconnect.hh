@@ -4,6 +4,7 @@
 #include <QVector>
 
 #include "algorithm/geometry/kdtree/kdtree.hh"
+#include "algorithm/pathplanner/pathplanner.hh"
 
 using ParentMap = QHash<KDNode *, KDNode *>;
 
@@ -14,7 +15,7 @@ struct ExtendResult {
     KDNode *qNew;
 };
 
-class RRTConnect {
+class RRTConnect : public PathPlanner {
 public:
     RRTConnect();
 

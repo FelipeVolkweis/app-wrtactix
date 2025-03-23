@@ -3,6 +3,7 @@
 #include <QVector>
 #include <QFile>
 #include <QTextStream>
+#include <chrono>
 
 using namespace std;
 
@@ -10,14 +11,23 @@ using namespace std;
 
 #define MM2M 0.001
 
+Vec2 generateRandomPoint() {
+    float x = QRandomGenerator::global()->bounded(0, 9000) * MM2M - 4.5;
+    float y = QRandomGenerator::global()->bounded(0, 6000) * MM2M - 3.0;
+    return Vec2(x, y);
+}
+
 int main() {
+    using std::chrono::high_resolution_clock;
+    using std::chrono::duration_cast;
+    using std::chrono::duration;
+    using std::chrono::milliseconds;
+
     float katt = 1.0;
-    float krep = 0.1;
-    float minRad = 0.2;
-    float threshhold = 0.5;
-    float step = 0.1;
-    float epsilon = 0.05;
-    int maxIt = 1000;
+    float krep = 0.001;
+    float minRad = 0.5;
+    float threshhold = 0.25;
+    float epsilon = 0.1;
 
     int nObstacles = 100;
 
@@ -40,13 +50,12 @@ int main() {
     QTextStream out(&file);
     QTextStream out2(&file2);
 
-    PotentialField pf(katt, krep, minRad, threshhold);
+    PotentialField pf(katt, krep, minRad, threshhold, epsilon);
     
-    Vec2 origin(QRandomGenerator::global()->bounded(0, 9000) * MM2M, QRandomGenerator::global()->bounded(0, 6000) * MM2M);
-    Vec2 goal(QRandomGenerator::global()->bounded(0, 9000) * MM2M, QRandomGenerator::global()->bounded(0, 6000) * MM2M);
+    Vec2 origin = generateRandomPoint();
+    Vec2 goal = generateRandomPoint();
     // Vec2 origin(3, 2.1);
     // Vec2 goal(6, 1.9);
-    Vec2 force = pf.getForce();
 
     QVector<Vec2> obstacles;
     // obstacles.push_back(Vec2(6, 2));
@@ -55,7 +64,7 @@ int main() {
     // out << obstacles[0][1];
     // out << "\n";
     for (int i = 0; i < nObstacles; i++) {
-        auto o = Vec2(QRandomGenerator::global()->bounded(0, 9000) * MM2M, QRandomGenerator::global()->bounded(0, 6000) * MM2M);
+        Vec2 o = generateRandomPoint();
         obstacles.push_back(o);
         out << o[0];
         out << " ";
@@ -68,34 +77,25 @@ int main() {
     out2 << origin[1];
     out2 << "\n";
 
-    int it = 0;
-    QVector<Vec2> previousPositions;
-
-    while ((goal - origin).norm() > epsilon && it < maxIt) {
-        pf.reset();
-        pf.setGoFromOriginToGoal(origin, goal);
-
-        for (auto &o : obstacles) {
-            pf.addRepulsiveForce(o);
-        }
-
-        pf.addAttractiveForce();
-
-        force = pf.getForce();
-
-        origin += force.normalized() * step;
-
-        out2 << origin[0];
-        out2 << " ";
-        out2 << origin[1];
-        out2 << "\n";
-        it++;
-    }
-
     out2 << goal[0];
     out2 << " ";
     out2 << goal[1];
     out2 << "\n";
+
+    auto t1 = high_resolution_clock::now();
+    auto path = pf.findPath(origin, goal, obstacles);
+    auto t2 = high_resolution_clock::now();
+
+    cout << "Path size: " << path.size() << endl;
+    duration<double, std::milli> ms_double = t2 - t1;
+    cout << ms_double.count() << "ms\n";
+
+    for (auto &p : path) {
+        out2 << p[0];
+        out2 << " ";
+        out2 << p[1];
+        out2 << "\n";
+    }
 
     file.close();
     file2.close();
