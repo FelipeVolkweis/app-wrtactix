@@ -18,9 +18,15 @@ public:
     void writeGridToFile(QFile *file);
 private:
     QVector<Vec2> reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current);
+    QVector<Vec2> reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current, const Vec2 &start, const Vec2 &end);
     float manhattanDistance(const Node &a, const Node &b);
+    float chebyshevDistance(const Node &a, const Node &b);
+    float euclideanDistance(const Node &a, const Node &b);
+
+    float cost(const Node &a, const Node &b);
 
     AStarGrid<90, 60, 10> grid_;
+    const int maxIts_ = 1000;
 };
 
 #endif

@@ -23,7 +23,7 @@ int main() {
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    int nObstacles = 100;
+    int nObstacles = 12;
 
     QString filename("obstacles.dat");
     QString filename2("path.dat");

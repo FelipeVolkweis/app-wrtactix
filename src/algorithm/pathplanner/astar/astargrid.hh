@@ -28,14 +28,14 @@ public:
     }
 
     void setObstacle(const Vec2 &pos, float radius) {
-        double X = (pos.x() + (W / 2.0) / conversionFactor) * conversionFactor;
-        double Y = (pos.y() + (H / 2.0) / conversionFactor) * conversionFactor;
-        double R = radius * conversionFactor;
+        float X = (pos.x() + (W / 2.0) / conversionFactor) * conversionFactor;
+        float Y = (pos.y() + (H / 2.0) / conversionFactor) * conversionFactor;
+        float R = radius * conversionFactor;
     
-        int minX = static_cast<int>(std::floor(X - R));
-        int maxX = static_cast<int>(std::ceil(X + R));
-        int minY = static_cast<int>(std::floor(Y - R));
-        int maxY = static_cast<int>(std::ceil(Y + R));
+        int minX = static_cast<int>(std::ceil(X - R));
+        int maxX = static_cast<int>((X + R));
+        int minY = static_cast<int>(std::ceil(Y - R));
+        int maxY = static_cast<int>((Y + R));
     
         minX = std::max(minX, 0);
         maxX = std::min(maxX, W - 1);

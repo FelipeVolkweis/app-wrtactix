@@ -32,6 +32,22 @@ float AStar::manhattanDistance(const Node &a, const Node &b) {
     return abs(a.x - b.x) + abs(a.y - b.y);
 }
 
+float AStar::chebyshevDistance(const Node &a, const Node &b) {
+    return std::max(abs(a.x - b.x), abs(a.y - b.y));
+}
+
+float AStar::euclideanDistance(const Node &a, const Node &b) {
+    return std::sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
+float AStar::cost(const Node &a, const Node &b) {
+    if (a.x == b.x || a.y == b.y) {
+        return 1;
+    } else {
+        return 1.414;
+    }
+}
+
 QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
     QHash<Node, float> g;
     QHash<Node, Node> cameFrom;
@@ -56,16 +72,27 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
     g[startNode] = 0;
 
     QVector<QPair<int, int>> directions = {
-        {0, 1}, {0, -1}, {1, 0}, {-1, 0},
+        {0, 1}, {0, -1}, {1, 0}, {-1, 0}, 
+        {1, 1}, {1, -1}, {-1, 1}, {-1, -1}
     };
 
-    while (!open.empty()) {
+    Node closestNode = startNode;
+    float closestDistance = h(startNode, endNode); 
+    int its = 0;
+    while (!open.empty() && its < maxIts_) {
         auto current = open.top();
+        open.pop();
+        its++;
+
+        float currentDistance = h(current, endNode);
+        if (currentDistance < closestDistance) {
+            closestNode = current;
+            closestDistance = currentDistance;
+        }
 
         if (current == endNode) {
-            return reconstructPath(cameFrom, current);
+            return reconstructPath(cameFrom, current, start, end);
         }
-        open.pop();
 
         if (current.g > g[current]) continue; 
 
@@ -82,7 +109,7 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
             }
 
             Node neighbor(x, y);
-            float tentativeG = g[current] + 1;
+            float tentativeG = g[current] + cost(current, neighbor);
 
             if (!g.contains(neighbor) || tentativeG < g[neighbor]) {
                 g[neighbor] = tentativeG;
@@ -94,8 +121,7 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
             }
         }
     }
-
-    return QVector<Vec2>();
+    return reconstructPath(cameFrom, closestNode);
 }
 
 QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current) {
@@ -112,6 +138,22 @@ QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const No
     return path;
 }
 
+QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const Node &current, const Vec2 &start, const Vec2 &end) {
+    QVector<Vec2> path;
+    Node tmp = current;
+
+    while (cameFrom.contains(tmp)) {
+        path.push_front(grid_.convertGridToVec2(tmp.x, tmp.y));
+        tmp = cameFrom[tmp];
+    }
+
+    path[0] = start;
+    path[path.size() - 1] = end;
+
+    return path;
+}
+
+
 inline size_t qHash(const AStar::Node &key, size_t seed = 0) {
     return qHash(key.x, seed) ^ qHash(key.y, seed);
 }
@@ -126,12 +168,9 @@ void AStar::writeGridToFile(QFile *file) {
     for (int i = 0; i < grid_.width(); i++) {
         for (int j = 0; j < grid_.height(); j++) {
             if (grid_.isObstacle(i, j)) {
-                out << 1 << " ";
-            } else {
-                out << 0 << " ";
-            }
+                out << i << " " << j << "\n";
+            } 
         }
-        out << "\n";
     }
 
     file->close();

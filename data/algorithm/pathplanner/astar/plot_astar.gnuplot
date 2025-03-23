@@ -13,13 +13,11 @@ set grid
 
 # Read the grid dimensions and conversion factor from grid.dat
 grid_data = system("head -n 3 grid.dat")
-width = real(word(grid_data, 1))  # 900
-height = real(word(grid_data, 2)) # 600
-conversionFactor = real(word(grid_data, 3)) # 100
+width = real(word(grid_data, 1))
+height = real(word(grid_data, 2))
+conversionFactor = real(word(grid_data, 3))
 
-# Calculate the grid cell size in real-world coordinates
-cell_width = 9.0 / width  # 0.01 m
-cell_height = 6.0 / height # 0.01 m
+cell_size = 1.0 / conversionFactor
 
 # Read the start and goal points from path.dat
 first_point = system("head -n 1 path.dat")
@@ -34,7 +32,11 @@ y_goal = real(word(second_point, 2))
 set label "Start" at x_start,y_start point pt 7 ps 2 lc rgb "blue"
 set label "Goal" at x_goal,y_goal point pt 7 ps 2 lc rgb "green"
 
-# Plot the grid as black squares for obstacles
-plot 'grid.dat' every ::3 using (($1-1)*cell_width-4.5):(($2-1)*cell_height-3):(cell_width):(cell_height) with boxes lc rgb "black" notitle, \
-     'obstacles.dat' using 1:2 with circles lc rgb "red" notitle, \
+R = 0.09  # Obstacle radius
+
+# Function to plot rectangles
+plot 'grid.dat' every ::1 using \
+     (-4.5 + $1*cell_size):(-3 + $2*cell_size):(cell_size):(cell_size) \
+     with boxxy fc "black" lc "black" notitle, \
+     'obstacles.dat' using 1:2:(R) with circles lc rgb "red" notitle, \
      'path.dat' every ::2 using 1:2 with lines lc rgb "blue" title "Path"
