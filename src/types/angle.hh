@@ -6,6 +6,7 @@
 #define ANGLE_EPSILON 1e-6
 
 enum class Quadrant { I = 1, II = 2, III = 3, IV = 4 };
+enum class Clockwise { CW = 1, CCW = -1, EQUAL = 0 };
 
 class Angle {
 public:
@@ -96,6 +97,26 @@ public:
             return (a >= s - ANGLE_EPSILON) && (a < e - ANGLE_EPSILON);
         } else {
             return (a >= s - ANGLE_EPSILON) || (a < e - ANGLE_EPSILON);
+        }
+    }
+
+    // Returns:
+    //  1 if other is clockwise to this angle (right side)
+    // -1 if other is counter-clockwise to this angle (left side)
+    //  0 if angles are equal (within epsilon)
+    static Clockwise relativeDirection(const Angle& pivot, const Angle& a2, float epsilon = 1e-5f) {
+        float diff = normalize(a2.radians() - pivot.radians());
+        
+        if (diff < epsilon && diff > -epsilon) {
+            return Clockwise::EQUAL; 
+        }
+        
+        if (diff > 0 && diff < M_PI) {
+            return Clockwise::CCW; 
+        } else if (diff > M_PI) {
+            return Clockwise::CCW; 
+        } else {
+            return Clockwise::CW; 
         }
     }
 

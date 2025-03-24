@@ -17,6 +17,10 @@ private slots:
     void testEmptyObstacles();
     void testBoundaryIntervals();
     void testAllObstructed();
+    void testPartialWrappedInterval();
+    void testPartialInterval();
+    void testPartialIntervalWithObstacleOn4th();
+    void testPartialNoObstacles();
 };
 
 void TestRadialSweep::testCreateAngleEvents() {
@@ -184,6 +188,93 @@ void TestRadialSweep::testAllObstructed() {
 
     // Complement should be empty
     QVERIFY(complement.empty());
+}
+
+void TestRadialSweep::testPartialWrappedInterval() {
+    Vec2 observer(0, 0);
+    QVector<Vec2> obstacles = { Vec2(1, 0) };
+    AngleInterval interval(M_PI * 3.0f / 2.0f, M_PI / 2.0f);
+    float radius = 3.0f;
+    float obstacleRadius = 0.5f;
+
+    RadialSweep rs = RadialSweep(observer, obstacles, obstacleRadius, interval, radius);
+    QVector<AngleInterval> freeAngles = rs.getFreeAngles();  
+
+    QVERIFY(freeAngles.size() == 2);
+    QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
+    QVERIFY(freeAngles[0].end == Angle(M_PI * 11.0f / 6.0f));
+    QVERIFY(freeAngles[1].start == Angle(M_PI / 6.0f));
+    QVERIFY(freeAngles[1].end == Angle(M_PI / 2.0f));
+}
+
+void TestRadialSweep::testPartialInterval() {
+    Vec2 observer(0, 0);
+    QVector<Vec2> obstacles = { Vec2(-1, 0) };
+    AngleInterval interval(M_PI / 2.0f, M_PI * 3.0f / 2.0f);
+    float radius = 3.0f;
+    float obstacleRadius = 0.5f;
+
+    RadialSweep rs(observer, obstacles, obstacleRadius, interval, radius);
+    QVector<AngleInterval> freeAngles = rs.getFreeAngles();
+    QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
+
+    QVERIFY(freeAngles.size() == 2);
+    QVERIFY(freeAngles[0].start == Angle(M_PI / 2.0f));
+    QVERIFY(freeAngles[0].end == Angle(5.0f * M_PI / 6.0f));
+}
+
+void TestRadialSweep::testPartialIntervalWithObstacleOn4th() {
+    Vec2 observer(0, 0);
+    QVector<Vec2> obstacles = { Vec2(1, -1) };
+    AngleInterval interval(M_PI * 3.0f / 2.0f, M_PI / 2.0f);
+    float radius = 3.0f;
+    float obstacleRadius = 0.5f;
+
+    RadialSweep rs(observer, obstacles, obstacleRadius, interval, radius);
+    QVector<AngleInterval> freeAngles = rs.getFreeAngles();
+    QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
+
+    QVERIFY(freeAngles.size() == 3);
+    QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
+    QVERIFY(freeAngles[0].end == Angle(atan2f(-1.2057189138831, 0.5442810861169)));
+    QVERIFY(freeAngles[1].start == Angle(atan2f(-0.5442810861169, 1.2057189138831))); // (1.2057189138831, -0.5442810861169)
+    QVERIFY(freeAngles[1].end == Angle(M_2_PI_EXCLUSIVE)); 
+    QVERIFY(freeAngles[2].start == Angle(0));
+    QVERIFY(freeAngles[2].end == Angle(M_PI / 2.0f));
+}
+
+void TestRadialSweep::testPartialNoObstacles() {
+    Vec2 observer(0, 0);
+    QVector<Vec2> obstacles = { };
+    AngleInterval interval(M_PI * 3.0f / 2.0f, M_PI / 2.0f);
+    float radius = 3.0f;
+    float obstacleRadius = 0.5f;
+
+    {
+        RadialSweep rs(observer, obstacles, obstacleRadius, interval, radius);
+        QVector<AngleInterval> freeAngles = rs.getFreeAngles();
+        QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
+
+        QVERIFY(freeAngles.size() == 2);
+        QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
+        QVERIFY(freeAngles[0].end == Angle(M_2_PI_EXCLUSIVE)); 
+        QVERIFY(freeAngles[1].start == Angle(0));
+        QVERIFY(freeAngles[1].end == Angle(M_PI / 2.0f));
+    }
+
+    {
+        RadialSweep rs(observer, obstacles, obstacleRadius, interval, radius);
+        QVector<AngleInterval> freeAngles = rs.getFreeAngles();
+        QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
+
+        QVERIFY(freeAngles.size() == 2);
+        QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
+        QVERIFY(freeAngles[0].end == Angle(M_2_PI_EXCLUSIVE)); 
+        QVERIFY(freeAngles[1].start == Angle(0));
+        QVERIFY(freeAngles[1].end == Angle(M_PI / 2.0f));
+    } 
+
+    obstacles.push_back(Vec2(-1, 0));
 }
 
 static TestRadialSweep TEST_RADIALSWEEP;

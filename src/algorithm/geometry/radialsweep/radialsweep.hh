@@ -24,15 +24,18 @@ struct AngleEvent {
 
 class RadialSweep {
 public:
+    RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, float obstacleRadius, AngleInterval interval, float radius);
     RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, AngleInterval interval, float radius);
-    QVector<AngleInterval> getFreeAngles() const;
-    QVector<AngleInterval> getObstructedAngles() const;
+
+    QVector<AngleInterval> getFreeAngles() const { return freeAngles_; };
+    QVector<AngleInterval> getObstructedAngles() const { return obstructedAngles_; };
 
     static QVector<AngleInterval> mergeObstructedIntervals(const QVector<AngleEvent> &events);
     static QVector<AngleEvent> createEvents(const QVector<Vec2> &obstacles, float obstacleRadius, const Vec2 &observer,
                                             float sweepRadius, AngleInterval interval);
     static QVector<AngleInterval> getComplementIntervals(const QVector<AngleInterval> &intervals, AngleInterval interval);
 
+    static AngleInterval getLargestAngleInterval(QVector<AngleInterval> intervals);
 private:
     QVector<AngleInterval> freeAngles_;
     QVector<AngleInterval> obstructedAngles_;
@@ -40,6 +43,7 @@ private:
     Vec2 observer_;
     float radius_;
     AngleInterval interval_;
+    float obstacleRadius_;
 
     void sweep();
 };
