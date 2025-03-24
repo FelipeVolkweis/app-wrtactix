@@ -1,0 +1,108 @@
+#include <cmath>
+
+#include <iostream>
+
+#define M_2_PI_EXCLUSIVE (2 * M_PI) - 1e-6
+
+enum class Quadrant { I = 1, II = 2, III = 3, IV = 4 };
+
+class Angle {
+public:
+    Angle(float radians = 0.0f) : value_(normalize(radians)) {}
+
+    float radians() const {
+        return value_;
+    }
+
+    void setRadians(float radians) {
+        value_ = normalize(radians);
+    }
+
+    float degrees() const {
+        return value_ * 180.0f / M_PI;
+    }
+
+    void setDegrees(float degrees) {
+        value_ = normalize(degrees * M_PI / 180.0f);
+    }
+
+    Angle operator+(const Angle &other) const {
+        return Angle(value_ + other.value_);
+    }
+
+    Angle operator-(const Angle &other) const {
+        return Angle(value_ - other.value_);
+    }
+
+    Angle operator*(float scalar) const {
+        return Angle(value_ * scalar);
+    }
+
+    Angle operator/(float scalar) const {
+        return Angle(value_ / scalar);
+    }
+
+    Angle &operator+=(const Angle &other) {
+        value_ = normalize(value_ + other.value_);
+        return *this;
+    }
+
+    Angle &operator-=(const Angle &other) {
+        value_ = normalize(value_ - other.value_);
+        return *this;
+    }
+
+    Angle &operator*=(float scalar) {
+        value_ = normalize(value_ * scalar);
+        return *this;
+    }
+
+    Angle &operator/=(float scalar) {
+        value_ = normalize(value_ / scalar);
+        return *this;
+    }
+
+    bool operator==(const Angle &other) const {
+        return normalize(std::fabs(normalize(value_) - normalize(other.value_))) < 1e-5;
+    }
+
+    bool operator!=(const Angle &other) const {
+        return !(*this == other);
+    }
+
+    bool operator<(const Angle &other) const {
+        return value_ < other.value_;
+    }
+
+    bool operator>(const Angle &other) const {
+        return value_ > other.value_;
+    }
+
+    bool operator<=(const Angle &other) const {
+        return value_ <= other.value_;
+    }
+
+    bool operator>=(const Angle &other) const {
+        return value_ >= other.value_;
+    }
+
+    Quadrant quadrant() const {
+        if (value_ < M_PI / 2.0f)
+            return Quadrant::I;
+        if (value_ < M_PI)
+            return Quadrant::II;
+        if (value_ < 3.0f * M_PI / 2.0f)
+            return Quadrant::III;
+        return Quadrant::IV;
+    }
+
+private:
+    static float normalize(float radians) {
+        radians = fmodf(radians, M_PI * 2.0f);
+        if (radians < 0)
+            radians += 2.0f * M_PI;
+        return radians;
+    }
+
+    float value_;
+};
