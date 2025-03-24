@@ -3,6 +3,7 @@
 #include <iostream>
 
 #define M_2_PI_EXCLUSIVE (2 * M_PI) - 1e-6
+#define ANGLE_EPSILON 1e-6
 
 enum class Quadrant { I = 1, II = 2, III = 3, IV = 4 };
 
@@ -63,7 +64,7 @@ public:
     }
 
     bool operator==(const Angle &other) const {
-        return normalize(std::fabs(normalize(value_) - normalize(other.value_))) < 1e-5;
+        return normalize(std::fabs(normalize(value_) - normalize(other.value_))) < ANGLE_EPSILON;
     }
 
     bool operator!=(const Angle &other) const {
@@ -84,6 +85,29 @@ public:
 
     bool operator>=(const Angle &other) const {
         return value_ >= other.value_;
+    }
+
+    static bool isBetween(const Angle &angle, const Angle &start, const Angle &end) {
+        float a = angle.radians();
+        float s = start.radians();
+        float e = end.radians();
+
+        if (s < e) {
+            return (a >= s - ANGLE_EPSILON) && (a < e - ANGLE_EPSILON);
+        } else {
+            return (a >= s - ANGLE_EPSILON) || (a < e - ANGLE_EPSILON);
+        }
+    }
+
+    static int size(const Angle &start, const Angle &end) {
+        float s = start.radians();
+        float e = end.radians();
+
+        if (s < e) {
+            return (e - s) / M_PI;
+        } else {
+            return (2.0f * M_PI - s + e) / M_PI;
+        }
     }
 
     Quadrant quadrant() const {

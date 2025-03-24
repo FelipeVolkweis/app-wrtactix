@@ -30,8 +30,8 @@ public:
 
     static QVector<AngleInterval> mergeObstructedIntervals(const QVector<AngleEvent> &events);
     static QVector<AngleEvent> createEvents(const QVector<Vec2> &obstacles, float obstacleRadius, const Vec2 &observer,
-                                            float sweepRadius);
-    static QVector<AngleInterval> getComplementIntervals(const QVector<AngleInterval> &intervals);
+                                            float sweepRadius, AngleInterval interval);
+    static QVector<AngleInterval> getComplementIntervals(const QVector<AngleInterval> &intervals, AngleInterval interval);
 
 private:
     QVector<AngleInterval> freeAngles_;
