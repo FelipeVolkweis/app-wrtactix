@@ -1,7 +1,7 @@
 #ifndef ALWAYS_TRUE
 #define ALWAYS_TRUE
 
-#include "algorithm/behaviortree/node.hh"
+#include "algorithm/behaviortree/base/node.hh"
 
 namespace WRBeT {
 class ForceSuccess : public Node {

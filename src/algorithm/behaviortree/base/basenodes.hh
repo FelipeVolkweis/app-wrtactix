@@ -5,9 +5,9 @@
 #include "controlflow/fallback.hh"
 #include "controlflow/parallel.hh"
 #include "controlflow/sequence.hh"
-#include "decorators/alwaystrue.hh"
+#include "decorators/forcefailure.hh"
+#include "decorators/forcesuccess.hh"
 #include "execution/action.hh"
-#include "execution/booleanflipper.hh"
 #include "execution/condition.hh"
 #include "execution/executionnode.hh"
 

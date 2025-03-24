@@ -13,11 +13,20 @@ public:
     QString name();
     virtual Status tick() = 0;
 
+    Status status() const {
+        return status_;
+    }
+
+    void assignParent(Node *parent) {
+        parent_ = parent;
+    }
+
 protected:
-    Node *_parent;
+    Node *parent_;
+    Status status_;
 
 private:
-    QString _name;
+    QString name_;
 };
 } // namespace WRBeT
 #endif // NODE_HH

@@ -3,14 +3,13 @@
 
 #include <QQueue>
 
-#include "agent/baseagent.hh"
-#include "agent/basecommand.hh"
+#include "agent/agent.hh"
 #include "types/playerid.hh"
+#include "world/world.hh"
 
-namespace Agent {
-class SSLAgent : BaseAgent {
+class SSLAgent : Agent {
 public:
-    SSLAgent(PlayerID id);
+    SSLAgent(PlayerID id, GEARSystem::Controller &controller, const World &world);
 
     void observe();
     void listen();
@@ -19,9 +18,6 @@ public:
 
 private:
     PlayerID id_;
-
-    QQueue<BaseCommand *> commands_;
 };
-} // namespace Agent
 
 #endif

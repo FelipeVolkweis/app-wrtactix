@@ -1,7 +1,7 @@
 #ifndef FORCEFAILURE_HH
 #define FORCEFAILURE_HH
 
-#include "algorithm/behaviortree/node.hh"
+#include "algorithm/behaviortree/base/node.hh"
 
 namespace WRBeT {
 class ForceFailure : public Node {

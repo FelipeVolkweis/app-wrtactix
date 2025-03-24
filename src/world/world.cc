@@ -7,12 +7,11 @@
 #define TEAMS 2
 #define PLAYERS 16
 
-World::World(GEARSystem::Controller *controller) {
+World::World(GEARSystem::Controller &controller) : controller_(controller) {
     info_ = new WorldInfo();
     infoBuffer_ = new WorldInfo();
     side_ = Sides::UNDEFINED;
     color_ = Colors::NONE;
-    controller_ = controller;
 
     for (int i = 0; i < BALLS; i++) {
         info_->addBall(i);
@@ -36,11 +35,11 @@ World::~World() {
 }
 
 bool World::connectToBackbone() {
-    return controller_->connect("localhost", 0);
+    return controller_.connect("localhost", 0);
 }
 
 void World::update() {
-    if (!controller_->isConnected()) {
+    if (!controller_.isConnected()) {
         connectToBackbone();
 
         return;
@@ -74,8 +73,8 @@ void World::setColor(Colors::Color color) {
 }
 
 void World::bufferizeBall(WorldInfo &info, uint8 ballNum) {
-    info.setBallPosition(ballNum, controller_->ballPosition(ballNum));
-    info.setBallVelocity(ballNum, controller_->ballVelocity(ballNum));
+    info.setBallPosition(ballNum, controller_.ballPosition(ballNum));
+    info.setBallVelocity(ballNum, controller_.ballVelocity(ballNum));
 }
 
 // TODO:
@@ -95,36 +94,36 @@ void World::bufferizeTeam(WorldInfo &info, uint8 teamNum) {
     QList<uint8> players = info.players(teamNum);
     for (auto player : players) {
         bufferizePlayer(info, teamNum, player);
-        if (controller_->playerPosition(teamNum, player).isValid() &&
-            !controller_->playerPosition(teamNum, player).isUnknown()) {
+        if (controller_.playerPosition(teamNum, player).isValid() &&
+            !controller_.playerPosition(teamNum, player).isUnknown()) {
             bufferizeBallPossession(info, teamNum, player);
         }
     }
 }
 
 void World::bufferizePlayer(WorldInfo &info, uint8 teamNum, uint8 playerNum) {
-    info.setPlayerPosition(teamNum, playerNum, controller_->playerPosition(teamNum, playerNum));
-    info.setPlayerOrientation(teamNum, playerNum, controller_->playerOrientation(teamNum, playerNum));
-    info.setPlayerVelocity(teamNum, playerNum, controller_->playerVelocity(teamNum, playerNum));
-    info.setPlayerAngularSpeed(teamNum, playerNum, controller_->playerAngularSpeed(teamNum, playerNum));
+    info.setPlayerPosition(teamNum, playerNum, controller_.playerPosition(teamNum, playerNum));
+    info.setPlayerOrientation(teamNum, playerNum, controller_.playerOrientation(teamNum, playerNum));
+    info.setPlayerVelocity(teamNum, playerNum, controller_.playerVelocity(teamNum, playerNum));
+    info.setPlayerAngularSpeed(teamNum, playerNum, controller_.playerAngularSpeed(teamNum, playerNum));
 }
 
 void World::bufferizeFieldGeometry(WorldInfo &info) {
-    info.setFieldTopRightCorner(controller_->fieldTopRightCorner());
-    info.setFieldTopLeftCorner(controller_->fieldTopLeftCorner());
-    info.setFieldBottomLeftCorner(controller_->fieldBottomLeftCorner());
-    info.setFieldBottomRightCorner(controller_->fieldBottomRightCorner());
-    info.setFieldCenter(controller_->fieldCenter());
+    info.setFieldTopRightCorner(controller_.fieldTopRightCorner());
+    info.setFieldTopLeftCorner(controller_.fieldTopLeftCorner());
+    info.setFieldBottomLeftCorner(controller_.fieldBottomLeftCorner());
+    info.setFieldBottomRightCorner(controller_.fieldBottomRightCorner());
+    info.setFieldCenter(controller_.fieldCenter());
 
-    info.setLeftGoalPosts(controller_->leftGoal().leftPost(), controller_->leftGoal().rightPost());
-    info.setRightGoalPosts(controller_->rightGoal().leftPost(), controller_->rightGoal().rightPost());
+    info.setLeftGoalPosts(controller_.leftGoal().leftPost(), controller_.leftGoal().rightPost());
+    info.setRightGoalPosts(controller_.rightGoal().leftPost(), controller_.rightGoal().rightPost());
 
-    info.setGoalArea(controller_->rightGoal().getAreaLength(), controller_->rightGoal().getAreaWidth(),
-                     controller_->rightGoal().getAreaRoundedRadius());
-    info.setGoalDepth(controller_->rightGoal().getDepth());
+    info.setGoalArea(controller_.rightGoal().getAreaLength(), controller_.rightGoal().getAreaWidth(),
+                     controller_.rightGoal().getAreaRoundedRadius());
+    info.setGoalDepth(controller_.rightGoal().getDepth());
 
-    info.setLeftPenaltyMark(controller_->leftPenaltyMark());
-    info.setRightPenaltyMark(controller_->rightPenaltyMark());
+    info.setLeftPenaltyMark(controller_.leftPenaltyMark());
+    info.setRightPenaltyMark(controller_.rightPenaltyMark());
 
-    info.setFieldCenterRadius(controller_->fieldCenterRadius());
+    info.setFieldCenterRadius(controller_.fieldCenterRadius());
 }

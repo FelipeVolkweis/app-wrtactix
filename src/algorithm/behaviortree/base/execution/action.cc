@@ -5,5 +5,6 @@ using namespace WRBeT;
 Action::Action(QString name) : ExecutionNode(name) {}
 
 Status Action::tick() {
-    return execute();
+    status_ = execute();
+    return status_;
 }

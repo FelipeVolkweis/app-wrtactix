@@ -3,7 +3,7 @@
 
 #include <QVector>
 
-#include "algorithm/behaviortree/node.hh"
+#include "algorithm/behaviortree/base/node.hh"
 
 namespace WRBeT {
 class ControlFlowNode : public Node {

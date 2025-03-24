@@ -7,7 +7,9 @@ Condition::Condition(QString name, std::function<bool()> conditionTrue)
 
 Status Condition::tick() {
     if (_conditionTrue()) {
+        status_ = SUCCESS;
         return SUCCESS;
     }
+    status_ = FAILURE;
     return FAILURE;
 }
