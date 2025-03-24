@@ -21,6 +21,8 @@ private slots:
     void testPartialInterval();
     void testPartialIntervalWithObstacleOn4th();
     void testPartialNoObstacles();
+    void testLargestInterval();
+    void testCenterOfInterval();
 };
 
 void TestRadialSweep::testCreateAngleEvents() {
@@ -275,6 +277,49 @@ void TestRadialSweep::testPartialNoObstacles() {
     } 
 
     obstacles.push_back(Vec2(-1, 0));
+}
+
+void TestRadialSweep::testLargestInterval() {
+    {
+        QVector<AngleInterval> intervals = {
+            { Angle(0), Angle(M_PI / 6.0f) },
+            { Angle(M_PI), Angle(3.0f * M_PI / 2.0f) },
+        };
+
+        AngleInterval largest = RadialSweep::getLargestAngleInterval(intervals);
+
+        QVERIFY(largest.start == Angle(M_PI));
+        QVERIFY(largest.end == Angle(3.0f * M_PI / 2.0f));
+    }
+
+    {
+        QVector<AngleInterval> intervals = {
+            { Angle(0), Angle(M_PI) },
+            { Angle(M_PI), Angle(M_2_PI_EXCLUSIVE) },
+        };
+
+        AngleInterval largest = RadialSweep::getLargestAngleInterval(intervals);
+
+        QVERIFY(largest.start == Angle(0));
+        QVERIFY(largest.end == Angle(M_2_PI_EXCLUSIVE));
+    }
+}
+
+void TestRadialSweep::testCenterOfInterval() {
+    AngleInterval interval(0, M_PI / 2.0f);
+    Angle center = RadialSweep::getCenterOfInterval(interval);
+
+    QVERIFY(center == Angle(M_PI / 4.0f));
+
+    interval = { Angle(0), Angle(M_PI) };
+    center = RadialSweep::getCenterOfInterval(interval);
+
+    QVERIFY(center == Angle(M_PI / 2.0f));
+
+    interval = { Angle(M_PI), Angle(M_PI / 2.0f) };
+    center = RadialSweep::getCenterOfInterval(interval);
+
+    QVERIFY(center == Angle(M_PI * 7.0f / 4.0f));
 }
 
 static TestRadialSweep TEST_RADIALSWEEP;

@@ -1,13 +1,15 @@
 #include "radialsweep.hh"
 #include <algorithm>
 
-RadialSweep::RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, AngleInterval interval, float radius) :
-    observer_(observer), obstacles_(obstacles), interval_(interval), radius_(radius), obstacleRadius_(0.09f) {
+RadialSweep::RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, AngleInterval interval, float radius)
+    : observer_(observer), obstacles_(obstacles), interval_(interval), radius_(radius), obstacleRadius_(0.09f) {
     sweep();
 }
 
-RadialSweep::RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, float obstacleRadius, AngleInterval interval, float radius) :    
-    observer_(observer), obstacles_(obstacles), interval_(interval), radius_(radius), obstacleRadius_(obstacleRadius) {
+RadialSweep::RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, float obstacleRadius,
+                         AngleInterval interval, float radius)
+    : observer_(observer), obstacles_(obstacles), interval_(interval), radius_(radius),
+      obstacleRadius_(obstacleRadius) {
     sweep();
 }
 
@@ -24,7 +26,7 @@ void RadialSweep::sweep() {
         AngleInterval interval2(Angle(0), interval_.end);
 
         QVector<AngleEvent> events1 = createEvents(obstacles_, obstacleRadius_, observer_, radius_, interval1);
-        QVector<AngleEvent> events2 = createEvents(obstacles_, obstacleRadius_ , observer_, radius_, interval2);
+        QVector<AngleEvent> events2 = createEvents(obstacles_, obstacleRadius_, observer_, radius_, interval2);
 
         QVector<AngleInterval> obs1 = mergeObstructedIntervals(events1);
         QVector<AngleInterval> obs2 = mergeObstructedIntervals(events2);
@@ -73,28 +75,30 @@ QVector<AngleEvent> RadialSweep::createEvents(const QVector<Vec2> &obstacles, fl
         }
 
         // Skip if the obstacle's shadow is completely outside the interval
-        if (!Angle::isBetween(a1, interval.start, interval.end) && !Angle::isBetween(a2, interval.start, interval.end)) {
+        if (!Angle::isBetween(a1, interval.start, interval.end) &&
+            !Angle::isBetween(a2, interval.start, interval.end)) {
             continue;
         }
 
-        if (!Angle::isBetween(a2, interval.start, interval.end)) { // if the end of our obstacle is outside the interval, change it to the max interval
+        if (!Angle::isBetween(
+                a2, interval.start,
+                interval.end)) { // if the end of our obstacle is outside the interval, change it to the max interval
             a2 = interval.end;
         } else if (!Angle::isBetween(a1, interval.start, interval.end)) {
             a1 = interval.start;
-        } 
+        }
 
-        if (a1.quadrant() == Quadrant::IV && a2.quadrant() == Quadrant::I) { // Checks if the obstacle is in the border of 0, 2pi
+        if (a1.quadrant() == Quadrant::IV &&
+            a2.quadrant() == Quadrant::I) { // Checks if the obstacle is in the border of 0, 2pi
             events.push_back({interval.start, true});
-            events.push_back({interval.end, false});  
-        } 
+            events.push_back({interval.end, false});
+        }
 
         events.push_back({a1, true});
         events.push_back({a2, false});
     }
 
-    std::sort(events.begin(), events.end(), [](const AngleEvent &a, const AngleEvent &b) {
-        return a.angle < b.angle;
-    });
+    std::sort(events.begin(), events.end(), [](const AngleEvent &a, const AngleEvent &b) { return a.angle < b.angle; });
 
     return events;
 }
@@ -122,7 +126,8 @@ QVector<AngleInterval> RadialSweep::mergeObstructedIntervals(const QVector<Angle
     return intervals;
 }
 
-QVector<AngleInterval> RadialSweep::getComplementIntervals(const QVector<AngleInterval> &intervals, AngleInterval interval) {
+QVector<AngleInterval> RadialSweep::getComplementIntervals(const QVector<AngleInterval> &intervals,
+                                                           AngleInterval interval) {
     QVector<AngleInterval> complement;
 
     if (intervals.empty()) {
@@ -149,5 +154,31 @@ QVector<AngleInterval> RadialSweep::getComplementIntervals(const QVector<AngleIn
 }
 
 AngleInterval RadialSweep::getLargestAngleInterval(QVector<AngleInterval> intervals) {
+    if (intervals.empty()) {
+        return AngleInterval(); // Return empty interval if no input
+    }
 
+    for (int i = 0; i < intervals.size() - 1; i++) {
+        if (intervals[i].end == intervals[i + 1].start) {
+            intervals[i].end = intervals[i + 1].end;
+            intervals.remove(i + 1);
+            i--;
+        }
+    }
+
+    AngleInterval largest = intervals[0];
+    float largestSize = Angle::size(largest.start, largest.end);
+    for (const AngleInterval &interval : intervals) {
+        float currentSize = Angle::size(interval.start, interval.end);
+        if (currentSize > largestSize) {
+            largest = interval;
+            largestSize = currentSize;
+        }
+    }
+
+    return largest;
+}
+
+Angle RadialSweep::getCenterOfInterval(const AngleInterval &interval) {
+    return (interval.start + Angle::size(interval.start, interval.end) / 2.0f);
 }

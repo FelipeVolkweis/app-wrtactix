@@ -104,30 +104,27 @@ public:
     //  1 if other is clockwise to this angle (right side)
     // -1 if other is counter-clockwise to this angle (left side)
     //  0 if angles are equal (within epsilon)
-    static Clockwise relativeDirection(const Angle& pivot, const Angle& a2, float epsilon = 1e-5f) {
+    static Clockwise relativeDirection(const Angle &pivot, const Angle &a2, float epsilon = 1e-5f) {
         float diff = normalize(a2.radians() - pivot.radians());
-        
+
         if (diff < epsilon && diff > -epsilon) {
-            return Clockwise::EQUAL; 
+            return Clockwise::EQUAL;
         }
-        
+
         if (diff > 0 && diff < M_PI) {
-            return Clockwise::CCW; 
+            return Clockwise::CCW;
         } else if (diff > M_PI) {
-            return Clockwise::CCW; 
+            return Clockwise::CCW;
         } else {
-            return Clockwise::CW; 
+            return Clockwise::CW;
         }
     }
 
-    static int size(const Angle &start, const Angle &end) {
-        float s = start.radians();
-        float e = end.radians();
-
-        if (s < e) {
-            return (e - s) / M_PI;
+    static float size(const Angle &start, const Angle &end) {
+        if (start < end) {
+            return end.radians() - start.radians();
         } else {
-            return (2.0f * M_PI - s + e) / M_PI;
+            return (2 * M_PI - start.radians()) + end.radians();
         }
     }
 

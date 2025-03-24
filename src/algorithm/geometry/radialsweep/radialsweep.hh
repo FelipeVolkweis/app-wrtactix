@@ -15,6 +15,14 @@ struct AngleInterval {
 
     Angle start;
     Angle end;
+
+    bool operator==(const AngleInterval &other) const {
+        return start == other.start && end == other.end;
+    }
+
+    bool operator!=(const AngleInterval &other) const {
+        return !(*this == other);
+    }
 };
 
 struct AngleEvent {
@@ -24,18 +32,27 @@ struct AngleEvent {
 
 class RadialSweep {
 public:
-    RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, float obstacleRadius, AngleInterval interval, float radius);
+    RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, float obstacleRadius, AngleInterval interval,
+                float radius);
     RadialSweep(const Vec2 &observer, const QVector<Vec2> &obstacles, AngleInterval interval, float radius);
 
-    QVector<AngleInterval> getFreeAngles() const { return freeAngles_; };
-    QVector<AngleInterval> getObstructedAngles() const { return obstructedAngles_; };
+    QVector<AngleInterval> getFreeAngles() const {
+        return freeAngles_;
+    };
+
+    QVector<AngleInterval> getObstructedAngles() const {
+        return obstructedAngles_;
+    };
 
     static QVector<AngleInterval> mergeObstructedIntervals(const QVector<AngleEvent> &events);
     static QVector<AngleEvent> createEvents(const QVector<Vec2> &obstacles, float obstacleRadius, const Vec2 &observer,
                                             float sweepRadius, AngleInterval interval);
-    static QVector<AngleInterval> getComplementIntervals(const QVector<AngleInterval> &intervals, AngleInterval interval);
+    static QVector<AngleInterval> getComplementIntervals(const QVector<AngleInterval> &intervals,
+                                                         AngleInterval interval);
 
     static AngleInterval getLargestAngleInterval(QVector<AngleInterval> intervals);
+    static Angle getCenterOfInterval(const AngleInterval &interval);
+
 private:
     QVector<AngleInterval> freeAngles_;
     QVector<AngleInterval> obstructedAngles_;
