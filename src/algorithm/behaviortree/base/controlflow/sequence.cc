@@ -13,15 +13,15 @@ Status Sequence::tick() {
         qCDebug(SEQUENCE) << child->name();
         Status childStatus = child->tick();
 
-        if (childStatus == RUNNING) {
-            status_ = RUNNING;
-            return RUNNING;
-        } else if (childStatus == FAILURE) {
-            status_ = FAILURE;
-            return FAILURE;
+        if (childStatus == Status::RUNNING) {
+            status_ = Status::RUNNING;
+            return status_;
+        } else if (childStatus == Status::FAILURE) {
+            status_ = Status::FAILURE;
+            return status_;
         }
     }
 
-    status_ = SUCCESS;
-    return SUCCESS;
+    status_ = Status::SUCCESS;
+    return status_;
 }

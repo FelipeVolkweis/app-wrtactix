@@ -9,15 +9,13 @@ using namespace WRBeT;
 Parallel::Parallel(QString name) : ControlFlowNode(name) {}
 
 Status Parallel::tick() {
-    Status status = Status::SUCCESS;
     status_ = Status::SUCCESS;
     for (auto &child : _children) {
         qCDebug(PARALLEL) << child->name();
         Status childStatus = child->tick();
         if (childStatus == Status::FAILURE) {
             status_ = Status::FAILURE;
-            status = Status::FAILURE;
         }
     }
-    return status;
+    return status_;
 }

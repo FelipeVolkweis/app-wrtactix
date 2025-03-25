@@ -3,9 +3,9 @@
 
 #include <QString>
 
-namespace WRBeT {
-enum Status { SUCCESS, FAILURE, RUNNING };
+#include "types/status.hh"
 
+namespace WRBeT {
 class Node {
 public:
     Node(QString name);

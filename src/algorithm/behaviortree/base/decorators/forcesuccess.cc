@@ -9,5 +9,5 @@ using namespace WRBeT;
 Status ForceSuccess::tick() {
     _child.tick();
     status_ = Status::SUCCESS;
-    return Status::SUCCESS;
+    return status_;
 }

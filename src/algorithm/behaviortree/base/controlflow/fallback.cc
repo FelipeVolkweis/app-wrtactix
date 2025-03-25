@@ -14,15 +14,15 @@ Status Fallback::tick() {
         Status childStatus = child->tick();
         status_ = childStatus;
 
-        if (childStatus == RUNNING) {
-            status_ = RUNNING;
-            return RUNNING;
-        } else if (childStatus == SUCCESS) {
-            status_ = SUCCESS;
-            return SUCCESS;
+        if (childStatus == Status::RUNNING) {
+            status_ = Status::RUNNING;
+            return status_;
+        } else if (childStatus == Status::SUCCESS) {
+            status_ = Status::SUCCESS;
+            return status_;
         }
     }
 
-    status_ = FAILURE;
-    return FAILURE;
+    status_ = Status::FAILURE;
+    return status_;
 }
