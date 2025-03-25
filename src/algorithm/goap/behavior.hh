@@ -6,7 +6,7 @@
 
 class Behavior {
 public:
-    Behavior() {}
+    Behavior(const QString &name) : name_(name) {}
 
     virtual bool isValid() const = 0;
     virtual float cost() const = 0;
@@ -14,7 +14,12 @@ public:
     virtual Dictionary<bool> effects() const = 0;
     virtual Status execute() const = 0;
 
+    const QString &name() const {
+        return name_;
+    }
+
 private:
+    const QString name_;
 };
 
 #endif

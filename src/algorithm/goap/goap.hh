@@ -7,10 +7,11 @@
 #include "types/dictionary.hh"
 
 #include "behavior.hh"
+#include "goal.hh"
 
 class GoapNode {
 public:
-    GoapNode() : behavior_(nullptr) {}
+    GoapNode(const Dictionary<bool> &desiredState) : behavior_(nullptr), desiredState_(desiredState) {}
 
     GoapNode(Behavior *behavior, const Dictionary<bool> &desiredState)
         : behavior_(behavior), desiredState_(desiredState) {};
@@ -47,16 +48,20 @@ private:
 
 struct Plan {
     QVector<Behavior *> behaviors;
-    float cost;
+    float cost = INFINITY;
 };
 
-class Goap {
+class GOAP {
 public:
-    Goap(QVector<Behavior *> availableBehaviors);
+    GOAP(QVector<Behavior *> availableBehaviors);
+
+    Plan getPlan(const Goal &goal, const Dictionary<bool> &blackboard);
 
 private:
     bool buildPlan(QSharedPointer<GoapNode> step, const Dictionary<bool> &blackboard);
     QVector<Plan> getAllPlansFromTree(GoapNode *root, const Dictionary<bool> &blackboard);
+    Plan getCheapestPlan(const QVector<Plan> &plans);
+    Plan getBestPlan(const Goal &goal, const Dictionary<bool> &blackboard);
 
     QVector<Behavior *> availableBehaviors_;
 };

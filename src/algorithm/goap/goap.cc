@@ -1,13 +1,22 @@
 #include "goap.hh"
+#include <iostream>
 
-Goap::Goap(QVector<Behavior *> availableBehaviors) {}
+GOAP::GOAP(QVector<Behavior *> availableBehaviors) : availableBehaviors_(availableBehaviors) {}
 
-bool Goap::buildPlan(QSharedPointer<GoapNode> step, const Dictionary<bool> &blackboard) {
+Plan GOAP::getPlan(const Goal &goal, const Dictionary<bool> &blackboard) {
+    if (!goal.isValid() || goal.desiredWorldState().isEmpty()) {
+        return Plan();
+    }
+
+    return getBestPlan(goal, blackboard);
+}
+
+bool GOAP::buildPlan(QSharedPointer<GoapNode> step, const Dictionary<bool> &blackboard) {
     bool hasFollowUp = false;
     auto state = step->desiredState();
 
     for (const auto &s : state.asKeyValueRange()) {
-        if (state[s.first] == blackboard[s.first]) {
+        if (blackboard.contains(s.first) && state[s.first] == blackboard[s.first]) {
             state.remove(s.first);
         }
     }
@@ -16,7 +25,7 @@ bool Goap::buildPlan(QSharedPointer<GoapNode> step, const Dictionary<bool> &blac
         return true;
     }
 
-    for (auto b : availableBehaviors_) {
+    for (auto &b : availableBehaviors_) {
         if (!b->isValid()) {
             continue;
         }
@@ -26,7 +35,7 @@ bool Goap::buildPlan(QSharedPointer<GoapNode> step, const Dictionary<bool> &blac
         auto desiredState = state;
 
         for (const auto &s : desiredState.asKeyValueRange()) {
-            if (desiredState[s.first] == effects[s.first]) {
+            if (effects.contains(s.first) && effects[s.first] == desiredState[s.first]) {
                 desiredState.remove(s.first);
                 shouldAddToPlan = true;
             }
@@ -50,7 +59,7 @@ bool Goap::buildPlan(QSharedPointer<GoapNode> step, const Dictionary<bool> &blac
     return hasFollowUp;
 }
 
-QVector<Plan> Goap::getAllPlansFromTree(GoapNode *root, const Dictionary<bool> &blackboard) {
+QVector<Plan> GOAP::getAllPlansFromTree(GoapNode *root, const Dictionary<bool> &blackboard) {
     QVector<Plan> plans;
 
     if (root == nullptr) {
@@ -58,7 +67,7 @@ QVector<Plan> Goap::getAllPlansFromTree(GoapNode *root, const Dictionary<bool> &
     }
 
     if (root->isLeaf()) {
-        plans.push_back({ QVector<Behavior *> {root->behavior()},  root->behavior()->cost() });
+        plans.push_back({QVector<Behavior *>{root->behavior()}, root->behavior()->cost()});
         return plans;
     }
 
@@ -66,8 +75,34 @@ QVector<Plan> Goap::getAllPlansFromTree(GoapNode *root, const Dictionary<bool> &
         for (auto &newPlan : getAllPlansFromTree(c.data(), blackboard)) {
             if (root->hasBehavior()) {
                 newPlan.behaviors.append(root->behavior());
-                
+                newPlan.cost += root->behavior()->cost();
             }
+            plans.append(newPlan);
         }
     }
+
+    return plans;
+}
+
+Plan GOAP::getBestPlan(const Goal &goal, const Dictionary<bool> &blackboard) {
+    QSharedPointer<GoapNode> node(new GoapNode(goal.desiredWorldState()));
+
+    if (buildPlan(node, blackboard)) {
+        auto plans = getAllPlansFromTree(node.data(), blackboard);
+        return getCheapestPlan(plans);
+    }
+
+    return Plan();
+}
+
+Plan GOAP::getCheapestPlan(const QVector<Plan> &plans) {
+    Plan best;
+
+    for (const auto &p : plans) {
+        if (p.cost < best.cost) {
+            best = p;
+        }
+    }
+
+    return best;
 }
