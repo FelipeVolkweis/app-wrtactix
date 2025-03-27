@@ -1,6 +1,7 @@
 #ifndef WORLD_HH
 #define WORLD_HH
 
+#include "algorithm/geometry/twod/twod.hh"
 #include "types/types.hh"
 #include "world/worldinfo.hh"
 
@@ -38,6 +39,10 @@ public:
         return info_->playerPosition(player);
     }
 
+    Vec2 playerPositionVec2(const PlayerID &player) const {
+        return TwoD::positionToVector(info_->playerPosition(player));
+    }
+
     const Angle &playerOrientation(const PlayerID &player) const {
         return info_->playerOrientation(player);
     }
@@ -58,6 +63,10 @@ public:
         return info_->ballPosition();
     }
 
+    Vec2 ballPositionVec2() const {
+        return TwoD::positionToVector(info_->ballPosition());
+    }
+
     const Velocity ballVelocity() const {
         return info_->ballVelocity();
     }
@@ -66,20 +75,40 @@ public:
         return info_->fieldTopRightCorner();
     }
 
+    Vec2 fieldTopRightCornerVec2() const {
+        return TwoD::positionToVector(info_->fieldTopRightCorner());
+    }
+
     const Position &fieldTopLeftCorner() const {
         return info_->fieldTopLeftCorner();
+    }
+
+    Vec2 fieldTopLeftCornerVec2() const {
+        return TwoD::positionToVector(info_->fieldTopLeftCorner());
     }
 
     const Position &fieldBottomLeftCorner() const {
         return info_->fieldBottomLeftCorner();
     }
 
+    Vec2 fieldBottomLeftCornerVec2() const {
+        return TwoD::positionToVector(info_->fieldBottomLeftCorner());
+    }
+
     const Position &fieldBottomRightCorner() const {
         return info_->fieldBottomRightCorner();
     }
 
+    Vec2 fieldBottomRightCornerVec2() const {
+        return TwoD::positionToVector(info_->fieldBottomRightCorner());
+    }
+
     const Position &fieldCenter() const {
         return info_->fieldCenter();
+    }
+
+    Vec2 fieldCenterVec2() const {
+        return TwoD::positionToVector(info_->fieldCenter());
     }
 
     const Goal &leftGoal() const {
@@ -94,8 +123,16 @@ public:
         return info_->leftPenaltyMark();
     }
 
+    Vec2 leftPenaltyMarkVec2() const {
+        return TwoD::positionToVector(info_->leftPenaltyMark());
+    }
+
     const Position &rightPenaltyMark() const {
         return info_->rightPenaltyMark();
+    }
+
+    Vec2 rightPenaltyMarkVec2() const {
+        return TwoD::positionToVector(info_->rightPenaltyMark());
     }
 
     float fieldCenterRadius() const {

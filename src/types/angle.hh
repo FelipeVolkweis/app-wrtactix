@@ -8,9 +8,9 @@
 enum class Quadrant { I = 1, II = 2, III = 3, IV = 4 };
 enum class Clockwise { CW = 1, CCW = -1, EQUAL = 0 };
 
-class Angle {
+class WRAngle {
 public:
-    Angle(float radians = 0.0f) : value_(normalize(radians)) {}
+    WRAngle(float radians = 0.0f) : value_(normalize(radians)) {}
 
     float radians() const {
         return value_;
@@ -28,67 +28,67 @@ public:
         value_ = normalize(degrees * M_PI / 180.0f);
     }
 
-    Angle operator+(const Angle &other) const {
-        return Angle(value_ + other.value_);
+    WRAngle operator+(const WRAngle &other) const {
+        return WRAngle(value_ + other.value_);
     }
 
-    Angle operator-(const Angle &other) const {
-        return Angle(value_ - other.value_);
+    WRAngle operator-(const WRAngle &other) const {
+        return WRAngle(value_ - other.value_);
     }
 
-    Angle operator*(float scalar) const {
-        return Angle(value_ * scalar);
+    WRAngle operator*(float scalar) const {
+        return WRAngle(value_ * scalar);
     }
 
-    Angle operator/(float scalar) const {
-        return Angle(value_ / scalar);
+    WRAngle operator/(float scalar) const {
+        return WRAngle(value_ / scalar);
     }
 
-    Angle &operator+=(const Angle &other) {
+    WRAngle &operator+=(const WRAngle &other) {
         value_ = normalize(value_ + other.value_);
         return *this;
     }
 
-    Angle &operator-=(const Angle &other) {
+    WRAngle &operator-=(const WRAngle &other) {
         value_ = normalize(value_ - other.value_);
         return *this;
     }
 
-    Angle &operator*=(float scalar) {
+    WRAngle &operator*=(float scalar) {
         value_ = normalize(value_ * scalar);
         return *this;
     }
 
-    Angle &operator/=(float scalar) {
+    WRAngle &operator/=(float scalar) {
         value_ = normalize(value_ / scalar);
         return *this;
     }
 
-    bool operator==(const Angle &other) const {
+    bool operator==(const WRAngle &other) const {
         return normalize(std::fabs(normalize(value_) - normalize(other.value_))) < ANGLE_EPSILON;
     }
 
-    bool operator!=(const Angle &other) const {
+    bool operator!=(const WRAngle &other) const {
         return !(*this == other);
     }
 
-    bool operator<(const Angle &other) const {
+    bool operator<(const WRAngle &other) const {
         return value_ < other.value_;
     }
 
-    bool operator>(const Angle &other) const {
+    bool operator>(const WRAngle &other) const {
         return value_ > other.value_;
     }
 
-    bool operator<=(const Angle &other) const {
+    bool operator<=(const WRAngle &other) const {
         return value_ <= other.value_;
     }
 
-    bool operator>=(const Angle &other) const {
+    bool operator>=(const WRAngle &other) const {
         return value_ >= other.value_;
     }
 
-    static bool isBetween(const Angle &angle, const Angle &start, const Angle &end) {
+    static bool isBetween(const WRAngle &angle, const WRAngle &start, const WRAngle &end) {
         float a = angle.radians();
         float s = start.radians();
         float e = end.radians();
@@ -104,7 +104,7 @@ public:
     //  1 if other is clockwise to this angle (right side)
     // -1 if other is counter-clockwise to this angle (left side)
     //  0 if angles are equal (within epsilon)
-    static Clockwise relativeDirection(const Angle &pivot, const Angle &a2, float epsilon = 1e-5f) {
+    static Clockwise relativeDirection(const WRAngle &pivot, const WRAngle &a2, float epsilon = 1e-5f) {
         float diff = normalize(a2.radians() - pivot.radians());
 
         if (diff < epsilon && diff > -epsilon) {
@@ -120,7 +120,7 @@ public:
         }
     }
 
-    static float size(const Angle &start, const Angle &end) {
+    static float size(const WRAngle &start, const WRAngle &end) {
         if (start < end) {
             return end.radians() - start.radians();
         } else {

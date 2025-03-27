@@ -9,12 +9,12 @@
 struct AngleInterval {
     AngleInterval(float start, float end) : start(start), end(end) {}
 
-    AngleInterval(Angle start, Angle end) : start(start), end(end) {}
+    AngleInterval(WRAngle start, WRAngle end) : start(start), end(end) {}
 
     AngleInterval() : start(0), end(0) {}
 
-    Angle start;
-    Angle end;
+    WRAngle start;
+    WRAngle end;
 
     bool operator==(const AngleInterval &other) const {
         return start == other.start && end == other.end;
@@ -26,7 +26,7 @@ struct AngleInterval {
 };
 
 struct AngleEvent {
-    Angle angle;
+    WRAngle angle;
     bool start;
 };
 
@@ -51,7 +51,7 @@ public:
                                                          AngleInterval interval);
 
     static AngleInterval getLargestAngleInterval(QVector<AngleInterval> intervals);
-    static Angle getCenterOfInterval(const AngleInterval &interval);
+    static WRAngle getCenterOfInterval(const AngleInterval &interval);
 
 private:
     QVector<AngleInterval> freeAngles_;

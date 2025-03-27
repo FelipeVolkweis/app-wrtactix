@@ -36,17 +36,17 @@ void TestRadialSweep::testCreateAngleEvents() {
     int last = events.size() - 1;
 
     QVERIFY(events.size() == 4);
-    QVERIFY(events[0].angle == Angle(0));
+    QVERIFY(events[0].angle == WRAngle(0));
     QVERIFY(events[0].start == true);
-    QVERIFY(events[last].angle == Angle(M_2_PI_EXCLUSIVE));
+    QVERIFY(events[last].angle == WRAngle(M_2_PI_EXCLUSIVE));
     QVERIFY(events[last].start == false);
 }
 
 void TestRadialSweep::testMergeObstructedAngles() {
-    AngleEvent e1 = { Angle(0.1f), true };
-    AngleEvent e2 = { Angle(0.2f), true };
-    AngleEvent e3 = { Angle(0.3f), false };
-    AngleEvent e4 = { Angle(0.4f), false };
+    AngleEvent e1 = { WRAngle(0.1f), true };
+    AngleEvent e2 = { WRAngle(0.2f), true };
+    AngleEvent e3 = { WRAngle(0.3f), false };
+    AngleEvent e4 = { WRAngle(0.4f), false };
 
     QVector<AngleEvent> events = { e1, e2, e3, e4 };    // Obstacle at 0 radians, so interval should cover [0, α) and [2π - α, 2π)
 
@@ -71,37 +71,37 @@ void TestRadialSweep::testMergeAfterCreation() {
     QVERIFY(intervals.size() > 0);
 
     int n = intervals.size() - 1;
-    QVERIFY(intervals[0].start == Angle(0));
-    QVERIFY(intervals[0].end == Angle(2.0f * M_PI / 3.0f)); // 120 degrees
-    QVERIFY(intervals[n].start == Angle(M_PI * 11.0f/6.0f)); // 330 degrees
-    QVERIFY(intervals[n].end == Angle(M_2_PI_EXCLUSIVE));
+    QVERIFY(intervals[0].start == WRAngle(0));
+    QVERIFY(intervals[0].end == WRAngle(2.0f * M_PI / 3.0f)); // 120 degrees
+    QVERIFY(intervals[n].start == WRAngle(M_PI * 11.0f/6.0f)); // 330 degrees
+    QVERIFY(intervals[n].end == WRAngle(M_2_PI_EXCLUSIVE));
 }
 
 void TestRadialSweep::testGetComplementIntervals() {
     QVector<AngleInterval> intervals = {
-        { Angle(0), Angle(M_PI / 2.0f) },
-        { Angle(M_PI), Angle(3.0f * M_PI / 2.0f) },
+        { WRAngle(0), WRAngle(M_PI / 2.0f) },
+        { WRAngle(M_PI), WRAngle(3.0f * M_PI / 2.0f) },
     };
     AngleInterval interval(0, M_2_PI_EXCLUSIVE);
 
     QVector<AngleInterval> complement = RadialSweep::getComplementIntervals(intervals, interval);
 
     QVERIFY(complement.size() == 2);
-    QVERIFY(complement[0].start == Angle(M_PI / 2.0f));
-    QVERIFY(complement[0].end == Angle(M_PI));
-    QVERIFY(complement[1].start == Angle(3.0f * M_PI / 2.0f));
-    QVERIFY(complement[1].end == Angle(M_2_PI_EXCLUSIVE));
+    QVERIFY(complement[0].start == WRAngle(M_PI / 2.0f));
+    QVERIFY(complement[0].end == WRAngle(M_PI));
+    QVERIFY(complement[1].start == WRAngle(3.0f * M_PI / 2.0f));
+    QVERIFY(complement[1].end == WRAngle(M_2_PI_EXCLUSIVE));
 
     intervals = {
-        {Angle(0), Angle(M_PI * 1.0f / 6.0f)},
-        {Angle(M_PI * 11.0f / 6.0f), Angle(M_2_PI_EXCLUSIVE)}
+        {WRAngle(0), WRAngle(M_PI * 1.0f / 6.0f)},
+        {WRAngle(M_PI * 11.0f / 6.0f), WRAngle(M_2_PI_EXCLUSIVE)}
     };
 
     complement = RadialSweep::getComplementIntervals(intervals, interval);
 
     QVERIFY(complement.size() == 1);
-    QVERIFY(complement[0].start == Angle(M_PI * 1.0f / 6.0f));
-    QVERIFY(complement[0].end == Angle(M_PI * 11.0f / 6.0f));
+    QVERIFY(complement[0].start == WRAngle(M_PI * 1.0f / 6.0f));
+    QVERIFY(complement[0].end == WRAngle(M_PI * 11.0f / 6.0f));
 }
 
 void TestRadialSweep::testHalfOutsideInterval() {
@@ -118,14 +118,14 @@ void TestRadialSweep::testHalfOutsideInterval() {
     QVERIFY(intervals.size() == 2);
 
     int n = intervals.size() - 1;
-    QVERIFY(intervals[0].start == Angle(M_PI / 2.0f));
-    QVERIFY(intervals[0].end == Angle(M_PI * 2.0f / 3.0f));
-    QVERIFY(intervals[n].start == Angle(M_PI * 11.0f / 6.0f));
-    QVERIFY(intervals[n].end == Angle(M_2_PI_EXCLUSIVE));
+    QVERIFY(intervals[0].start == WRAngle(M_PI / 2.0f));
+    QVERIFY(intervals[0].end == WRAngle(M_PI * 2.0f / 3.0f));
+    QVERIFY(intervals[n].start == WRAngle(M_PI * 11.0f / 6.0f));
+    QVERIFY(intervals[n].end == WRAngle(M_2_PI_EXCLUSIVE));
 
     QVERIFY(complement.size() == 1);
-    QVERIFY(complement[0].start == Angle(M_PI * 2.0f / 3.0f));
-    QVERIFY(complement[0].end == Angle(M_PI * 11.0f / 6.0f));
+    QVERIFY(complement[0].start == WRAngle(M_PI * 2.0f / 3.0f));
+    QVERIFY(complement[0].end == WRAngle(M_PI * 11.0f / 6.0f));
 }
 
 void TestRadialSweep::testEmptyObstacles() {
@@ -145,8 +145,8 @@ void TestRadialSweep::testEmptyObstacles() {
 
     // Complement should be the entire interval
     QVERIFY(complement.size() == 1);
-    QVERIFY(complement[0].start == Angle(0));
-    QVERIFY(complement[0].end == Angle(M_2_PI_EXCLUSIVE));
+    QVERIFY(complement[0].start == WRAngle(0));
+    QVERIFY(complement[0].end == WRAngle(M_2_PI_EXCLUSIVE));
 }
 
 void TestRadialSweep::testBoundaryIntervals() {
@@ -162,17 +162,17 @@ void TestRadialSweep::testBoundaryIntervals() {
 
     // Obstacles at 0 and π radians, so intervals should cover [0, α) and [π - α, π + α)
     QVERIFY(intervals.size() == 3);
-    QVERIFY(intervals[0].start == Angle(0));
-    QVERIFY(intervals[0].end == Angle(M_PI / 6)); // 30 degrees
-    QVERIFY(intervals[1].start == Angle(5 * M_PI / 6)); // 150 degrees
-    QVERIFY(intervals[1].end == Angle(7 * M_PI / 6)); // 210 degrees
+    QVERIFY(intervals[0].start == WRAngle(0));
+    QVERIFY(intervals[0].end == WRAngle(M_PI / 6)); // 30 degrees
+    QVERIFY(intervals[1].start == WRAngle(5 * M_PI / 6)); // 150 degrees
+    QVERIFY(intervals[1].end == WRAngle(7 * M_PI / 6)); // 210 degrees
 
     // Complement should have gaps between intervals
     QVERIFY(complement.size() == 2);
-    QVERIFY(complement[0].start == Angle(M_PI / 6));
-    QVERIFY(complement[0].end == Angle(5 * M_PI / 6));
-    QVERIFY(complement[1].start == Angle(7 * M_PI / 6));
-    QVERIFY(complement[1].end == Angle(M_PI * 11.0 / 6.0));
+    QVERIFY(complement[0].start == WRAngle(M_PI / 6));
+    QVERIFY(complement[0].end == WRAngle(5 * M_PI / 6));
+    QVERIFY(complement[1].start == WRAngle(7 * M_PI / 6));
+    QVERIFY(complement[1].end == WRAngle(M_PI * 11.0 / 6.0));
 }
 
 void TestRadialSweep::testAllObstructed() {
@@ -203,10 +203,10 @@ void TestRadialSweep::testPartialWrappedInterval() {
     QVector<AngleInterval> freeAngles = rs.getFreeAngles();  
 
     QVERIFY(freeAngles.size() == 2);
-    QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
-    QVERIFY(freeAngles[0].end == Angle(M_PI * 11.0f / 6.0f));
-    QVERIFY(freeAngles[1].start == Angle(M_PI / 6.0f));
-    QVERIFY(freeAngles[1].end == Angle(M_PI / 2.0f));
+    QVERIFY(freeAngles[0].start == WRAngle(M_PI * 3.0f / 2.0f));
+    QVERIFY(freeAngles[0].end == WRAngle(M_PI * 11.0f / 6.0f));
+    QVERIFY(freeAngles[1].start == WRAngle(M_PI / 6.0f));
+    QVERIFY(freeAngles[1].end == WRAngle(M_PI / 2.0f));
 }
 
 void TestRadialSweep::testPartialInterval() {
@@ -221,8 +221,8 @@ void TestRadialSweep::testPartialInterval() {
     QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
 
     QVERIFY(freeAngles.size() == 2);
-    QVERIFY(freeAngles[0].start == Angle(M_PI / 2.0f));
-    QVERIFY(freeAngles[0].end == Angle(5.0f * M_PI / 6.0f));
+    QVERIFY(freeAngles[0].start == WRAngle(M_PI / 2.0f));
+    QVERIFY(freeAngles[0].end == WRAngle(5.0f * M_PI / 6.0f));
 }
 
 void TestRadialSweep::testPartialIntervalWithObstacleOn4th() {
@@ -237,12 +237,12 @@ void TestRadialSweep::testPartialIntervalWithObstacleOn4th() {
     QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
 
     QVERIFY(freeAngles.size() == 3);
-    QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
-    QVERIFY(freeAngles[0].end == Angle(atan2f(-1.2057189138831, 0.5442810861169)));
-    QVERIFY(freeAngles[1].start == Angle(atan2f(-0.5442810861169, 1.2057189138831))); // (1.2057189138831, -0.5442810861169)
-    QVERIFY(freeAngles[1].end == Angle(M_2_PI_EXCLUSIVE)); 
-    QVERIFY(freeAngles[2].start == Angle(0));
-    QVERIFY(freeAngles[2].end == Angle(M_PI / 2.0f));
+    QVERIFY(freeAngles[0].start == WRAngle(M_PI * 3.0f / 2.0f));
+    QVERIFY(freeAngles[0].end == WRAngle(atan2f(-1.2057189138831, 0.5442810861169)));
+    QVERIFY(freeAngles[1].start == WRAngle(atan2f(-0.5442810861169, 1.2057189138831))); // (1.2057189138831, -0.5442810861169)
+    QVERIFY(freeAngles[1].end == WRAngle(M_2_PI_EXCLUSIVE)); 
+    QVERIFY(freeAngles[2].start == WRAngle(0));
+    QVERIFY(freeAngles[2].end == WRAngle(M_PI / 2.0f));
 }
 
 void TestRadialSweep::testPartialNoObstacles() {
@@ -258,10 +258,10 @@ void TestRadialSweep::testPartialNoObstacles() {
         QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
 
         QVERIFY(freeAngles.size() == 2);
-        QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
-        QVERIFY(freeAngles[0].end == Angle(M_2_PI_EXCLUSIVE)); 
-        QVERIFY(freeAngles[1].start == Angle(0));
-        QVERIFY(freeAngles[1].end == Angle(M_PI / 2.0f));
+        QVERIFY(freeAngles[0].start == WRAngle(M_PI * 3.0f / 2.0f));
+        QVERIFY(freeAngles[0].end == WRAngle(M_2_PI_EXCLUSIVE)); 
+        QVERIFY(freeAngles[1].start == WRAngle(0));
+        QVERIFY(freeAngles[1].end == WRAngle(M_PI / 2.0f));
     }
 
     {
@@ -270,10 +270,10 @@ void TestRadialSweep::testPartialNoObstacles() {
         QVector<AngleInterval> obstructedAngles = rs.getObstructedAngles();
 
         QVERIFY(freeAngles.size() == 2);
-        QVERIFY(freeAngles[0].start == Angle(M_PI * 3.0f / 2.0f));
-        QVERIFY(freeAngles[0].end == Angle(M_2_PI_EXCLUSIVE)); 
-        QVERIFY(freeAngles[1].start == Angle(0));
-        QVERIFY(freeAngles[1].end == Angle(M_PI / 2.0f));
+        QVERIFY(freeAngles[0].start == WRAngle(M_PI * 3.0f / 2.0f));
+        QVERIFY(freeAngles[0].end == WRAngle(M_2_PI_EXCLUSIVE)); 
+        QVERIFY(freeAngles[1].start == WRAngle(0));
+        QVERIFY(freeAngles[1].end == WRAngle(M_PI / 2.0f));
     } 
 
     obstacles.push_back(Vec2(-1, 0));
@@ -282,44 +282,44 @@ void TestRadialSweep::testPartialNoObstacles() {
 void TestRadialSweep::testLargestInterval() {
     {
         QVector<AngleInterval> intervals = {
-            { Angle(0), Angle(M_PI / 6.0f) },
-            { Angle(M_PI), Angle(3.0f * M_PI / 2.0f) },
+            { WRAngle(0), WRAngle(M_PI / 6.0f) },
+            { WRAngle(M_PI), WRAngle(3.0f * M_PI / 2.0f) },
         };
 
         AngleInterval largest = RadialSweep::getLargestAngleInterval(intervals);
 
-        QVERIFY(largest.start == Angle(M_PI));
-        QVERIFY(largest.end == Angle(3.0f * M_PI / 2.0f));
+        QVERIFY(largest.start == WRAngle(M_PI));
+        QVERIFY(largest.end == WRAngle(3.0f * M_PI / 2.0f));
     }
 
     {
         QVector<AngleInterval> intervals = {
-            { Angle(0), Angle(M_PI) },
-            { Angle(M_PI), Angle(M_2_PI_EXCLUSIVE) },
+            { WRAngle(0), WRAngle(M_PI) },
+            { WRAngle(M_PI), WRAngle(M_2_PI_EXCLUSIVE) },
         };
 
         AngleInterval largest = RadialSweep::getLargestAngleInterval(intervals);
 
-        QVERIFY(largest.start == Angle(0));
-        QVERIFY(largest.end == Angle(M_2_PI_EXCLUSIVE));
+        QVERIFY(largest.start == WRAngle(0));
+        QVERIFY(largest.end == WRAngle(M_2_PI_EXCLUSIVE));
     }
 }
 
 void TestRadialSweep::testCenterOfInterval() {
     AngleInterval interval(0, M_PI / 2.0f);
-    Angle center = RadialSweep::getCenterOfInterval(interval);
+    WRAngle center = RadialSweep::getCenterOfInterval(interval);
 
-    QVERIFY(center == Angle(M_PI / 4.0f));
+    QVERIFY(center == WRAngle(M_PI / 4.0f));
 
-    interval = { Angle(0), Angle(M_PI) };
+    interval = { WRAngle(0), WRAngle(M_PI) };
     center = RadialSweep::getCenterOfInterval(interval);
 
-    QVERIFY(center == Angle(M_PI / 2.0f));
+    QVERIFY(center == WRAngle(M_PI / 2.0f));
 
-    interval = { Angle(M_PI), Angle(M_PI / 2.0f) };
+    interval = { WRAngle(M_PI), WRAngle(M_PI / 2.0f) };
     center = RadialSweep::getCenterOfInterval(interval);
 
-    QVERIFY(center == Angle(M_PI * 7.0f / 4.0f));
+    QVERIFY(center == WRAngle(M_PI * 7.0f / 4.0f));
 }
 
 static TestRadialSweep TEST_RADIALSWEEP;

@@ -22,8 +22,8 @@ void RadialSweep::sweep() {
         obstructedIntervals = mergeObstructedIntervals(events);
         complementIntervals = getComplementIntervals(obstructedIntervals, interval_);
     } else {
-        AngleInterval interval1(interval_.start, Angle(M_2_PI_EXCLUSIVE));
-        AngleInterval interval2(Angle(0), interval_.end);
+        AngleInterval interval1(interval_.start, WRAngle(M_2_PI_EXCLUSIVE));
+        AngleInterval interval2(WRAngle(0), interval_.end);
 
         QVector<AngleEvent> events1 = createEvents(obstacles_, obstacleRadius_, observer_, radius_, interval1);
         QVector<AngleEvent> events2 = createEvents(obstacles_, obstacleRadius_, observer_, radius_, interval2);
@@ -61,30 +61,30 @@ QVector<AngleEvent> RadialSweep::createEvents(const QVector<Vec2> &obstacles, fl
             continue;
         }
 
-        Angle angle(atan2f(diff.y(), diff.x()));
+        WRAngle angle(atan2f(diff.y(), diff.x()));
         float alpha = asinf(obstacleRadius / distance);
 
-        Angle a1 = angle - Angle(alpha);
-        Angle a2 = angle + Angle(alpha);
+        WRAngle a1 = angle - WRAngle(alpha);
+        WRAngle a2 = angle + WRAngle(alpha);
 
-        if (a1 < interval.start && Angle::isBetween(a1, interval.start, interval.end)) {
+        if (a1 < interval.start && WRAngle::isBetween(a1, interval.start, interval.end)) {
             a1 = interval.start;
         }
-        if (a2 > interval.end && Angle::isBetween(a2, interval.start, interval.end)) {
+        if (a2 > interval.end && WRAngle::isBetween(a2, interval.start, interval.end)) {
             a2 = interval.end;
         }
 
         // Skip if the obstacle's shadow is completely outside the interval
-        if (!Angle::isBetween(a1, interval.start, interval.end) &&
-            !Angle::isBetween(a2, interval.start, interval.end)) {
+        if (!WRAngle::isBetween(a1, interval.start, interval.end) &&
+            !WRAngle::isBetween(a2, interval.start, interval.end)) {
             continue;
         }
 
-        if (!Angle::isBetween(
+        if (!WRAngle::isBetween(
                 a2, interval.start,
                 interval.end)) { // if the end of our obstacle is outside the interval, change it to the max interval
             a2 = interval.end;
-        } else if (!Angle::isBetween(a1, interval.start, interval.end)) {
+        } else if (!WRAngle::isBetween(a1, interval.start, interval.end)) {
             a1 = interval.start;
         }
 
@@ -167,9 +167,9 @@ AngleInterval RadialSweep::getLargestAngleInterval(QVector<AngleInterval> interv
     }
 
     AngleInterval largest = intervals[0];
-    float largestSize = Angle::size(largest.start, largest.end);
+    float largestSize = WRAngle::size(largest.start, largest.end);
     for (const AngleInterval &interval : intervals) {
-        float currentSize = Angle::size(interval.start, interval.end);
+        float currentSize = WRAngle::size(interval.start, interval.end);
         if (currentSize > largestSize) {
             largest = interval;
             largestSize = currentSize;
@@ -179,6 +179,6 @@ AngleInterval RadialSweep::getLargestAngleInterval(QVector<AngleInterval> interv
     return largest;
 }
 
-Angle RadialSweep::getCenterOfInterval(const AngleInterval &interval) {
-    return (interval.start + Angle::size(interval.start, interval.end) / 2.0f);
+WRAngle RadialSweep::getCenterOfInterval(const AngleInterval &interval) {
+    return (interval.start + WRAngle::size(interval.start, interval.end) / 2.0f);
 }
