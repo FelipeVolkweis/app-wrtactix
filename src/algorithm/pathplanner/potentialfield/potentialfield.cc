@@ -47,7 +47,7 @@ void PotentialField::reset() {
     resultantForce_ = Vec2(0, 0);
 }
 
-QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
+QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
     QVector<Vec2> path;
     origin_ = start;
     goal_ = end;
@@ -56,7 +56,7 @@ QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const
 
     KDTree tree;
     for (auto &o : obstacles) {
-        tree.insert(o);
+        tree.insert(o.center);
     }
 
     Vec2 force;
@@ -64,7 +64,7 @@ QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const
     do {
         reset();
         for (const auto &obstacle : obstacles) {
-            addRepulsiveForce(obstacle);
+            addRepulsiveForce(obstacle.center);
         }
         addAttractiveForce();
 
@@ -78,14 +78,14 @@ QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const
     return path;
 }
 
-float PotentialField::findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
+float PotentialField::findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
     reset();
 
     origin_ = start;
     goal_ = end;
 
     for (const auto &obstacle : obstacles) {
-        addRepulsiveForce(obstacle);
+        addRepulsiveForce(obstacle.center);
     }
     addAttractiveForce();
 

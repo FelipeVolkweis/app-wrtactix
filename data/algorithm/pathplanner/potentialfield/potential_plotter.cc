@@ -57,7 +57,7 @@ int main() {
     // Vec2 origin(3, 2.1);
     // Vec2 goal(6, 1.9);
 
-    QVector<Vec2> obstacles;
+    QVector<Obstacle> obstacles;
     // obstacles.push_back(Vec2(6, 2));
     // out << obstacles[0][0];
     // out << " ";
@@ -65,7 +65,7 @@ int main() {
     // out << "\n";
     for (int i = 0; i < nObstacles; i++) {
         Vec2 o = generateRandomPoint();
-        obstacles.push_back(o);
+        obstacles.push_back(Obstacle(o, 0.09));
         out << o[0];
         out << " ";
         out << o[1];

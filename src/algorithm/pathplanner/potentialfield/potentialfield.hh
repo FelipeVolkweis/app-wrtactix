@@ -1,5 +1,6 @@
 #ifndef POTENTIALFIELD_HH
 #define POTENTIALFIELD_HH
+
 #include "algorithm/pathplanner/pathplanner.hh"
 
 class PotentialField : public PathPlanner {
@@ -7,8 +8,8 @@ public:
     PotentialField(float kAtt, float kRep, float minRadiusForRepulsiveForce, float conicQuadraticThreshold,
                    float epsilon);
 
-    QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles);
-    float findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles);
+    QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
+    float findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
 
 private:
     void addForce(const Vec2 &force);

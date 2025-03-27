@@ -47,7 +47,7 @@ float AStar::cost(const Node &a, const Node &b) {
     }
 }
 
-QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
+QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
     QHash<Node, float> g;
     QHash<Node, Node> cameFrom;
 
@@ -64,7 +64,7 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
     grid_.clearGrid();
 
     for (auto &obstacle : obstacles) {
-        grid_.setObstacle(obstacle, 0.09);
+        grid_.setObstacle(obstacle.center, obstacle.radius);
     }
 
     open.push(startNode);

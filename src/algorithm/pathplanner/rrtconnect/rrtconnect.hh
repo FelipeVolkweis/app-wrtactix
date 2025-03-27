@@ -19,7 +19,7 @@ class RRTConnect : public PathPlanner {
 public:
     RRTConnect();
 
-    QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles);
+    QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
 
 private:
     ExtendResult connect(KDTree &T, ParentMap &p, const Vec2 &q);
@@ -30,12 +30,11 @@ private:
     float stepSize();
     QVector<Vec2> makePath(ParentMap &pA, ParentMap &pB, KDNode *meetingNodeA, KDNode *meetingNodeB);
 
-    QVector<Vec2> obstacles_;
+    QVector<Obstacle> obstacles_;
 
     const int maxIts_ = 100;
     const float stepSize_ = 0.1;
     const float goalRadius_ = 0.05;
-    const float obstacleRadius_ = 0.09;
     const float goalBiasing_ = 0.00;
 };
 

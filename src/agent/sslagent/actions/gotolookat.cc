@@ -46,7 +46,7 @@ Status GoToLookAt::execute() {
         return Status::SUCCESS;
     }
 
-    QVector<Vec2> obs;
+    QVector<Obstacle> obs;
     auto path = pathPlanner_->findPath(origin, goal, obs);
 
     controller().move(path, angle);

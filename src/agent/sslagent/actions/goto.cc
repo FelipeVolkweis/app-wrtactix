@@ -33,7 +33,7 @@ Status GoTo::execute() {
         return Status::SUCCESS;
     }
 
-    QVector<Vec2> obstacles;
+    QVector<Obstacle> obstacles;
 
     auto path = pathPlanner_->findPath(origin, goal, obstacles);
 

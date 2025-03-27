@@ -12,7 +12,7 @@ public:
     class Node;
 
     AStar();
-    QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles);
+    QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
     float h(const Node &a, const Node &b);
 
     void writeGridToFile(QFile *file);

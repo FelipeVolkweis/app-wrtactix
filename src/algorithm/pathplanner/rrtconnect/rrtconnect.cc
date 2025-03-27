@@ -6,7 +6,7 @@
 
 RRTConnect::RRTConnect() {}
 
-QVector<Vec2> RRTConnect::findPath(const Vec2 &start, const Vec2 &end, const QVector<Vec2> &obstacles) {
+QVector<Vec2> RRTConnect::findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
     QVector<Vec2> path;
     KDTree *treeA = new KDTree();
     KDTree *treeB = new KDTree();
@@ -116,7 +116,7 @@ ExtendResult RRTConnect::extend(KDTree &T, ParentMap &p, const Vec2 &q) {
     bool collision = false;
     for (const auto &o : obstacles_) {
         TwoD::Line line(qNear->point(), qNewCandidate);
-        if (TwoD::boundedLineIntersection(line, o, obstacleRadius_) != NULL_VEC) {
+        if (TwoD::boundedLineIntersection(line, o.center, o.radius) != NULL_VEC) {
             collision = true;
             break;
         }
