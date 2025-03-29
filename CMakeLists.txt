@@ -147,5 +147,5 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 target_compile_definitions(${PROJECT_NAME}_lib
-    PUBLIC DEFAULT_CONFIG_FILEPATH="${src_dir}/WRCoach/const/config/config.toml"
+    PUBLIC DEFAULT_CONFIG_FILEPATH="${src_dir}/constants/constants.toml"
 )

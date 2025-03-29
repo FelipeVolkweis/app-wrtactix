@@ -1,0 +1,29 @@
+@startuml control_system
+title Control System Class Diagram
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #333
+    ArrowColor #555
+    FontSize 13
+}
+
+' Core Control Interface
+interface Control {
+  + {abstract} computeSignal(float error): float
+  + {abstract} reset(): void
+}
+
+' PID Implementation
+class PID {
+  + computeSignal(float error): float
+  + reset(): void
+  - kp: const float
+  - ki: const float
+  - kd: const float
+  - dt: const float
+}
+
+' Relationships
+Control <|-- PID
+
+@enduml

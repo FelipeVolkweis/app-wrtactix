@@ -1,0 +1,55 @@
+@startuml pathplanner_classes
+title Path Planner System Class Diagram
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #333
+    ArrowColor #555
+    FontSize 13
+}
+
+interface PathPlanner {
+  + {abstract} findPath(Vec2 start, Vec2 goal, QVector<Obstacle> obstacles): QVector<Vec2>
+}
+
+class AStar {
+  + findPath(Vec2, Vec2, QVector<Obstacle>): QVector<Vec2>
+}
+
+class PotentialFields {
+  + findPath(Vec2, Vec2, QVector<Obstacle>): QVector<Vec2>
+}
+
+class RRTConnect {
+  + findPath(Vec2, Vec2, QVector<Obstacle>): QVector<Vec2>
+}
+
+' Data Types
+class Vec2 {
+  + x: float
+  + y: float
+}
+
+enum ObstacleType {
+  CIRCLE
+  RECTANGLE
+}
+
+class Obstacle {
+  + center: Vec2
+  + radius: float
+  + bottomLeft: Vec2
+  + topRight: Vec2
+  + type: ObstacleType
+  + isCircle(): bool
+  + isRectangle(): bool
+}
+
+' Relationships
+PathPlanner <|-- AStar
+PathPlanner <|-- PotentialFields
+PathPlanner <|-- RRTConnect
+
+Obstacle "1" *-- "1" Vec2 : contains >
+Obstacle "1" *-- "1" ObstacleType : has >
+
+@enduml

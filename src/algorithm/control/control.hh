@@ -1,6 +1,10 @@
 #ifndef CONTROL_HH
 #define CONTROL_HH
 
-#include "control/pid/pid.hh"
+class Control {
+public:
+    virtual float computeSignal(float error) = 0;
+    virtual void reset() = 0;
+};
 
 #endif // CONTROL_HH

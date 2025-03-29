@@ -38,11 +38,7 @@ Status GoToLookAt::execute() {
     float angle = atan2f(direction.y(), direction.x());
     float orientation = world().playerOrientation(id()).value();
 
-    if (fabsf(angle - orientation) < 0.1) {
-        return Status::SUCCESS;
-    }
-
-    if ((goal - origin).norm() < 1e-4) {
+    if ((goal - origin).norm() < 1e-4 && fabsf(angle - orientation) < 0.1) {
         return Status::SUCCESS;
     }
 

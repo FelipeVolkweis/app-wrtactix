@@ -1,0 +1,78 @@
+@startuml behavior_tree_classes
+title WRBeT Behavior Tree Class Diagram
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #333
+    ArrowColor #555
+    FontSize 13
+}
+
+' Core Node Classes
+class Node {
+  + {abstract} tick(): Status
+  + name(): QString
+  + status(): Status
+  + assignParent(Node*)
+  # parent: Node*
+  # status: Status
+  - name: QString
+}
+
+class ExecutionNode {
+  + {abstract} tick(): Status
+}
+
+class ControlFlowNode {
+  + addChild(Node*)
+  # children: QVector<Node*>
+}
+
+' Specialized Nodes
+class Condition {
+  + tick(): Status
+  - conditionTrue: std::function<bool()>
+}
+
+class Action {
+  + {abstract} execute(): Status
+  + tick(): Status
+}
+
+class Sequence {
+  + tick(): Status
+}
+
+class Parallel {
+  + tick(): Status
+}
+
+class Fallback {
+  + tick(): Status
+}
+
+class StochasticFallback {
+  + tick(): Status
+}
+
+class UtilityFallback {
+  + tick(): Status
+}
+
+' Inheritance Relationships
+Node <|-- ExecutionNode
+Node <|-- ControlFlowNode
+ExecutionNode <|-- Condition
+ExecutionNode <|-- Action
+ControlFlowNode <|-- Sequence
+ControlFlowNode <|-- Parallel
+ControlFlowNode <|-- Fallback
+ControlFlowNode <|-- StochasticFallback
+ControlFlowNode <|-- UtilityFallback
+
+' Composition Relationships
+ControlFlowNode "1" *-- "*" Node : children >
+Node "1" o-- "0..1" Node : parent >
+
+note top of Node : Abstract base class for all\nBehavior Tree nodes
+
+@enduml

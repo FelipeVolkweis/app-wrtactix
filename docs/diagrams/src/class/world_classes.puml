@@ -1,0 +1,122 @@
+@startuml world_system
+title World Information System
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #333
+    ArrowColor #555
+    FontSize 13
+}
+
+' Core World Classes
+class World {
+  + update()
+  + connectToBackbone(): bool
+  + setSide(Sides::Side)
+  + setColor(Colors::Color)
+  + ourColor(): Colors::Color
+  + theirColor(): Colors::Color
+  + ourSide(): Sides::Side
+  + theirSide(): Sides::Side
+  + playerPosition(PlayerID): const Position&
+  + playerOrientation(PlayerID): const Angle&
+  + playerVelocity(PlayerID): const Velocity&
+  + playerAngularSpeed(PlayerID): const AngularSpeed&
+  + ballPossession(PlayerID): bool
+  + ballPosition(): Position
+  + ballVelocity(): Velocity
+  + fieldTopRightCorner(): const Position&
+  + fieldTopLeftCorner(): const Position&
+  + fieldBottomLeftCorner(): const Position&
+  + fieldBottomRightCorner(): const Position&
+  + fieldCenter(): const Position&
+  + leftGoal(): const Goal&
+  + rightGoal(): const Goal&
+  + leftPenaltyMark(): const Position&
+  + rightPenaltyMark(): const Position&
+  + fieldCenterRadius(): float
+  - update(WorldInfo&)
+  - bufferizeBall(WorldInfo&, uint8)
+  - bufferizeTeam(WorldInfo&, uint8)
+  - info: WorldInfo*
+  - infoBuffer: WorldInfo*
+  - mutex: QMutex
+}
+
+class WorldInfo {
+  + playerPosition(PlayerID): Position
+  + playerOrientation(PlayerID): Angle
+  + playerVelocity(PlayerID): Velocity
+  + ballPosition(): Position
+  + ballVelocity(): Velocity
+  + ballPossession(PlayerID): bool
+  + fieldTopRightCorner(): Position
+  + leftGoal(): Goal
+  + rightGoal(): Goal
+}
+
+' External Systems
+class "GEARSystem::WorldMap" as GEARWorldMap {
+  <<external>>
+}
+
+class "GEARSystem::Controller" as GEARController {
+  <<external>>
+}
+
+' Data Types
+class Position {
+  <<data type>>
+}
+
+class Angle {
+  <<data type>>
+}
+
+class Velocity {
+  <<data type>>
+}
+
+class Goal {
+  <<data type>>
+}
+
+class PlayerID {
+    <<data type>>
+    + teamNum(): quint8
+    + playerNum(): quint8
+}
+
+enum Sides {
+  LEFT
+  RIGHT
+  CENTER
+  UNDEFINED
+}
+
+enum Colors {
+  YELLOW
+  BLUE
+  NONE
+}
+
+' Relationships
+GEARWorldMap <|-- WorldInfo
+World *-- WorldInfo : contains >
+World --> GEARController : uses
+World --> Sides
+World --> Colors
+WorldInfo --> Position
+WorldInfo --> Angle
+WorldInfo --> Velocity
+WorldInfo --> Goal
+WorldInfo --> PlayerID
+
+note left of World::update
+Update process:
+1. Locks mutex
+2. Updates infoBuffer_
+3. Swaps pointers
+4. Unlocks mutex
+end note
+
+@enduml

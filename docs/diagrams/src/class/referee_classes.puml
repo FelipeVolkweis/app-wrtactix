@@ -1,0 +1,117 @@
+@startuml referee_classes
+title Referee Classes
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #333
+    ArrowColor #555
+    FontSize 10
+}
+
+' External Classes
+class World <<from world module>> {
+}
+
+class QElapsedTimer <<from Qt module>> {
+}
+
+' Main Classes
+class Referee {
+  + Referee(QHostAddress, uint16_t, const World&)
+  + connect(): bool
+  + bufferize(): bool
+  + update(): void
+  + getRefereeMap(): const RefereeMap&
+  + stateAsString(): const QString
+  + state(): const RefereeStates::State
+  + setPort(uint16_t)
+  - buffer: RefereeMap*
+  - refereeMap: RefereeMap*
+  - gameState: GameState
+  - socket: QUdpSocket
+  - address: QHostAddress
+  - port: uint16_t
+  - mutex: QMutex
+}
+
+class RefereeMap {
+  + update(char[], int)
+  + stage(): const ssl::Referee_Stage
+  + packetTimestamp(): const uint64_t
+  + stageTimeLeft(): const int64_t
+  + command(): const ssl::Referee_Command
+  + commandCounter(): const uint64_t
+  + blueInfo(): const ssl::Referee_TeamInfo
+  + yellowInfo(): const ssl::Referee_TeamInfo
+  + teamInfo(Colors::Color): const ssl::Referee_TeamInfo
+  + teamInfoGoalie(Colors::Color): const quint8
+  + commandAsString(ssl::Referee_Command): const QString
+  + commandAsString(): const QString
+  - lastCommand: ssl::Referee_Command
+  - ballKicked: bool
+}
+
+class GameState {
+  + GameState(const World&)
+  + state(): const RefereeStates::State
+  + stateAsString(): QString
+  + stateMachine(QString)
+  + hasNewState(): const bool
+  - world: const World&
+  - state: RefereeStates::State
+  - previousState: RefereeStates::State
+  - ballPosition: Position
+  - kickoffTimer: QElapsedTimer
+  - freeKickTimer: QElapsedTimer
+  - penaltyTimer: QElapsedTimer
+  - halt(QString): RefereeStates::State
+  - stop(QString): RefereeStates::State
+  - prepareKickoff(QString): RefereeStates::State
+  - ballPlacement(QString): RefereeStates::State
+  - preparePenalty(QString): RefereeStates::State
+  - kickoff(QString): RefereeStates::State
+  - freeKick(QString): RefereeStates::State
+  - penalty(QString): RefereeStates::State
+  - run(QString): RefereeStates::State
+}
+
+enum RefereeStates::State {
+  HALT
+  TIMEOUT
+  STOP
+  OUR_PREPARE_KICKOFF
+  THEIR_PREPARE_KICKOFF
+  OUR_BALL_PLACEMENT
+  THEIR_BALL_PLACEMENT
+  OUR_PREPARE_PENALTY
+  THEIR_PREPARE_PENALTY
+  OUR_KICKOFF
+  THEIR_KICKOFF
+  OUR_FREEKICK
+  THEIR_FREEKICK
+  OUR_PENALTY
+  THEIR_PENALTY
+  RUN
+}
+
+' Relationships
+Referee *-- RefereeMap : buffer\nrefereeMap
+Referee *-- GameState : gameState
+
+GameState --> World : world
+GameState --> RefereeStates::State : state\npreviousState
+GameState --> QElapsedTimer : kickoffTimer\nfreeKickTimer\npenaltyTimer
+
+note left of Referee::mutex
+Protects:
+- Buffer swaps
+- Socket operations
+- State changes
+end note
+
+note right of GameState::stateMachine
+Handles all state transitions:
+- Timers for automatic changes
+- Team-specific logic
+- Ball position tracking
+end note
+@enduml

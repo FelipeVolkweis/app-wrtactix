@@ -1,0 +1,138 @@
+@startuml sslagent_classes
+title SSL Agent System
+skinparam class {
+    BackgroundColor #F8F8F8
+    BorderColor #333
+    ArrowColor #555
+    FontSize 13
+}
+
+' Core Agent Hierarchy
+abstract class Agent {
+  + {abstract} observe()
+  + {abstract} listen()
+  + {abstract} think()
+  + {abstract} act()
+}
+
+abstract class Role {
+  + {abstract} execute()
+  + {abstract} name()
+  + {abstract} calculateEachBehaviorCost()
+}
+
+abstract class Behavior {
+  + {abstract} calculateCost()
+  + {abstract} cost()
+  + {abstract} execute()
+  + {abstract} name()
+}
+
+class SSLAgent {
+  + observe()
+  + listen()
+  + think()
+  + act()
+  - id: PlayerID
+  - sslController: SSLController
+  - world: World
+  - referee: Referee
+  - role: Role
+}
+
+class SSLBehavior {
+  + calculateCost()
+  + cost()
+  + execute()
+  + name()
+  - root: Node
+  - name: QString
+}
+
+class SSLAction {
+  + name()
+  + execute()
+  - playerID: PlayerID
+  - SSLController: *SSLController
+  - world: *World
+}
+
+class Action {
+  <<from behavior tree module>>
+}
+
+class SSLRole {
+  + execute()
+  + name()
+  + calculateEachBehaviorCost()
+  + roleType()
+  - root: Node
+  - name: QString
+  - behaviors: QVector<SSLBehavior *>
+  - roleType: RoleType
+}
+
+enum RoleType {
+  "Attacker"
+  "Defender"
+  "Goalkeeper"
+}
+
+' Controller System
+class SSLController {
+  + move(path: QVector<Vec2>, angle: float)
+  + kick()
+  + kick(force: float)
+  + dribble()
+  + chipKick()
+  + chipKick(force: float)
+  + stop()
+  - id: PlayerID
+  - controller: GEARSystem::Controller
+  - linearPid: PID
+  - angularPid: PID
+}
+
+' External Systems
+class "GEARSystem::Controller" as GEARController {
+  <<external>>
+}
+
+class PID {
+  <<from control system>>
+}
+
+class World {
+  <<from world module>>
+}
+
+class Referee {
+  <<from referee module>>
+}
+' Data Types
+class PlayerID {
+  + teamNum(): quint8
+  + playerNum(): quint8
+}
+
+' Relationships
+Agent <|-- SSLAgent
+Role <|-- SSLRole
+Behavior <|-- SSLBehavior
+SSLAction <|-- Action
+SSLAction <-- SSLController : uses >
+SSLBehavior <-- SSLAction : uses >
+SSLController *-- PID : uses >
+SSLController --> GEARController : interacts with
+SSLController --> PlayerID
+SSLAgent --> World : observes
+SSLAgent --> Referee : listens to
+SSLAgent --> SSLRole : executes
+SSLRole *-- SSLBehavior : contains >
+SSLRole <-- RoleType
+
+note bottom of SSLController : Handles low-level robot control
+note right of SSLAgent : Coordinates perception,\ndecision making, and action
+note left of SSLAgent: observe() checks the world state,\nlisten() checks the referee state,\
+\nthink() precalculates behavior cost,\nand act() ticks the behavior
+@enduml

@@ -3,7 +3,9 @@
 
 #include <QQueue>
 
-class PID {
+#include "algorithm/control/control.hh"
+
+class PID : public Control {
 public:
     PID(float kp, float ki, float kd, float dt, float max);
     float computeSignal(float error);
