@@ -3,10 +3,9 @@
 
 #include "base/basenodes.hh"
 
-using BT = WRBeT::BehaviorTree;
-
 namespace WRBeT {
 class BehaviorTree {
+public:
     static inline Sequence *Sequence(const QString &name, std::initializer_list<Node *> children) {
         auto sequence = new WRBeT::Sequence(name);
         for (auto child : children) {
