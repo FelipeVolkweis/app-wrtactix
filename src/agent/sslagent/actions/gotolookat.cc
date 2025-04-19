@@ -3,19 +3,19 @@
 GoToLookAt::GoToLookAt(const PlayerID &player, SSLController &controller, const World &world)
     : SSLAction(player, controller, world, "GoToLookAt"), pathPlanner_(nullptr) {}
 
-GoToLookAt &GoToLookAt::setGoal(std::function<Vec2()> goal) {
+GoToLookAt *GoToLookAt::setGoal(std::function<Vec2()> goal) {
     goal_ = goal;
-    return *this;
+    return this;
 }
 
-GoToLookAt &GoToLookAt::setPathPlanner(PathPlanner *pathPlanner) {
+GoToLookAt *GoToLookAt::setPathPlanner(PathPlanner *pathPlanner) {
     pathPlanner_ = pathPlanner;
-    return *this;
+    return this;
 }
 
-GoToLookAt &GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
+GoToLookAt *GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
     lookAt_ = lookAt;
-    return *this;
+    return this;
 }
 
 Status GoToLookAt::execute() {

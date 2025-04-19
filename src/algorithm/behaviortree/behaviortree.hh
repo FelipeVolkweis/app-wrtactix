@@ -29,6 +29,10 @@ public:
         }
         return parallel;
     }
+
+    static inline Condition *Condition(const QString &name, std::function<bool()> conditionTrue) {
+        return new WRBeT::Condition(name, conditionTrue);
+    }
 };
 } // namespace WRBeT
 

@@ -8,9 +8,9 @@ class GoToLookAt : public SSLAction {
 public:
     GoToLookAt(const PlayerID &player, SSLController &controller, const World &world);
 
-    GoToLookAt &setGoal(std::function<Vec2()> goal);
-    GoToLookAt &setPathPlanner(PathPlanner *pathPlanner);
-    GoToLookAt &setLookAt(std::function<Vec2()> lookAt);
+    GoToLookAt *setGoal(std::function<Vec2()> goal);
+    GoToLookAt *setPathPlanner(PathPlanner *pathPlanner);
+    GoToLookAt *setLookAt(std::function<Vec2()> lookAt);
 
     Status execute();
 

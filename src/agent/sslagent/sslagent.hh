@@ -21,6 +21,7 @@ public:
 private:
     PlayerID id_;
     SSLController sslController_;
+    const World &world_;
 };
 
 #endif

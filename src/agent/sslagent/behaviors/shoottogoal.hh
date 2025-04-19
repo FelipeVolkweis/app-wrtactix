@@ -5,7 +5,7 @@
 
 class ShootToGoal : public SSLBehavior {
 public:
-    ShootToGoal(const PlayerID &player, SSLController &controller, const World &world);
+    ShootToGoal(const PlayerID &playerId, SSLController &controller, const World &worldRef);
 
 private:
 };

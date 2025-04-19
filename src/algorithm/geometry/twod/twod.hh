@@ -14,6 +14,8 @@ public:
         Vec2 p2;
     };
 
+    static Vec2 threePoints(const Vec2 &near, const Vec2 &far, float distance, float beta);
+
     static float distance(const GEARSystem::Position &p1, const GEARSystem::Position &p2) {
         return sqrtf(powf(p1.x() - p2.x(), 2) + powf(p1.y() - p2.y(), 2));
     }

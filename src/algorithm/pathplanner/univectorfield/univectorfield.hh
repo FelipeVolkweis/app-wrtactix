@@ -24,11 +24,11 @@ private:
     QVector<Vec2> generatePath(const Vec2 &originPos, const Vec2 &goalPos, const QVector<Vec2> &obstacles,
                                const Vec2 &vObs, const Vec2 &vRob);
 
-    float de_ = 10 / 100.0f;    // predefined radius for spiral
-    float kr_ = 0.5 / 100.0f;    // adjustable parameter for spiral
+    float de_ = 10 / 100.0f;   // predefined radius for spiral
+    float kr_ = 0.5 / 100.0f;  // adjustable parameter for spiral
     float ko_ = 1;             // parameter for obstacle avoidance
     float dMin_ = 5 / 100.0f;  // minimum distance for obstacle influence
-    float delta_ = 5/ 100.0f; // parameter for Gaussian function
+    float delta_ = 5 / 100.0f; // parameter for Gaussian function
     float maxIts_ = 1000;
     float step_ = 0.05;
 };

@@ -1,5 +1,12 @@
 #include "twod.hh"
 
+Vec2 TwoD::threePoints(const Vec2 &near, const Vec2 &far, float distance, float beta) {
+    Angle alpha(true, atan2(far.y() - near.y(), far.x() - near.x()));
+    Angle gama(true, alpha.value() + beta);
+    Vec2 p(near.x() + distance * cos(gama.value()), near.y() + distance * sin(gama.value()));
+    return p;
+}
+
 bool TwoD::isPointOnSegment(float x, float y, float x1, float y1, float x2, float y2) {
     float cross = (x - x1) * (y2 - y1) - (y - y1) * (x2 - x1);
     if (abs(cross) > 1e-6)
