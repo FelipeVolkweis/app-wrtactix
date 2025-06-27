@@ -12,7 +12,7 @@ set(CMAKE_AUTOUIC ON)
 cmake_policy(SET CMP0100 NEW)  # Process .hh headers for Qt
 
 # Dependency finding
-find_package(Qt6 COMPONENTS Core Network Concurrent Test REQUIRED)
+find_package(Qt6 COMPONENTS Widgets Gui Core Network Concurrent Test REQUIRED)
 find_package(gRPC CONFIG REQUIRED)
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 
@@ -49,11 +49,14 @@ add_library(${PROJECT_NAME}_lib STATIC
 )
 
 target_include_directories(${PROJECT_NAME}_lib PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
     ${src_dir}
     ${src_dir}/3rdparty
 )
 
 target_link_libraries(${PROJECT_NAME}_lib
+    Qt6::Widgets
+    Qt6::Gui
     Qt6::Network
     Qt6::Core
     Qt6::Concurrent
@@ -83,6 +86,16 @@ target_link_libraries(${PROJECT_NAME}
     ${PROJECT_NAME}_lib
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${src_dir}
+)
+
+target_compile_options(${PROJECT_NAME} PRIVATE
+    -isystem ${src_dir}/3rdparty
+    -w
+    -Wno-everything
+)
 # ------------------------------------------------------------
 # Test Executable
 # ------------------------------------------------------------

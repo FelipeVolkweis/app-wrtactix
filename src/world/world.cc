@@ -1,11 +1,15 @@
+#include <QLoggingCategory>
+
 #include "algorithm/geometry/twod/twod.hh"
 #include "types/playerid.hh"
 
 #include "world.hh"
 
-#define BALLS 5
+#define BALLS 1
 #define TEAMS 2
 #define PLAYERS 16
+
+Q_LOGGING_CATEGORY(WORLD, "World")
 
 World::World(GEARSystem::Controller &controller) : controller_(controller) {
     info_ = new WorldInfo();
@@ -16,7 +20,7 @@ World::World(GEARSystem::Controller &controller) : controller_(controller) {
     for (int i = 0; i < BALLS; i++) {
         info_->addBall(i);
         infoBuffer_->addBall(i);
-    }
+    } 
 
     for (int i = 0; i < TEAMS; i++) {
         info_->addTeam(i, "Team " + QString::number(i));
@@ -27,6 +31,13 @@ World::World(GEARSystem::Controller &controller) : controller_(controller) {
             infoBuffer_->addPlayer(i, j);
         }
     }
+
+    auto a = info_->ballPosition();
+    auto b = infoBuffer_->ballPosition();
+
+    if (!controller_.isConnected()) {
+        connectToBackbone();
+    }
 }
 
 World::~World() {
@@ -35,7 +46,15 @@ World::~World() {
 }
 
 bool World::connectToBackbone() {
-    return controller_.connect("localhost", 0);
+    bool res = controller_.connect("localhost", 0);
+    
+    if (res) {
+        qCInfo(WORLD) << "Connected to backbone";
+    } else {  
+        qCWarning(WORLD) << "Failed to connect to backbone";
+    }
+
+    return res; 
 }
 
 void World::update() {
@@ -91,12 +110,12 @@ void World::bufferizeBallPossession(WorldInfo &info, uint8 teamNum, uint8 player
 }
 
 void World::bufferizeTeam(WorldInfo &info, uint8 teamNum) {
-    QList<uint8> players = info.players(teamNum);
-    for (auto player : players) {
-        bufferizePlayer(info, teamNum, player);
-        if (controller_.playerPosition(teamNum, player).isValid() &&
-            !controller_.playerPosition(teamNum, player).isUnknown()) {
-            bufferizeBallPossession(info, teamNum, player);
+    for (int pnum = 0; pnum < PLAYERS; pnum++) {
+        qDebug() << "Bufferizing player" << pnum;
+        bufferizePlayer(info, teamNum, pnum);
+        if (controller_.playerPosition(teamNum, pnum).isValid() &&
+            !controller_.playerPosition(teamNum, pnum).isUnknown()) {
+            bufferizeBallPossession(info, teamNum, pnum);
         }
     }
 }

@@ -2,7 +2,6 @@
 #define SSLBEHAVIOR_HH
 
 #include "agent/sslagent/conditions/ballinteraction.hh"
-#include "algorithm/behaviortree/base/costnode.hh"
 #include "algorithm/behaviortree/behaviortree.hh"
 #include "types/playerid.hh"
 #include "world/world.hh"
@@ -11,10 +10,10 @@
 
 using namespace WRBeT;
 
-class SSLBehavior : public CostNode {
+class SSLBehavior {
 public:
     SSLBehavior(const PlayerID &playerId, SSLController &controller, const World &worldRef, const QString &name)
-        : CostNode(name), playerId_(playerId), controller_(controller), world_(worldRef), ballInteraction_(world_) {}
+        : playerId_(playerId), controller_(controller), world_(worldRef), ballInteraction_(world_) {}
 
     template <typename ActionType, typename... Args> ActionType *action(Args &&...args) {
         return new ActionType(playerId_, controller_, world_, std::forward<Args>(args)...);
@@ -32,12 +31,19 @@ public:
         return world_;
     }
 
+    WRBeT::Node *node() const {
+        return rootNode_;
+    }
+
 private:
     const BallInteraction ballInteraction_;
 
     const PlayerID &playerId_;
     SSLController &controller_;
     const World &world_;
+
+protected:
+    WRBeT::Node *rootNode_ = nullptr;
 };
 
 #endif

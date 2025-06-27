@@ -55,6 +55,10 @@ public:
         return info_->playerAngularSpeed(player);
     }
 
+    bool playerIsActive(const PlayerID &player) const {
+        return info_->playerPosition(player).isValid() && !info_->playerPosition(player).isUnknown();
+    }
+
     bool ballPossession(const PlayerID &player) const {
         return info_->ballPossession(player);
     }

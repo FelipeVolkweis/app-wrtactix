@@ -3,25 +3,37 @@
 
 #include <QQueue>
 
-#include "agent/agent.hh"
+#include "algorithm/behaviortree/base/node.hh"
+#include "referee/referee.hh"
 #include "types/playerid.hh"
 #include "world/world.hh"
 
 #include "sslcontroller.hh"
 
-class SSLAgent : Agent {
+class SSLAgent {
 public:
-    SSLAgent(PlayerID id, GEARSystem::Controller &controller, const World &world);
+    SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller);
 
     void observe();
     void listen();
     void think();
     void act();
 
+    bool isActive() const;
+
+    const PlayerID& id() const {
+        return id_;
+    }
+
 private:
     PlayerID id_;
     SSLController sslController_;
-    const World &world_;
+    World world_;
+    Referee referee_;
+
+    WRBeT::Node *currentBehavior_;
+    WRBeT::Node *goTo_;
+    WRBeT::Node *idle_;
 };
 
 #endif

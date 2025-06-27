@@ -19,4 +19,6 @@ ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, co
                 ->setGoal([this]() { return ballInteraction().behindBall(world().playerPositionVec2(player()), 0.5f); })
                 ->setLookAt([this]() { return world().ballPositionVec2(); }),
         });
+
+    rootNode_ = root;
 }

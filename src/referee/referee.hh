@@ -29,6 +29,10 @@ public:
         return _gameState.state();
     }
 
+    const bool hasNewState() const {
+        return _gameState.hasNewState();
+    }
+
     void setPort(uint16_t port) {
         _port = port;
     }

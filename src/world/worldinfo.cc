@@ -23,9 +23,9 @@ bool WorldInfo::ballPossession(const PlayerID &player) const {
 }
 
 const Position WorldInfo::ballPosition() const {
-    return GEARSystem::WorldMap::ballPosition(0);
+    return this->GEARSystem::WorldMap::ballPosition(0);
 }
 
 const Velocity WorldInfo::ballVelocity() const {
-    return GEARSystem::WorldMap::ballVelocity(0);
+    return this->GEARSystem::WorldMap::ballVelocity(0);
 }

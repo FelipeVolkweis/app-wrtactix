@@ -1,4 +1,7 @@
+#include <QLoggingCategory>
 #include "gotolookat.hh"
+
+Q_LOGGING_CATEGORY(GOTOLOOKAT, "GoToLookAt")
 
 GoToLookAt::GoToLookAt(const PlayerID &player, SSLController &controller, const World &world)
     : SSLAction(player, controller, world, "GoToLookAt"), pathPlanner_(nullptr) {}
@@ -19,6 +22,7 @@ GoToLookAt *GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
 }
 
 Status GoToLookAt::execute() {
+    qCInfo(GOTOLOOKAT) << "Executing GoToLookAt action";
     if (!goal_) {
         return Status::FAILURE;
     }
