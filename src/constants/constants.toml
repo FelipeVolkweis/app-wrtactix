@@ -46,7 +46,7 @@ kd = 0.005
 max_integral = 1.0  # Anti-windup
 
 [control.pid.angular]
-kp = 0.003
+kp = 1
 ki = 0.001  # New integral term
 kd = 0.0
 max_integral = 0.5  # Anti-windup

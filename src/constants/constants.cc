@@ -1,82 +1,147 @@
+// constants.cc
 #include "config/config.hh"
 
 #include "constants.hh"
 
 namespace Const {
-// Referee
-const QString Referee::ip_address = Config::retrieve<QString>(Config::CONFIGS["referee"]["ip_address"]);
-const int Referee::port = Config::retrieve<int>(Config::CONFIGS["referee"]["port"]);
-const int Referee::packet_size = Config::retrieve<int>(Config::CONFIGS["referee"]["packet_size"]);
 
-// Physics
-const float Physics::ball_radius = Config::retrieve<float>(Config::CONFIGS["physics"]["ball_radius"]);
-const float Physics::robot_radius = Config::retrieve<float>(Config::CONFIGS["physics"]["robot_radius"]);
-const float Physics::stop_game_distance = Config::retrieve<float>(Config::CONFIGS["physics"]["stop_game_distance"]);
-const float Physics::off_field_tolerance = Config::retrieve<float>(Config::CONFIGS["physics"]["off_field_tolerance"]);
+// Definições de todas as variáveis (sem const)
+QString Referee::ip_address;
+int Referee::port;
+int Referee::packet_size;
 
-// AI
-const int AI::max_roles = Config::retrieve<int>(Config::CONFIGS["ai"]["max_roles"]);
-const int AI::role_swap_hysteresis = Config::retrieve<int>(Config::CONFIGS["ai"]["role_swap_hysteresis"]);
-const float AI::distance_tolerance = Config::retrieve<float>(Config::CONFIGS["ai"]["distance_tolerance"]);
-const float AI::angle_tolerance = Config::retrieve<float>(Config::CONFIGS["ai"]["angle_tolerance"]);
-const float AI::min_velocity_threshold = Config::retrieve<float>(Config::CONFIGS["ai"]["min_velocity_threshold"]);
+float Physics::ball_radius;
+float Physics::robot_radius;
+float Physics::stop_game_distance;
+float Physics::off_field_tolerance;
 
-// Skills
+int AI::max_roles;
+int AI::role_swap_hysteresis;
+float AI::distance_tolerance;
+float AI::angle_tolerance;
+float AI::min_velocity_threshold;
+
 namespace Skills {
 namespace Kicking {
-const float max_power = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["max_power"]);
-const float optimal_distance = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["optimal_distance"]);
-const float enable_distance = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["enable_distance"]);
-const float max_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["max_velocity"]);
-const float min_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_velocity"]);
-const int enable_duration = Config::retrieve<int>(Config::CONFIGS["skills"]["kicking"]["enable_duration"]);
+float max_power;
+float optimal_distance;
+float enable_distance;
+float max_velocity;
+float min_velocity;
+int enable_duration;
 } // namespace Kicking
 
 namespace Dribbling {
-const float max_push_distance = Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["max_push_distance"]);
-const float barrier_distance = Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["barrier_distance"]);
-const float behind_ball_distance =
-    Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["behind_ball_distance"]);
-const float minkowski_distance = Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["minkowski_distance"]);
+float max_push_distance;
+float barrier_distance;
+float behind_ball_distance;
+float minkowski_distance;
 } // namespace Dribbling
 } // namespace Skills
 
-// Control
 namespace Control {
 namespace Movement {
-const float max_linear_speed = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_linear_speed"]);
-const float min_linear_speed = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["min_linear_speed"]);
-const float max_linear_accel = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_linear_accel"]);
-const float max_angular_speed = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_angular_speed"]);
-const float min_angular_speed = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["min_angular_speed"]);
-const float linear_error = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["linear_error"]);
-const float angular_error = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["angular_error"]);
+float max_linear_speed;
+float min_linear_speed;
+float max_linear_accel;
+float max_angular_speed;
+float min_angular_speed;
+float linear_error;
+float angular_error;
 } // namespace Movement
 
 namespace PID {
-const Gains linear = {.kp = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["kp"]),
-                      .ki = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["ki"]),
-                      .kd = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["kd"]),
-                      .max_integral =
-                          Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["max_integral"])};
-
-const Gains angular = {.kp = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["kp"]),
-                       .ki = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["ki"]),
-                       .kd = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["kd"]),
-                       .max_integral =
-                           Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["max_integral"])};
+Gains linear;
+Gains angular;
 } // namespace PID
 
 namespace Timing {
-const float max_dt = Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["max_dt"]);
-const float replan_interval = Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["replan_interval"]);
+float max_dt;
+float replan_interval;
 } // namespace Timing
 } // namespace Control
 
-// System
-const int System::thread_frequency = Config::retrieve<int>(Config::CONFIGS["system"]["thread_frequency"]);
-const int System::invalid_id = Config::retrieve<int>(Config::CONFIGS["system"]["invalid_id"]);
-const float System::game_off_max_speed = Config::retrieve<float>(Config::CONFIGS["system"]["game_off_max_speed"]);
-const int System::max_robots = Config::retrieve<int>(Config::CONFIGS["system"]["max_robots"]);
-const float System::bezier_control_point = Config::retrieve<float>(Config::CONFIGS["system"]["bezier_control_point"]);
+int System::thread_frequency;
+int System::invalid_id;
+float System::game_off_max_speed;
+int System::max_robots;
+float System::bezier_control_point;
+
+// Função que efetivamente busca todos os valores em Config e atribui
+void initialize() {
+    // Referee
+    Referee::ip_address = Config::retrieve<QString>(Config::CONFIGS["referee"]["ip_address"]);
+    Referee::port = Config::retrieve<int>(Config::CONFIGS["referee"]["port"]);
+    Referee::packet_size = Config::retrieve<int>(Config::CONFIGS["referee"]["packet_size"]);
+
+    // Physics
+    Physics::ball_radius = Config::retrieve<float>(Config::CONFIGS["physics"]["ball_radius"]);
+    Physics::robot_radius = Config::retrieve<float>(Config::CONFIGS["physics"]["robot_radius"]);
+    Physics::stop_game_distance = Config::retrieve<float>(Config::CONFIGS["physics"]["stop_game_distance"]);
+    Physics::off_field_tolerance = Config::retrieve<float>(Config::CONFIGS["physics"]["off_field_tolerance"]);
+
+    // AI
+    AI::max_roles = Config::retrieve<int>(Config::CONFIGS["ai"]["max_roles"]);
+    AI::role_swap_hysteresis = Config::retrieve<int>(Config::CONFIGS["ai"]["role_swap_hysteresis"]);
+    AI::distance_tolerance = Config::retrieve<float>(Config::CONFIGS["ai"]["distance_tolerance"]);
+    AI::angle_tolerance = Config::retrieve<float>(Config::CONFIGS["ai"]["angle_tolerance"]);
+    AI::min_velocity_threshold = Config::retrieve<float>(Config::CONFIGS["ai"]["min_velocity_threshold"]);
+
+    // Skills::Kicking
+    Skills::Kicking::max_power = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["max_power"]);
+    Skills::Kicking::optimal_distance =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["optimal_distance"]);
+    Skills::Kicking::enable_distance = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["enable_distance"]);
+    Skills::Kicking::max_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["max_velocity"]);
+    Skills::Kicking::min_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_velocity"]);
+    Skills::Kicking::enable_duration = Config::retrieve<int>(Config::CONFIGS["skills"]["kicking"]["enable_duration"]);
+
+    // Skills::Dribbling
+    Skills::Dribbling::max_push_distance =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["max_push_distance"]);
+    Skills::Dribbling::barrier_distance =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["barrier_distance"]);
+    Skills::Dribbling::behind_ball_distance =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["behind_ball_distance"]);
+    Skills::Dribbling::minkowski_distance =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["minkowski_distance"]);
+
+    // Control::Movement
+    Control::Movement::max_linear_speed =
+        Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_linear_speed"]);
+    Control::Movement::min_linear_speed =
+        Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["min_linear_speed"]);
+    Control::Movement::max_linear_accel =
+        Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_linear_accel"]);
+    Control::Movement::max_angular_speed =
+        Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_angular_speed"]);
+    Control::Movement::min_angular_speed =
+        Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["min_angular_speed"]);
+    Control::Movement::linear_error = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["linear_error"]);
+    Control::Movement::angular_error = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["angular_error"]);
+
+    // Control::PID
+    Control::PID::linear.kp = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["kp"]);
+    Control::PID::linear.ki = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["ki"]);
+    Control::PID::linear.kd = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["kd"]);
+    Control::PID::linear.max_integral =
+        Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["max_integral"]);
+    Control::PID::angular.kp = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["kp"]);
+    Control::PID::angular.ki = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["ki"]);
+    Control::PID::angular.kd = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["kd"]);
+    Control::PID::angular.max_integral =
+        Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["angular"]["max_integral"]);
+
+    // Control::Timing
+    Control::Timing::max_dt = Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["max_dt"]);
+    Control::Timing::replan_interval = Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["replan_interval"]);
+
+    // System
+    System::thread_frequency = Config::retrieve<int>(Config::CONFIGS["system"]["thread_frequency"]);
+    System::invalid_id = Config::retrieve<int>(Config::CONFIGS["system"]["invalid_id"]);
+    System::game_off_max_speed = Config::retrieve<float>(Config::CONFIGS["system"]["game_off_max_speed"]);
+    System::max_robots = Config::retrieve<int>(Config::CONFIGS["system"]["max_robots"]);
+    System::bezier_control_point = Config::retrieve<float>(Config::CONFIGS["system"]["bezier_control_point"]);
+}
+
 } // namespace Const

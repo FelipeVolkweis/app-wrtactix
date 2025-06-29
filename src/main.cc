@@ -2,8 +2,13 @@
 #include <QCommandLineParser>
 
 #include "agent/sslagent/sslagent.hh"
+#include "constants/config/config.hh"
+#include "constants/constants.hh"
 
 int main(int argc, char *argv[]) {
+    Config::initialize();
+    Const::initialize();
+
     QApplication app(argc, argv);
     app.setApplicationName("WRTactix");
     app.setApplicationVersion("0.1");

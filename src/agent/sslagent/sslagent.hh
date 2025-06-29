@@ -21,7 +21,7 @@ public:
 
     bool isActive() const;
 
-    const PlayerID& id() const {
+    const PlayerID &id() const {
         return id_;
     }
 

@@ -12,7 +12,7 @@ ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, co
             BehaviorTree::Condition("Is Behing Ball",
                                     [this]() {
                                         return ballInteraction().isBehindBall(world().playerPositionVec2(player()),
-                                                                              world().ballPositionVec2(), 0.5f);
+                                                                              world().ballPositionVec2(), 0.55f);
                                     }),
             action<GoToLookAt>()
                 ->setPathPlanner(new AStar())

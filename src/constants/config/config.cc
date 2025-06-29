@@ -10,10 +10,6 @@ namespace Config {
 toml::table CONFIGS;
 
 void initialize() {
-    if (INITIALIZED) {
-        return;
-    }
-
     const char *configFilepath = std::getenv("WRTACTIX_CONFIG_FILEPATH");
     if (configFilepath == nullptr) {
         configFilepath = DEFAULT_CONFIG_FILEPATH;
@@ -21,8 +17,6 @@ void initialize() {
 
     std::cout << "[INFO] Reading config file [" << configFilepath << "].\n";
     CONFIGS = toml::parse_file(configFilepath);
-
-    INITIALIZED = true;
 }
 
 template <> QString retrieve(const toml::node_view<toml::node> &node) {

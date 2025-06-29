@@ -20,7 +20,7 @@ World::World(GEARSystem::Controller &controller) : controller_(controller) {
     for (int i = 0; i < BALLS; i++) {
         info_->addBall(i);
         infoBuffer_->addBall(i);
-    } 
+    }
 
     for (int i = 0; i < TEAMS; i++) {
         info_->addTeam(i, "Team " + QString::number(i));
@@ -47,14 +47,14 @@ World::~World() {
 
 bool World::connectToBackbone() {
     bool res = controller_.connect("localhost", 0);
-    
+
     if (res) {
         qCInfo(WORLD) << "Connected to backbone";
-    } else {  
+    } else {
         qCWarning(WORLD) << "Failed to connect to backbone";
     }
 
-    return res; 
+    return res;
 }
 
 void World::update() {

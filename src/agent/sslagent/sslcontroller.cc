@@ -1,9 +1,14 @@
 #include "algorithm/geometry/twod/twod.hh"
+#include "constants/constants.hh"
 
 #include "sslcontroller.hh"
 
 SSLController::SSLController(const PlayerID &id, GEARSystem::Controller &controller, const World &world)
-    : id_(id), controller_(controller), linearPid_(0.5, 0.0, 0.0, 1, 1), angularPid_(0.5, 0.0, 0.0, 1, 1), world_(world) {}
+    : id_(id), controller_(controller), world_(world),
+      linearPid_(Const::Control::PID::linear.kp, Const::Control::PID::linear.ki, Const::Control::PID::linear.kd,
+                 Const::Control::Timing::max_dt, Const::Control::PID::linear.max_integral),
+      angularPid_(Const::Control::PID::angular.kp, Const::Control::PID::angular.ki, Const::Control::PID::angular.kd,
+                  Const::Control::Timing::max_dt, Const::Control::PID::angular.max_integral) {}
 
 void SSLController::move(const QVector<Vec2> &path, const Vec2 &lookAt) {
     if (path.isEmpty()) {

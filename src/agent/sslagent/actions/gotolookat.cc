@@ -1,4 +1,5 @@
 #include <QLoggingCategory>
+
 #include "gotolookat.hh"
 
 Q_LOGGING_CATEGORY(GOTOLOOKAT, "GoToLookAt")
@@ -39,7 +40,8 @@ Status GoToLookAt::execute() {
     Vec2 lookAt = lookAt_();
     Vec2 origin = world().playerPositionVec2(id());
     Vec2 direction = lookAt - origin;
-    // qCInfo(GOTOLOOKAT) << "Origin:" << vec2ToString(origin) << "Goal:" << vec2ToString(goal) << "LookAt:" << vec2ToString(lookAt)
+    // qCInfo(GOTOLOOKAT) << "Origin:" << vec2ToString(origin) << "Goal:" << vec2ToString(goal) << "LookAt:" <<
+    // vec2ToString(lookAt)
     //                  << "Direction:" << vec2ToString(direction);
     float angle = atan2f(direction.y(), direction.x());
     float orientation = world().playerOrientation(id()).value();

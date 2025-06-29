@@ -7,11 +7,7 @@
 
 #include <iostream>
 
-// #include <WRCoach/utils/basics/competition.hh>
-
 namespace Config {
-
-bool INITIALIZED = false;
 
 extern toml::table CONFIGS;
 

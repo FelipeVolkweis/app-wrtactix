@@ -1,8 +1,8 @@
 #ifndef PLAYERID_HH
 #define PLAYERID_HH
 
-#include <QtGlobal>
 #include <QString>
+#include <QtGlobal>
 
 class PlayerID {
 public:
@@ -19,6 +19,7 @@ public:
     QString toString() const {
         return QString("PlayerID(%1, %2)").arg(teamNum_).arg(playerNum_);
     }
+
 private:
     quint8 teamNum_;
     quint8 playerNum_;
