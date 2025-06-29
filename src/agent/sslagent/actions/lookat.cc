@@ -26,7 +26,7 @@ Status LookAt::execute() {
         return Status::SUCCESS;
     }
 
-    controller().move(emptyPath, angle);
+    controller().move(emptyPath, target);
 
     return Status::RUNNING;
 }

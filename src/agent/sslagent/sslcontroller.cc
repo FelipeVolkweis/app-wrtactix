@@ -2,21 +2,23 @@
 
 #include "sslcontroller.hh"
 
-SSLController::SSLController(const PlayerID &id, GEARSystem::Controller &controller)
-    : id_(id), controller_(controller), linearPid_(0.5, 0.0, 0.0, 1, 1), angularPid_(0.5, 0.0, 0.0, 1, 1) {}
+SSLController::SSLController(const PlayerID &id, GEARSystem::Controller &controller, const World &world)
+    : id_(id), controller_(controller), linearPid_(0.5, 0.0, 0.0, 1, 1), angularPid_(0.5, 0.0, 0.0, 1, 1), world_(world) {}
 
-void SSLController::move(const QVector<Vec2> &path, float angle) {
+void SSLController::move(const QVector<Vec2> &path, const Vec2 &lookAt) {
     if (path.isEmpty()) {
         return;
     }
 
     Vec2 goal = path.last();
-    Vec2 position = TwoD::positionToVector(controller_.playerPosition(id_.teamNum(), id_.playerNum()));
+    Vec2 position = TwoD::positionToVector(world_.playerPosition(id_));
+    float theta = path.size() > 1 ? TwoD::angleBetweenVectors(path[0], path[1]) : 0.0f;
 
     Vec2 error = goal - position;
     float distance = error.norm();
 
-    float angleError = angle - controller_.playerOrientation(id_.teamNum(), id_.playerNum()).value();
+    float angleToLookAt = TwoD::angleBetweenVectors(position, lookAt);
+    float angleError = angleToLookAt - world_.playerOrientation(id_).value();
     if (angleError > M_PI) {
         angleError -= 2 * M_PI;
     } else if (angleError < -M_PI) {
@@ -25,9 +27,10 @@ void SSLController::move(const QVector<Vec2> &path, float angle) {
 
     float linearSignal = linearPid_.computeSignal(distance);
     float angularSignal = angularPid_.computeSignal(angleError);
+    theta = theta - world_.playerOrientation(id_).value() + GEARSystem::Angle::pi / 2;
 
-    float x = linearSignal * cos(angleError);
-    float y = linearSignal * sin(angleError);
+    float x = linearSignal * cos(theta);
+    float y = linearSignal * sin(theta);
 
     controller_.setSpeed(id_.teamNum(), id_.playerNum(), x, y, angularSignal);
 }

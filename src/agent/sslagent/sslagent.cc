@@ -3,7 +3,7 @@
 #include "agent/sslagent/behaviors/shoottogoal.hh"
 
 SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller)
-    : id_(id), sslController_(id, controller), world_(controller), referee_(QHostAddress("224.5.23.1"), 10003, world_),
+    : id_(id), world_(controller), sslController_(id, controller, world_), referee_(QHostAddress("224.5.23.1"), 10003, world_),
       currentBehavior_(nullptr) {
     Colors::Color ourTeamColor = id.teamNum() == 0 ? Colors::YELLOW : Colors::BLUE;
     world_.setColor(ourTeamColor);

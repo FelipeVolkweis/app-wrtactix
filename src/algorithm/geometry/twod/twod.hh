@@ -41,6 +41,10 @@ public:
     static Vec2 boundedLineIntersection(const Line &line, const Line &line2);
 
     static Vec2 boundedLineIntersection(const Line &line, const Vec2 &center, float radius);
+
+    static float angleBetweenVectors(const Vec2 &v1, const Vec2 &v2) {
+        return atan2f(v2.y() - v1.y(), v2.x() - v1.x());
+    }
 };
 
 #endif

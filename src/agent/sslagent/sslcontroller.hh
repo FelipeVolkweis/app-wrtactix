@@ -6,14 +6,15 @@
 #include "algorithm/control/pid/pid.hh"
 #include "types/playerid.hh"
 #include "types/vec2.hh"
+#include "world/world.hh"
 
 #include <GEARSystem/gearsystem.hh>
 
 class SSLController {
 public:
-    SSLController(const PlayerID &id, GEARSystem::Controller &controller);
+    SSLController(const PlayerID &id, GEARSystem::Controller &controller, const World &world);
 
-    void move(const QVector<Vec2> &path, float angle);
+    void move(const QVector<Vec2> &path, const Vec2 &lookAt);
     void kick();
     void kick(float force);
     void dribble();
@@ -24,6 +25,7 @@ public:
 private:
     PlayerID id_;
     GEARSystem::Controller &controller_;
+    const World &world_;
     PID linearPid_;
     PID angularPid_;
 };

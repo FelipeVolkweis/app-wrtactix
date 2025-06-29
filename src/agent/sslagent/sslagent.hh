@@ -27,8 +27,8 @@ public:
 
 private:
     PlayerID id_;
-    SSLController sslController_;
     World world_;
+    SSLController sslController_;
     Referee referee_;
 
     WRBeT::Node *currentBehavior_;

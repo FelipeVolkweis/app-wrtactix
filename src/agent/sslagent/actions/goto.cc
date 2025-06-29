@@ -42,7 +42,9 @@ Status GoTo::execute() {
     }
 
     auto orientation = world().playerOrientation(id()).value();
-    controller().move(path, orientation);
+    Vec2 dir{ cosf(orientation), sinf(orientation) };
+    Vec2 lookAt = origin + dir * 5.0f;
+    controller().move(path, lookAt);
 
     return Status::RUNNING;
 }

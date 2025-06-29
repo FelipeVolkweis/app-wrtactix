@@ -144,7 +144,9 @@ QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const No
         path.push_front(grid_.convertGridToVec2(tmp.x, tmp.y));
         tmp = cameFrom[tmp];
     }
-
+    if (path.isEmpty()) {
+        return path;
+    }
     path[0] = start;
     path[path.size() - 1] = end;
 
