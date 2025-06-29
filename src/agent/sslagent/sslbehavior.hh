@@ -36,11 +36,11 @@ public:
     }
 
 private:
-    const BallInteraction ballInteraction_;
-
     const PlayerID &playerId_;
     SSLController &controller_;
     const World &world_;
+
+    const BallInteraction ballInteraction_;
 
 protected:
     WRBeT::Node *rootNode_ = nullptr;
