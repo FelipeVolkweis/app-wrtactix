@@ -12,6 +12,10 @@
 Q_LOGGING_CATEGORY(WORLD, "World")
 
 World::World(GEARSystem::Controller &controller) : controller_(controller) {
+    if (!controller_.isConnected()) {
+        connectToBackbone();
+    }
+
     info_ = new WorldInfo();
     infoBuffer_ = new WorldInfo();
     side_ = Sides::UNDEFINED;
@@ -32,12 +36,7 @@ World::World(GEARSystem::Controller &controller) : controller_(controller) {
         }
     }
 
-    auto a = info_->ballPosition();
-    auto b = infoBuffer_->ballPosition();
-
-    if (!controller_.isConnected()) {
-        connectToBackbone();
-    }
+    qInfo() << info_->teams().count() << "teams created with" << info_->players(0).count() << "players each.";
 }
 
 World::~World() {
@@ -145,4 +144,30 @@ void World::bufferizeFieldGeometry(WorldInfo &info) {
     info.setRightPenaltyMark(controller_.rightPenaltyMark());
 
     info.setFieldCenterRadius(controller_.fieldCenterRadius());
+}
+
+QList<PlayerID> World::availablePlayers(Colors::Color color) const {
+    QList<PlayerID> avPlayers;
+    quint8 teamNum = (color == Colors::BLUE) ? 1 : 0;
+    if (info_->teams().count() <= teamNum || info_->players(teamNum).size() > PLAYERS) {
+        qWarning() << info_->players(teamNum).size();
+        qWarning() << "Invalid team number or player count exceeds limit.";
+        return avPlayers;
+    }
+    for (auto playerNum : info_->players(teamNum)) {
+        PlayerID playerId(teamNum, playerNum);
+        if (playerIsActive(playerId)) {
+            avPlayers.append(playerId);
+        }
+    }
+
+    return avPlayers;
+}
+
+QList<PlayerID> World::ourAvailablePlayers() const {
+    return availablePlayers(ourColor());
+}
+
+QList<PlayerID> World::theirAvailablePlayers() const {
+    return availablePlayers(theirColor());
 }

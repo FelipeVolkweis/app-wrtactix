@@ -65,6 +65,9 @@ int main() {
     out2 << "\n";
 
     QVector<Obstacle> obstacles;
+    Vec2 bottomLeft(-4.5, -2.0);
+    Vec2 topRight(-4.0, 2.0);
+    obstacles.push_back(Obstacle(bottomLeft, topRight));
     for (int i = 0; i < nObstacles; i++) {
         Vec2 o = generateRandomPoint();
         obstacles.push_back(Obstacle(o, 0.09));

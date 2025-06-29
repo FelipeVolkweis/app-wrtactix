@@ -49,6 +49,34 @@ public:
         }
     }
 
+    void setObstacle(const Vec2 &bottomCorner, const Vec2 &topCorner) {
+        float minWX = std::min(bottomCorner.x(), topCorner.x());
+        float maxWX = std::max(bottomCorner.x(), topCorner.x());
+        float minWY = std::min(bottomCorner.y(), topCorner.y());
+        float maxWY = std::max(bottomCorner.y(), topCorner.y());
+
+        float X1 = (minWX + (W / 2.0) / conversionFactor) * conversionFactor;
+        float X2 = (maxWX + (W / 2.0) / conversionFactor) * conversionFactor;
+        float Y1 = (minWY + (H / 2.0) / conversionFactor) * conversionFactor;
+        float Y2 = (maxWY + (H / 2.0) / conversionFactor) * conversionFactor;
+
+        int minX = static_cast<int>(std::ceil(X1));
+        int maxX = static_cast<int>(X2);           
+        int minY = static_cast<int>(std::ceil(Y1));
+        int maxY = static_cast<int>(Y2);
+
+        minX = std::max(minX, 0);
+        maxX = std::min(maxX, W - 1);
+        minY = std::max(minY, 0);
+        maxY = std::min(maxY, H - 1);
+
+        for (int i = minX; i <= maxX; ++i) {
+            for (int j = minY; j <= maxY; ++j) {
+                grid[i][j] = true;
+            }
+        }
+    }
+
     bool isObstacle(int x, int y) {
         return grid[x][y];
     }

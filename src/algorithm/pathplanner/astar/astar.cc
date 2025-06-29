@@ -64,7 +64,11 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
     grid_.clearGrid();
 
     for (auto &obstacle : obstacles) {
-        grid_.setObstacle(obstacle.center, obstacle.radius);
+        if (obstacle.isCircle()) {
+            grid_.setObstacle(obstacle.center, obstacle.radius);
+        } else if (obstacle.isRectangle()) {
+            grid_.setObstacle(obstacle.bottomLeft, obstacle.topRight);
+        }
     }
 
     open.push(startNode);

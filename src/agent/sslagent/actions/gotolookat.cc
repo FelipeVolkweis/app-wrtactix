@@ -1,11 +1,12 @@
 #include <QLoggingCategory>
 
 #include "gotolookat.hh"
+#include "agent/wrappers/obstaclesbuilder.hh"
 
 Q_LOGGING_CATEGORY(GOTOLOOKAT, "GoToLookAt")
 
 GoToLookAt::GoToLookAt(const PlayerID &player, SSLController &controller, const World &world)
-    : SSLAction(player, controller, world, "GoToLookAt"), pathPlanner_(nullptr) {}
+    : SSLAction(player, controller, world, "GoToLookAt"), pathPlanner_(nullptr), obstaclesBuilder_(world, player) {}
 
 GoToLookAt *GoToLookAt::setGoal(std::function<Vec2()> goal) {
     goal_ = goal;
@@ -19,6 +20,31 @@ GoToLookAt *GoToLookAt::setPathPlanner(PathPlanner *pathPlanner) {
 
 GoToLookAt *GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
     lookAt_ = lookAt;
+    return this;
+}
+
+GoToLookAt *GoToLookAt::avoidTeammates() {
+    avoidTeammates_ = true;
+    return this;
+}
+
+GoToLookAt *GoToLookAt::avoidOpponents() {
+    avoidOpponents_ = true;
+    return this;
+}
+
+GoToLookAt *GoToLookAt::avoidBall() {
+    avoidBall_ = true;
+    return this;
+}
+
+GoToLookAt *GoToLookAt::avoidOurGoal() {
+    avoidOurGoal_ = true;
+    return this;
+}
+
+GoToLookAt *GoToLookAt::avoidTheirGoal() {
+    avoidTheirGoal_ = true;
     return this;
 }
 
@@ -50,10 +76,30 @@ Status GoToLookAt::execute() {
         return Status::SUCCESS;
     }
 
-    QVector<Obstacle> obs;
+    handleObstacles();
+    auto obs = obstaclesBuilder_.obstacles();
     auto path = pathPlanner_->findPath(origin, goal, obs);
+    obstaclesBuilder_.reset();
 
     controller().move(path, lookAt);
 
     return Status::RUNNING;
+}
+
+void GoToLookAt::handleObstacles() {
+    if (avoidTeammates_) {
+        obstaclesBuilder_.avoidTeammates();
+    }
+    if (avoidOpponents_) {
+        obstaclesBuilder_.avoidOpponents();
+    }
+    if (avoidBall_) {
+        obstaclesBuilder_.avoidBall();
+    }
+    if (avoidOurGoal_) {
+        obstaclesBuilder_.avoidOurGoal();
+    }
+    if (avoidTheirGoal_) {
+        obstaclesBuilder_.avoidTheirGoal();
+    }
 }

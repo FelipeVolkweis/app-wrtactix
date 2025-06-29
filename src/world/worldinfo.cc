@@ -1,6 +1,6 @@
 #include "worldinfo.hh"
 
-WorldInfo::WorldInfo() {}
+WorldInfo::WorldInfo() : WorldMap() {}
 
 const Position &WorldInfo::playerPosition(const PlayerID &player) const {
     return GEARSystem::WorldMap::playerPosition(player.teamNum(), player.playerNum());

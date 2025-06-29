@@ -63,6 +63,10 @@ public:
         return info_->ballPossession(player);
     }
 
+    QList<PlayerID> availablePlayers(Colors::Color color) const;
+    QList<PlayerID> ourAvailablePlayers() const;
+    QList<PlayerID> theirAvailablePlayers() const;
+
     const Position ballPosition() const {
         return info_->ballPosition();
     }
@@ -153,13 +157,15 @@ private:
 
     WorldInfo *info_;
     WorldInfo *infoBuffer_;
-
+    
     GEARSystem::Controller &controller_;
-
-    QMutex mutex_;
-
+    
     Sides::Side side_;
     Colors::Color color_;
+
+
+
+    QMutex mutex_;
 };
 
 #endif

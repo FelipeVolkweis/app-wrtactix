@@ -5,7 +5,7 @@
 
 #include <GEARSystem/worldmap.hh>
 
-class WorldInfo : public GEARSystem::WorldMap {
+class WorldInfo : public WorldMap {
 public:
     WorldInfo();
 

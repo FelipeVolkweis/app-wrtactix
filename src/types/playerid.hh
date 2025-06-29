@@ -20,6 +20,14 @@ public:
         return QString("PlayerID(%1, %2)").arg(teamNum_).arg(playerNum_);
     }
 
+    bool operator==(const PlayerID &other) const {
+        return teamNum_ == other.teamNum_ && playerNum_ == other.playerNum_;
+    }
+    
+    bool operator!=(const PlayerID &other) const {
+        return !(*this == other);
+    }
+
 private:
     quint8 teamNum_;
     quint8 playerNum_;
