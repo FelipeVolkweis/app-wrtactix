@@ -35,8 +35,6 @@ World::World(GEARSystem::Controller &controller) : controller_(controller) {
             infoBuffer_->addPlayer(i, j);
         }
     }
-
-    qInfo() << info_->teams().count() << "teams created with" << info_->players(0).count() << "players each.";
 }
 
 World::~World() {
@@ -149,12 +147,7 @@ void World::bufferizeFieldGeometry(WorldInfo &info) {
 QList<PlayerID> World::availablePlayers(Colors::Color color) const {
     QList<PlayerID> avPlayers;
     quint8 teamNum = (color == Colors::BLUE) ? 1 : 0;
-    if (info_->teams().count() <= teamNum || info_->players(teamNum).size() > PLAYERS) {
-        qWarning() << info_->players(teamNum).size();
-        qWarning() << "Invalid team number or player count exceeds limit.";
-        return avPlayers;
-    }
-    for (auto playerNum : info_->players(teamNum)) {
+    for (int playerNum = 0; playerNum < PLAYERS; playerNum++) {
         PlayerID playerId(teamNum, playerNum);
         if (playerIsActive(playerId)) {
             avPlayers.append(playerId);

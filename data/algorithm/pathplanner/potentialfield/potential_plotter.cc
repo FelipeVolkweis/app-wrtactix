@@ -24,7 +24,7 @@ int main() {
     using std::chrono::milliseconds;
 
     float katt = 1.0;
-    float krep = 0.001;
+    float krep = 0.01;
     float minRad = 0.5;
     float threshhold = 0.25;
     float epsilon = 0.1;

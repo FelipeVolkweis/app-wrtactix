@@ -60,16 +60,18 @@ int main(int argc, char *argv[]) {
     }
 
     while (true) {
+        QElapsedTimer timer;
+        timer.start();
         for (SSLAgent *agent : agents) {
             agent->observe();
             if (!agent->isActive()) {
                 continue;
             }
-            qInfo() << "Agent" << agent->id().toString() << "is active.";
             agent->listen();
             agent->think();
             agent->act();
         }
+        qInfo() << timer.elapsed() << "ms";
     }
 
     int retn = app.exec();
