@@ -1,8 +1,9 @@
 #include <QElapsedTimer>
 
+#include "agent/sslagent/behaviors/calibrateangular.hh"
+#include "agent/sslagent/behaviors/calibratelinear.hh"
 #include "agent/sslagent/behaviors/donothing.hh"
 #include "agent/sslagent/behaviors/shoottogoal.hh"
-#include "agent/sslagent/behaviors/calibratelinear.hh"
 
 #include "sslagent.hh"
 
@@ -17,6 +18,7 @@ SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &contro
     goTo_ = (new ShootToGoal(id_, sslController_, world_))->node();
     idle_ = (new DoNothing(id_, sslController_, world_))->node();
     calibrateLinear_ = (new CalibrateLinear(id_, sslController_, world_))->node();
+    calibrateAngular_ = (new CalibrateAngular(id_, sslController_, world_))->node();
 
     currentBehavior_ = idle_;
 }
@@ -38,8 +40,9 @@ void SSLAgent::think() {
             currentBehavior_ = idle_;
             break;
         default:
-            // currentBehavior_ = goTo_;
-            currentBehavior_ = calibrateLinear_;
+            currentBehavior_ = goTo_;
+            // currentBehavior_ = calibrateLinear_;
+            // currentBehavior_ = calibrateAngular_;
             break;
         }
     }

@@ -35,6 +35,7 @@ private:
     WRBeT::Node *goTo_;
     WRBeT::Node *idle_;
     WRBeT::Node *calibrateLinear_;
+    WRBeT::Node *calibrateAngular_;
 };
 
 #endif

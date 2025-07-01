@@ -1,12 +1,11 @@
-#include "calibratelinear.hh"
-
 #include "agent/sslagent/actions/actions.hh"
 #include "algorithm/behaviortree/behaviortree.hh"
 #include "algorithm/pathplanner/pointtopoint/pointtopoint.hh"
 
+#include "calibratelinear.hh"
+
 CalibrateLinear::CalibrateLinear(const PlayerID &playerId, SSLController &controller, const World &worldRef)
     : SSLBehavior(playerId, controller, worldRef, "CalibrateLinear") {
-    
     Vec2 A = {0.0f, 0.0f};
     Vec2 B = {0.0f, 1.0f};
     Vec2 C = {1.0f, 1.0f};

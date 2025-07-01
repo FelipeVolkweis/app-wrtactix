@@ -13,17 +13,7 @@ SSLController::SSLController(const PlayerID &id, GEARSystem::Controller &control
                         Const::Control::Timing::max_dt) {}
 
 void SSLController::move(const QVector<Vec2> &path, const Vec2 &lookAt) {
-    if (path.isEmpty()) {
-        return;
-    }
-
-    Vec2 goal = path.last();
     Vec2 position = TwoD::positionToVector(world_.playerPosition(id_));
-    float theta = path.size() > 1 ? TwoD::angleBetweenVectors(path[0], path[1]) : 0.0f;
-
-    Vec2 error = goal - position;
-    float distance = error.norm();
-
     float angleToLookAt = TwoD::angleBetweenVectors(position, lookAt);
     float angleError = angleToLookAt - world_.playerOrientation(id_).value();
     if (angleError > M_PI) {
@@ -31,9 +21,20 @@ void SSLController::move(const QVector<Vec2> &path, const Vec2 &lookAt) {
     } else if (angleError < -M_PI) {
         angleError += 2 * M_PI;
     }
+    float angularSignal = angularPid_.computeSignal(angleError);
+
+    if (path.isEmpty()) {
+        controller_.setSpeed(id_.teamNum(), id_.playerNum(), 0, 0, angularSignal);
+        return;
+    }
+
+    Vec2 goal = path.last();
+    float theta = path.size() > 1 ? TwoD::angleBetweenVectors(path[0], path[1]) : 0.0f;
+
+    Vec2 error = goal - position;
+    float distance = error.norm();
 
     float linearSignal = linearPid_.computeSignal(distance);
-    float angularSignal = angularPid_.computeSignal(angleError);
     theta = theta - world_.playerOrientation(id_).value() + GEARSystem::Angle::pi / 2;
 
     float x = linearSignal * cos(theta);

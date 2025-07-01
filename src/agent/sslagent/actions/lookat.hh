@@ -9,7 +9,7 @@ class LookAt : public SSLAction {
 public:
     LookAt(const PlayerID &player, SSLController &controller, const World &world);
 
-    LookAt &setLookAt(std::function<Vec2()> target);
+    LookAt *setLookAt(std::function<Vec2()> target);
 
     Status execute();
 

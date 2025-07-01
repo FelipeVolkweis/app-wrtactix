@@ -5,9 +5,9 @@
 LookAt::LookAt(const PlayerID &player, SSLController &controller, const World &world)
     : SSLAction(player, controller, world, "LookAt") {}
 
-LookAt &LookAt::setLookAt(std::function<Vec2()> target) {
+LookAt *LookAt::setLookAt(std::function<Vec2()> target) {
     target_ = target;
-    return *this;
+    return this;
 }
 
 Status LookAt::execute() {
@@ -21,8 +21,9 @@ Status LookAt::execute() {
     auto d = (target - origin);
     auto angle = atan2f(d.y(), d.x());
     auto orientation = world().playerOrientation(id()).value();
-
-    if (fabsf(angle - orientation) < 0.1) { // ?
+    auto angleObj = WRAngle(angle);
+    auto orientationObj = WRAngle(orientation);
+    if (fabsf((angleObj - orientationObj).radians()) < 0.1) { // ?
         return Status::SUCCESS;
     }
 
