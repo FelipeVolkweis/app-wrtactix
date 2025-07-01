@@ -19,11 +19,6 @@ float PID::computeSignal(float error) {
     lastError_ = error;
 
     float signal = p + i + d;
-    if (signal > max_) {
-        signal = max_;
-    } else if (signal < -max_) {
-        signal = -max_;
-    }
 
     return signal;
 }
