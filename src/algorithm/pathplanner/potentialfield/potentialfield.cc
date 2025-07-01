@@ -9,8 +9,26 @@ PotentialField::PotentialField(float kAtt, float kRep, float minRadiusForRepulsi
     : kAtt_(kAtt), kRep_(kRep), minRadiusForRepulsiveForce_(minRadiusForRepulsiveForce),
       conicQuadraticThreshold_(conicQuadraticThreshold), epsilon_(epsilon) {}
 
-void PotentialField::addRepulsiveForce(const Vec2 &obstacle) {
-    auto distance = (obstacle - origin_).norm() + EPS;
+void PotentialField::addRepulsiveForce(const Obstacle &obstacle) {
+    Vec2 obstacleSurface;
+    if (obstacle.type == ObstacleType::CIRCLE) {
+        if ((obstacle.center - origin_).norm() > obstacle.radius) {
+            obstacleSurface = obstacle.center + obstacle.radius * (origin_ - obstacle.center).normalized();
+        } else {
+            obstacleSurface = obstacle.center;
+        }
+    } else if (obstacle.type == ObstacleType::RECTANGLE) {
+        // Precisa validar
+        float x = std::clamp(origin_.x(),
+                         obstacle.bottomLeft.x(),
+                         obstacle.topRight.x());
+        float y = std::clamp(origin_.y(),
+                         obstacle.bottomLeft.y(),
+                         obstacle.topRight.y());
+        obstacleSurface = Vec2{x, y};
+    }
+
+    auto distance = (obstacleSurface - origin_).norm() + EPS;
     if (distance > minRadiusForRepulsiveForce_) {
         return;
     }
@@ -18,7 +36,7 @@ void PotentialField::addRepulsiveForce(const Vec2 &obstacle) {
     auto qq = 1.0f / minRadiusForRepulsiveForce_ + EPS;
     auto dd = 1.0f / distance;
 
-    auto potentialForce = kRep_ * (qq - dd) * (1.0f / (distance * distance)) * (obstacle - origin_);
+    auto potentialForce = kRep_ * (qq - dd) * (1.0f / (distance * distance)) * (obstacleSurface - origin_);
 
     addForce(potentialForce);
 }
@@ -26,11 +44,12 @@ void PotentialField::addRepulsiveForce(const Vec2 &obstacle) {
 void PotentialField::addAttractiveForce() {
     auto distance = (goal_ - origin_).norm() + EPS;
     Vec2 potentialForce;
-    if (distance <= conicQuadraticThreshold_) { // quadratic
-        potentialForce = kAtt_ * (goal_ - origin_);
-    } else { // conic
-        potentialForce = kAtt_ * (goal_ - origin_).normalized() * conicQuadraticThreshold_;
-    }
+    potentialForce = kAtt_ * (goal_ - origin_);
+    // if (distance <= conicQuadraticThreshold_) { // quadratic
+    //     potentialForce = kAtt_ * (goal_ - origin_);
+    // } else { // conic
+    //     potentialForce = kAtt_ * (goal_ - origin_).normalized() * conicQuadraticThreshold_;
+    // }
 
     addForce(potentialForce);
 }
@@ -64,7 +83,7 @@ QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const
     do {
         reset();
         for (const auto &obstacle : obstacles) {
-            addRepulsiveForce(obstacle.center);
+            addRepulsiveForce(obstacle);
         }
         addAttractiveForce();
 
@@ -85,7 +104,7 @@ float PotentialField::findGreedyPath(const Vec2 &start, const Vec2 &end, const Q
     goal_ = end;
 
     for (const auto &obstacle : obstacles) {
-        addRepulsiveForce(obstacle.center);
+        addRepulsiveForce(obstacle);
     }
     addAttractiveForce();
 

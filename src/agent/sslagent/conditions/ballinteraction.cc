@@ -4,7 +4,7 @@ BallInteraction::BallInteraction(const World &world) : world_(world) {}
 
 Vec2 BallInteraction::behindBall(const Vec2 &reference, float distance) const {
     Vec2 ballPosition = world_.ballPositionVec2();
-    Vec2 direction = (reference - ballPosition).normalized();
+    Vec2 direction = (ballPosition - reference).normalized();
     return ballPosition + direction * distance;
 }
 

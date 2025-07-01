@@ -45,6 +45,10 @@ public:
     static float angleBetweenVectors(const Vec2 &v1, const Vec2 &v2) {
         return atan2f(v2.y() - v1.y(), v2.x() - v1.x());
     }
+
+    static float angleBetweenPositions(const Position &p1, const Position &p2) {
+        return atan2f(p2.y() - p1.y(), p2.x() - p1.x());
+    }
 };
 
 #endif

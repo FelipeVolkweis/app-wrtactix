@@ -61,3 +61,10 @@ invalid_id = 0xFF
 game_off_max_speed = 0.35
 max_robots = 11
 bezier_control_point = 2.0
+
+[pathplanner.potentialfield]
+katt = 1.0
+krep = 0.005
+min_rad = 1.0
+threshold = 1
+epsilon = 0.1

@@ -19,7 +19,7 @@ private:
     Vec2 origin_;
     Vec2 goal_;
 
-    void addRepulsiveForce(const Vec2 &obstacle);
+    void addRepulsiveForce(const Obstacle &obstacle);
     void addAttractiveForce();
 
     Vec2 getForce() const;

@@ -67,6 +67,17 @@ float System::game_off_max_speed;
 int System::max_robots;
 float System::bezier_control_point;
 
+// Path planner
+namespace PathPlanner {
+namespace PotentialField {
+    float katt;
+    float krep;
+    float min_rad;
+    float threshold;
+    float epsilon;
+}  // namespace PotentialField
+}  // namespace PathPlanner
+
 // Função que efetivamente busca todos os valores em Config e atribui
 void initialize() {
     // Referee
@@ -142,6 +153,13 @@ void initialize() {
     System::game_off_max_speed = Config::retrieve<float>(Config::CONFIGS["system"]["game_off_max_speed"]);
     System::max_robots = Config::retrieve<int>(Config::CONFIGS["system"]["max_robots"]);
     System::bezier_control_point = Config::retrieve<float>(Config::CONFIGS["system"]["bezier_control_point"]);
+
+    // Path planner: potential field
+    PathPlanner::PotentialField::katt       = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["katt"]);
+    PathPlanner::PotentialField::krep       = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["krep"]);
+    PathPlanner::PotentialField::min_rad    = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["min_rad"]);
+    PathPlanner::PotentialField::threshold  = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["threshold"]);
+    PathPlanner::PotentialField::epsilon    = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["epsilon"]);
 }
 
 } // namespace Const

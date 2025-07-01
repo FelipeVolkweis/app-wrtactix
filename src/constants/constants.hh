@@ -88,6 +88,17 @@ extern int max_robots;
 extern float bezier_control_point;
 } // namespace System
 
+// Path planner
+namespace PathPlanner {
+namespace PotentialField {
+    extern float katt;
+    extern float krep;
+    extern float min_rad;
+    extern float threshold;
+    extern float epsilon;
+}  // namespace PotentialField
+}  // namespace PathPlanner
+
 /// Inicializa todas as constantes a partir de Config::retrieve<…>()
 void initialize();
 

@@ -24,6 +24,11 @@ private:
     const World &world_;
 
     QVector<Obstacle> obstacles_;
+
+    Vec2 bottomLeftLeftGoal() const;
+    Vec2 bottomLeftRightGoal() const;
+    Vec2 topRightLeftGoal() const;
+    Vec2 topRightRightGoal() const;
 };
 
 #endif
