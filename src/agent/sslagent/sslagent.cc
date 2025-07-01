@@ -1,9 +1,9 @@
+#include <QElapsedTimer>
+
 #include "agent/sslagent/behaviors/donothing.hh"
 #include "agent/sslagent/behaviors/shoottogoal.hh"
 
 #include "sslagent.hh"
-
-#include <QElapsedTimer>
 
 SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller)
     : id_(id), world_(controller), sslController_(id, controller, world_),

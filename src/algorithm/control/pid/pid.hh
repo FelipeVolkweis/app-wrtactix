@@ -1,8 +1,6 @@
 #ifndef PID_HH
 #define PID_HH
 
-#include <QQueue>
-
 #include "algorithm/control/control.hh"
 
 class PID : public Control {
@@ -18,9 +16,11 @@ private:
     const float dt_;
     const float max_;
 
-    QQueue<float> errors_;
+    float integral_;
 
     float lastError_;
+
+    bool firstRun_ = true;
 };
 
 #endif

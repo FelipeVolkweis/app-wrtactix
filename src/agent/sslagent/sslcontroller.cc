@@ -8,7 +8,9 @@ SSLController::SSLController(const PlayerID &id, GEARSystem::Controller &control
       linearPid_(Const::Control::PID::linear.kp, Const::Control::PID::linear.ki, Const::Control::PID::linear.kd,
                  Const::Control::Timing::max_dt, Const::Control::PID::linear.max_integral),
       angularPid_(Const::Control::PID::angular.kp, Const::Control::PID::angular.ki, Const::Control::PID::angular.kd,
-                  Const::Control::Timing::max_dt, Const::Control::PID::angular.max_integral) {}
+                  Const::Control::Timing::max_dt, Const::Control::PID::angular.max_integral),
+      accelerationRamp_(Const::Control::Movement::max_linear_accel, Const::Control::Movement::max_linear_speed,
+                        Const::Control::Timing::max_dt) {}
 
 void SSLController::move(const QVector<Vec2> &path, const Vec2 &lookAt) {
     if (path.isEmpty()) {
@@ -37,7 +39,12 @@ void SSLController::move(const QVector<Vec2> &path, const Vec2 &lookAt) {
     float x = linearSignal * cos(theta);
     float y = linearSignal * sin(theta);
 
-    controller_.setSpeed(id_.teamNum(), id_.playerNum(), x, y, angularSignal);
+    Vec2 targetVelocity(x, y);
+    if (!lastTargetVelocity_.isZero()) {
+        targetVelocity = accelerationRamp_.fitSpeedToRamp(lastTargetVelocity_, targetVelocity);
+    }
+    lastTargetVelocity_ = targetVelocity;
+    controller_.setSpeed(id_.teamNum(), id_.playerNum(), targetVelocity.x(), targetVelocity.y(), angularSignal);
 }
 
 void SSLController::kick() {

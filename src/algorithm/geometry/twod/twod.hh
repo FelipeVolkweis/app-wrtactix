@@ -32,6 +32,10 @@ public:
         return Vec2(pos.x(), pos.y());
     }
 
+    static Vec2 velocityToVector(const GEARSystem::Velocity &vel) {
+        return Vec2(vel.x(), vel.y());
+    }
+
     static bool isPointOnSegment(float x, float y, float x1, float y1, float x2, float y2);
 
     static bool isPointOnSegment(const Vec2 &point, const Vec2 &p1, const Vec2 &p2);

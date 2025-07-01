@@ -1,9 +1,10 @@
 #ifndef SSLCONTROLLER_HH
 #define SSLCONTROLLER_HH
 
-#include <QVector>
 #include <QElapsedTimer>
+#include <QVector>
 
+#include "algorithm/control/accelerationramp/accelerationramp.hh"
 #include "algorithm/control/pid/pid.hh"
 #include "types/playerid.hh"
 #include "types/vec2.hh"
@@ -31,7 +32,9 @@ private:
     const World &world_;
     PID linearPid_;
     PID angularPid_;
+    AccelerationRamp accelerationRamp_;
 
+    Vec2 lastTargetVelocity_;
     QElapsedTimer kickEnabledTimer_;
 };
 
