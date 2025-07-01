@@ -76,6 +76,7 @@ extern Gains angular;
 namespace Timing {
 extern float max_dt;
 extern float replan_interval;
+extern float kick_enabled_timeout;
 } // namespace Timing
 } // namespace Control
 
@@ -101,6 +102,17 @@ extern float epsilon;
 namespace StarPotential {
 extern float threshold;
 }
+
+namespace UnivectorField {
+extern float de;
+extern float kr;
+extern float ko;
+extern float dmin;
+extern float delta;
+extern int maxIts;
+extern float step;
+} // namespace UnivectorField
+
 } // namespace PathPlanner
 
 /// Inicializa todas as constantes a partir de Config::retrieve<…>()

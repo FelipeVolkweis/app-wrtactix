@@ -46,6 +46,7 @@ void SSLController::kick() {
 
 void SSLController::kick(float power) {
     controller_.kickOnTouch(id_.teamNum(), id_.playerNum(), true, power);
+    kickEnabledTimer_.start();
 }
 
 void SSLController::dribble() {}
@@ -62,4 +63,11 @@ void SSLController::stop() {
     controller_.setSpeed(id_.teamNum(), id_.playerNum(), 0, 0, 0);
     controller_.kickOnTouch(id_.teamNum(), id_.playerNum(), false, 0);
     controller_.chipKick(id_.teamNum(), id_.playerNum(), 0);
+}
+
+void SSLController::controllerCallback() {
+    if (kickEnabledTimer_.isValid() && kickEnabledTimer_.elapsed() > Const::Control::Timing::kick_enabled_timeout) {
+        controller_.kickOnTouch(id_.teamNum(), id_.playerNum(), false, 0);
+        kickEnabledTimer_.invalidate();
+    }
 }

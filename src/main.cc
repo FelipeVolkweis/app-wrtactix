@@ -71,7 +71,7 @@ int main(int argc, char *argv[]) {
             agent->think();
             agent->act();
         }
-        qInfo() << timer.elapsed() << "ms";
+        qInfo() << timer.elapsed() << "ms in total";
     }
 
     int retn = app.exec();

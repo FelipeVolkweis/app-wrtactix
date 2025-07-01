@@ -58,6 +58,7 @@ Gains angular;
 namespace Timing {
 float max_dt;
 float replan_interval;
+float kick_enabled_timeout;
 } // namespace Timing
 } // namespace Control
 
@@ -80,6 +81,16 @@ float epsilon;
 namespace StarPotential {
 float threshold;
 }
+
+namespace UnivectorField {
+float de;
+float kr;
+float ko;
+float dmin;
+float delta;
+int maxIts;
+float step;
+} // namespace UnivectorField
 } // namespace PathPlanner
 
 // Função que efetivamente busca todos os valores em Config e atribui
@@ -150,6 +161,8 @@ void initialize() {
     // Control::Timing
     Control::Timing::max_dt = Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["max_dt"]);
     Control::Timing::replan_interval = Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["replan_interval"]);
+    Control::Timing::kick_enabled_timeout =
+        Config::retrieve<float>(Config::CONFIGS["control"]["timing"]["kick_enabled_timeout"]);
 
     // System
     System::thread_frequency = Config::retrieve<int>(Config::CONFIGS["system"]["thread_frequency"]);
@@ -173,6 +186,19 @@ void initialize() {
     // Path planner: star potential
     PathPlanner::StarPotential::threshold =
         Config::retrieve<float>(Config::CONFIGS["pathplanner"]["starpotential"]["threshold"]);
+
+    // Path planner: univector field
+    PathPlanner::UnivectorField::de = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["de"]);
+    PathPlanner::UnivectorField::kr = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["kr"]);
+    PathPlanner::UnivectorField::ko = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["ko"]);
+    PathPlanner::UnivectorField::dmin =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["dmin"]);
+    PathPlanner::UnivectorField::delta =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["delta"]);
+    PathPlanner::UnivectorField::maxIts =
+        Config::retrieve<int>(Config::CONFIGS["pathplanner"]["univectorfield"]["maxIts"]);
+    PathPlanner::UnivectorField::step =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["step"]);
 }
 
 } // namespace Const

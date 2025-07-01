@@ -10,33 +10,43 @@
 
 ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, const World &worldRef)
     : SSLBehavior(playerId, controller, worldRef, "ShootToGoal") {
-    auto root = BehaviorTree::Fallback(
+    auto root = BehaviorTree::Sequence(
         "Shooting Sequence",
         {
-            BehaviorTree::Condition("Is Behing Ball",
-                                    [this]() {
-                                        return ballInteraction().isBehindBall(
-                                            world().playerPositionVec2(player()),
-                                            aiming().getEnemyGoalKickPosition(player()), 0.1f);
-                                    }),
-            action<GoToLookAt>()
-                // ->setPathPlanner(new PotentialField(
-                //     Const::PathPlanner::PotentialField::katt, Const::PathPlanner::PotentialField::krep,
-                //     Const::PathPlanner::PotentialField::min_rad, Const::PathPlanner::PotentialField::threshold,
-                //     Const::PathPlanner::PotentialField::epsilon))
-                // ->setPathPlanner(new AStar())
-                // ->setPathPlanner(new PointToPoint())
-                ->setPathPlanner(new StarPotential(
-                    Const::PathPlanner::PotentialField::katt, Const::PathPlanner::PotentialField::krep,
-                    Const::PathPlanner::PotentialField::min_rad, Const::PathPlanner::StarPotential::threshold,
-                    Const::PathPlanner::PotentialField::epsilon))
-                ->setGoal([this]() {
-                    return ballInteraction().behindBall(aiming().getEnemyGoalKickPosition(player()), 0.2f);
-                })
-                ->setLookAt([this]() { return aiming().getEnemyGoalKickPosition(player()); })
-                ->avoidTeammates()
-                ->avoidOpponents()
-                ->avoidTheirGoal(),
+            BehaviorTree::Fallback(
+            "PositionToShootFallback",
+            {
+                BehaviorTree::Condition("Is Behing Ball",
+                                        [this]() {
+                                            return ballInteraction().isBehindBall(
+                                                world().playerPositionVec2(player()),
+                                                aiming().getEnemyGoalKickPosition(player()), 0.105f);
+                                        }),
+                action<GoToLookAt>()
+                    // ->setPathPlanner(new PotentialField(
+                    //     Const::PathPlanner::PotentialField::katt, Const::PathPlanner::PotentialField::krep,
+                    //     Const::PathPlanner::PotentialField::min_rad, Const::PathPlanner::PotentialField::threshold,
+                    //     Const::PathPlanner::PotentialField::epsilon))
+                    // ->setPathPlanner(new AStar())
+                    // ->setPathPlanner(new PointToPoint())
+                    ->setPathPlanner(new StarPotential(
+                        Const::PathPlanner::PotentialField::katt, Const::PathPlanner::PotentialField::krep,
+                        Const::PathPlanner::PotentialField::min_rad, Const::PathPlanner::StarPotential::threshold,
+                        Const::PathPlanner::PotentialField::epsilon))
+                    ->setGoal([this]() {
+                        return ballInteraction().behindBall(aiming().getEnemyGoalKickPosition(player()), 0.1f);
+                    })
+                    ->setLookAt([this]() { return aiming().getEnemyGoalKickPosition(player()); })
+                    ->avoidTeammates()
+                    ->avoidOpponents()
+                    ->avoidTheirGoal()
+                    ->avoidBall([this]() {
+                        return !ballInteraction().isBehindBall(world().playerPositionVec2(player()),
+                                                               aiming().getEnemyGoalKickPosition(player()), 0.25f);
+                    }),
+            }),
+            action<Kick>()
+                ->setPower(10.f)
         });
 
     rootNode_ = root;

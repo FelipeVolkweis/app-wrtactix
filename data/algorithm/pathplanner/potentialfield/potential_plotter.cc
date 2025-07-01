@@ -8,6 +8,9 @@
 using namespace std;
 
 #include "algorithm/pathplanner/potentialfield/potentialfield.hh"
+#include "constants/constants.hh"
+#include "constants/config/config.hh"
+#include "algorithm/interpolation/interpolation.hh"
 
 #define MM2M 0.001
 
@@ -18,16 +21,19 @@ Vec2 generateRandomPoint() {
 }
 
 int main() {
+    Config::initialize();
+    Const::initialize();
+
     using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    float katt = 1.0;
-    float krep = 0.01;
-    float minRad = 0.5;
-    float threshhold = 0.25;
-    float epsilon = 0.1;
+    float katt = Const::PathPlanner::PotentialField::katt;
+    float krep = Const::PathPlanner::PotentialField::krep;
+    float minRad = Const::PathPlanner::PotentialField::min_rad;
+    float threshhold = Const::PathPlanner::StarPotential::threshold;
+    float epsilon = Const::PathPlanner::PotentialField::epsilon;
 
     int nObstacles = 100;
 
@@ -84,6 +90,7 @@ int main() {
 
     auto t1 = high_resolution_clock::now();
     auto path = pf.findPath(origin, goal, obstacles);
+    // path = Interpolation::smoothMovingAverage(path, 5);
     auto t2 = high_resolution_clock::now();
 
     cout << "Path size: " << path.size() << endl;

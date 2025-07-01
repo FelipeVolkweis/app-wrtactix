@@ -22,7 +22,7 @@ void ObstaclesBuilder::avoidOpponents() {
 
 void ObstaclesBuilder::avoidBall() {
     const auto &ballPos = world_.ballPositionVec2();
-    float radius = Const::Physics::ball_radius + 0.1f;
+    float radius = Const::Physics::ball_radius + Const::Physics::robot_radius;
     obstacles_.push_back(Obstacle(ballPos, radius));
 }
 

@@ -5,6 +5,8 @@
 #include "agent/wrappers/obstaclesbuilder.hh"
 #include "algorithm/pathplanner/pathplanner.hh"
 
+#include <functional>
+
 class GoToLookAt : public SSLAction {
 public:
     GoToLookAt(const PlayerID &player, SSLController &controller, const World &world);
@@ -13,11 +15,11 @@ public:
     GoToLookAt *setPathPlanner(PathPlanner *pathPlanner);
     GoToLookAt *setLookAt(std::function<Vec2()> lookAt);
 
-    GoToLookAt *avoidTeammates();
-    GoToLookAt *avoidOpponents();
-    GoToLookAt *avoidBall();
-    GoToLookAt *avoidOurGoal();
-    GoToLookAt *avoidTheirGoal();
+    GoToLookAt *avoidTeammates(std::function<bool()> condition = nullptr);
+    GoToLookAt *avoidOpponents(std::function<bool()> condition = nullptr);
+    GoToLookAt *avoidBall(std::function<bool()> condition = nullptr);
+    GoToLookAt *avoidOurGoal(std::function<bool()> condition = nullptr);
+    GoToLookAt *avoidTheirGoal(std::function<bool()> condition = nullptr);
 
     Status execute();
 
@@ -27,11 +29,11 @@ private:
     PathPlanner *pathPlanner_;
     ObstaclesBuilder obstaclesBuilder_;
 
-    bool avoidTeammates_ = false;
-    bool avoidOpponents_ = false;
-    bool avoidBall_ = false;
-    bool avoidOurGoal_ = false;
-    bool avoidTheirGoal_ = false;
+    std::function<bool()> avoidTeammates_;
+    std::function<bool()> avoidOpponents_;
+    std::function<bool()> avoidBall_;
+    std::function<bool()> avoidOurGoal_;
+    std::function<bool()> avoidTheirGoal_;
 
     void handleObstacles();
 };

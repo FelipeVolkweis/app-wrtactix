@@ -40,20 +40,21 @@ linear_error = 0.015
 angular_error = 4
 
 [control.pid.linear]
-kp = 2.1
-ki = 0.01  # New integral term
-kd = 0.005
+kp = 3
+ki = 0  # New integral term
+kd = 0
 max_integral = 1.0  # Anti-windup
 
 [control.pid.angular]
-kp = 1
-ki = 0.001  # New integral term
+kp = 3
+ki = 0.0  # New integral term
 kd = 0.0
 max_integral = 0.5  # Anti-windup
 
 [control.timing]
 max_dt = 0.020
 replan_interval = 0.5
+kick_enabled_timeout = 200
 
 [system]
 thread_frequency = 60
@@ -63,11 +64,20 @@ max_robots = 11
 bezier_control_point = 2.0
 
 [pathplanner.potentialfield]
-katt = 2.0
+katt = 5
 krep = 0.005
-min_rad = 2.0
+min_rad = 1
 threshold = 1
 epsilon = 0.1
 
 [pathplanner.starpotential]
 threshold = 0.2
+
+[pathplanner.univectorfield]
+de = 0.020
+kr = 0.005
+ko = 1
+dmin = 0.05
+delta = 0.05
+maxIts = 1000
+step = 0.05

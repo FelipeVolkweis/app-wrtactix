@@ -24,28 +24,28 @@ GoToLookAt *GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
     return this;
 }
 
-GoToLookAt *GoToLookAt::avoidTeammates() {
-    avoidTeammates_ = true;
+GoToLookAt *GoToLookAt::avoidTeammates(std::function<bool()> condition) {
+    avoidTeammates_ = condition;
     return this;
 }
 
-GoToLookAt *GoToLookAt::avoidOpponents() {
-    avoidOpponents_ = true;
+GoToLookAt *GoToLookAt::avoidOpponents(std::function<bool()> condition) {
+    avoidOpponents_ = condition;
     return this;
 }
 
-GoToLookAt *GoToLookAt::avoidBall() {
-    avoidBall_ = true;
+GoToLookAt *GoToLookAt::avoidBall(std::function<bool()> condition) {
+    avoidBall_ = condition;
     return this;
 }
 
-GoToLookAt *GoToLookAt::avoidOurGoal() {
-    avoidOurGoal_ = true;
+GoToLookAt *GoToLookAt::avoidOurGoal(std::function<bool()> condition) {
+    avoidOurGoal_ = condition;
     return this;
 }
 
-GoToLookAt *GoToLookAt::avoidTheirGoal() {
-    avoidTheirGoal_ = true;
+GoToLookAt *GoToLookAt::avoidTheirGoal(std::function<bool()> condition) {
+    avoidTheirGoal_ = condition;
     return this;
 }
 
@@ -86,20 +86,22 @@ Status GoToLookAt::execute() {
     return Status::RUNNING;
 }
 
+// If no function was provided, simply avoid the obstacle class, else, evaluate the function
 void GoToLookAt::handleObstacles() {
-    if (avoidTeammates_) {
+    if (!avoidTeammates_ || avoidTeammates_()) {
         obstaclesBuilder_.avoidTeammates();
     }
-    if (avoidOpponents_) {
+    if (!avoidOpponents_ || avoidOpponents_()) {
         obstaclesBuilder_.avoidOpponents();
     }
-    if (avoidBall_) {
+    if (!avoidBall_ || avoidBall_()) {
+        qWarning() << "Avoiding ball";
         obstaclesBuilder_.avoidBall();
     }
-    if (avoidOurGoal_) {
+    if (!avoidOurGoal_ || avoidOurGoal_()) {
         obstaclesBuilder_.avoidOurGoal();
     }
-    if (avoidTheirGoal_) {
+    if (!avoidTheirGoal_ || avoidTheirGoal_()) {
         obstaclesBuilder_.avoidTheirGoal();
     }
 }

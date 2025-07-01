@@ -2,6 +2,7 @@
 #define SSLCONTROLLER_HH
 
 #include <QVector>
+#include <QElapsedTimer>
 
 #include "algorithm/control/pid/pid.hh"
 #include "types/playerid.hh"
@@ -22,12 +23,16 @@ public:
     void chipKick(float force);
     void stop();
 
+    void controllerCallback();
+
 private:
     PlayerID id_;
     GEARSystem::Controller &controller_;
     const World &world_;
     PID linearPid_;
     PID angularPid_;
+
+    QElapsedTimer kickEnabledTimer_;
 };
 
 #endif

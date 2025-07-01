@@ -3,6 +3,8 @@
 
 #include "sslagent.hh"
 
+#include <QElapsedTimer>
+
 SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller)
     : id_(id), world_(controller), sslController_(id, controller, world_),
       referee_(QHostAddress("224.5.23.1"), 10003, world_), currentBehavior_(nullptr) {
@@ -40,9 +42,14 @@ void SSLAgent::think() {
 }
 
 void SSLAgent::act() {
+    QElapsedTimer timer;
+    timer.start();
     if (currentBehavior_) {
         currentBehavior_->tick();
     }
+    qInfo() << "Behavior tick took" << timer.elapsed() << "ms";
+
+    sslController_.controllerCallback();
 }
 
 bool SSLAgent::isActive() const {

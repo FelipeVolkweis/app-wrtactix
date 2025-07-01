@@ -8,6 +8,8 @@
 using namespace std;
 
 #include "algorithm/pathplanner/univectorfield/univectorfield.hh"
+#include "constants/constants.hh"
+#include "constants/config/config.hh"
 
 #define MM2M 0.001
 
@@ -18,12 +20,15 @@ Vec2 generateRandomPoint() {
 }
 
 int main() {
+    Config::initialize();
+    Const::initialize();
+
     using std::chrono::high_resolution_clock;
     using std::chrono::duration_cast;
     using std::chrono::duration;
     using std::chrono::milliseconds;
 
-    int nObstacles = 200;
+    int nObstacles = 100;
 
     QString filename("obstacles.dat");
     QString filename2("path.dat");
@@ -44,7 +49,13 @@ int main() {
     QTextStream out(&file);
     QTextStream out2(&file2);
 
-    UnivectorField pf;
+    UnivectorField pf(Const::PathPlanner::UnivectorField::de,
+                      Const::PathPlanner::UnivectorField::kr,
+                      Const::PathPlanner::UnivectorField::ko,
+                      Const::PathPlanner::UnivectorField::dmin,
+                      Const::PathPlanner::UnivectorField::delta,
+                      Const::PathPlanner::UnivectorField::maxIts,
+                      Const::PathPlanner::UnivectorField::step);
     
     Vec2 origin = generateRandomPoint();
     Vec2 goal = generateRandomPoint();
@@ -59,7 +70,7 @@ int main() {
     // out << "\n";
     for (int i = 0; i < nObstacles; i++) {
         Vec2 o = generateRandomPoint();
-        obstacles.push_back(Obstacle(o, 0.09));
+        obstacles.push_back(Obstacle(o, 0.18));
         out << o[0];
         out << " ";
         out << o[1];

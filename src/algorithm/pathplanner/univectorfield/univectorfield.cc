@@ -2,17 +2,15 @@
 
 UnivectorField::UnivectorField() {}
 
+UnivectorField::UnivectorField(float de, float kr, float ko, float dmin, float delta, float maxits, float step)
+    : de_(de), kr_(kr), ko_(ko), dMin_(dmin), delta_(delta), maxIts_(maxits), step_(step) {}
+
 QVector<Vec2> UnivectorField::findPath(const Vec2 &start, const Vec2 &goal, const QVector<Obstacle> &obstacles) {
     QVector<Vec2> path;
     Vec2 originPos = start;
     Vec2 goalPos = goal;
 
-    QVector<Vec2> obsVec;
-    for (const auto &obs : obstacles) {
-        obsVec.push_back(obs.center);
-    }
-
-    path = generatePath(originPos, goalPos, obsVec, Vec2(0, 0), Vec2(0, 0));
+    path = generatePath(originPos, goalPos, obstacles, Vec2(0, 0), Vec2(0, 0));
 
     return path;
 }
@@ -91,7 +89,7 @@ float UnivectorField::phiAuf(const Vec2 &obstaclePos, const Vec2 &robotPos, cons
     return phiR(delta);
 }
 
-float UnivectorField::phiComposed(float phiTuf, float phiAuf, float R, const QVector<Vec2> &obstacles, float delta,
+float UnivectorField::phiComposed(float phiTuf, float phiAuf, float R, const QVector<Obstacle> &obstacles, float delta,
                                   float dMin) {
     if (obstacles.empty()) {
         return wrapToPi(phiTuf);
@@ -107,15 +105,16 @@ float UnivectorField::phiComposed(float phiTuf, float phiAuf, float R, const QVe
     }
 }
 
-Vec2 UnivectorField::closestObstacle(const Vec2 &robotPos, const QVector<Vec2> &obstacles) {
+Vec2 UnivectorField::closestObstacle(const Vec2 &robotPos, const QVector<Obstacle> &obstacles) {
     if (obstacles.empty()) {
         return NULL_VEC;
     }
 
-    Vec2 closest = obstacles[0];
+    Vec2 closest = getObstacleSurface(obstacles[0], robotPos);
     float minDist = (robotPos - closest).norm();
 
-    for (const auto &obs : obstacles) {
+    for (const auto &obstacle : obstacles) {
+        auto obs = getObstacleSurface(obstacle, robotPos);
         float dist = (robotPos - obs).norm();
         if (dist < minDist) {
             minDist = dist;
@@ -126,7 +125,7 @@ Vec2 UnivectorField::closestObstacle(const Vec2 &robotPos, const QVector<Vec2> &
     return closest;
 }
 
-Vec2 UnivectorField::getDirection(const Vec2 &originPos, const Vec2 &goalPos, const QVector<Vec2> &obstacles,
+Vec2 UnivectorField::getDirection(const Vec2 &originPos, const Vec2 &goalPos, const QVector<Obstacle> &obstacles,
                                   const Vec2 &vObs, const Vec2 &vRob) {
     Vec2 deltaGoal = originPos - goalPos;
     float theta = phiR(deltaGoal);
@@ -146,12 +145,12 @@ Vec2 UnivectorField::getDirection(const Vec2 &originPos, const Vec2 &goalPos, co
     return Vec2(cosf(phi_composed), sinf(phi_composed));
 }
 
-Vec2 UnivectorField::getDirection(const Vec2 &originPos, const Vec2 &goalPos, const QVector<Vec2> &obstacles) {
+Vec2 UnivectorField::getDirection(const Vec2 &originPos, const Vec2 &goalPos, const QVector<Obstacle> &obstacles) {
     return getDirection(originPos, goalPos, obstacles, Vec2(0, 0), Vec2(0, 0));
 }
 
-QVector<Vec2> UnivectorField::generatePath(const Vec2 &originPos, const Vec2 &goalPos, const QVector<Vec2> &obstacles,
-                                           const Vec2 &vObs, const Vec2 &vRob) {
+QVector<Vec2> UnivectorField::generatePath(const Vec2 &originPos, const Vec2 &goalPos,
+                                           const QVector<Obstacle> &obstacles, const Vec2 &vObs, const Vec2 &vRob) {
     QVector<Vec2> path;
     Vec2 currentPos = originPos;
     path.push_back(currentPos);
@@ -174,4 +173,22 @@ QVector<Vec2> UnivectorField::generatePath(const Vec2 &originPos, const Vec2 &go
     } while (distanceToGoal > step_ * 1.2f);
 
     return path;
+}
+
+Vec2 UnivectorField::getObstacleSurface(const Obstacle &obstacle, const Vec2 &origin) {
+    Vec2 obstacleSurface;
+    if (obstacle.type == ObstacleType::CIRCLE) {
+        if ((obstacle.center - origin).norm() > obstacle.radius) {
+            obstacleSurface = obstacle.center + obstacle.radius * (origin - obstacle.center).normalized();
+        } else {
+            obstacleSurface = obstacle.center;
+        }
+    } else if (obstacle.type == ObstacleType::RECTANGLE) {
+        // Precisa validar
+        float x = std::clamp(origin.x(), obstacle.bottomLeft.x(), obstacle.topRight.x());
+        float y = std::clamp(origin.y(), obstacle.bottomLeft.y(), obstacle.topRight.y());
+        obstacleSurface = Vec2{x, y};
+    }
+
+    return obstacleSurface;
 }

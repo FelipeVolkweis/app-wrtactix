@@ -7,7 +7,7 @@ class Kick : public SSLAction {
 public:
     Kick(const PlayerID &player, SSLController &controller, const World &world);
 
-    Kick &setPower(float power);
+    Kick *setPower(float power);
 
     Status execute();
 
