@@ -50,7 +50,6 @@ GoToLookAt *GoToLookAt::avoidTheirGoal() {
 }
 
 Status GoToLookAt::execute() {
-    qCInfo(GOTOLOOKAT) << "Executing GoToLookAt action";
     if (!goal_) {
         return Status::FAILURE;
     }

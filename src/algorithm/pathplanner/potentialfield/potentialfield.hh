@@ -11,6 +11,7 @@ public:
     QVector<Vec2> findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
     QVector<Vec2> findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
     QVector<Vec2> findFullPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles);
+
 private:
     void addForce(const Vec2 &force);
 
