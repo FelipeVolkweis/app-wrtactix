@@ -33,6 +33,18 @@ public:
     static inline Condition *Condition(const QString &name, std::function<bool()> conditionTrue) {
         return new WRBeT::Condition(name, conditionTrue);
     }
+
+    static inline RunLambda *RunLambda(const QString &name, std::function<void()> lambda) {
+        return new WRBeT::RunLambda(name, lambda);
+    }
+
+    static inline ForceFailure *ForceFailure(Node *child) {
+        return new WRBeT::ForceFailure("ForceFailure for " + child->name(), *child);
+    }
+
+    static inline ForceSuccess *ForceSuccess(Node *child) {
+        return new WRBeT::ForceSuccess("ForceSuccess for " + child->name(), *child);
+    }
 };
 } // namespace WRBeT
 

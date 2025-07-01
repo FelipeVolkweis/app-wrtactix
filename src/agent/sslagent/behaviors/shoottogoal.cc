@@ -46,5 +46,5 @@ ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, co
              }),
          action<Kick>()->setPower(10.f)});
 
-    rootNode_ = root;
+    setRoot(root);
 }

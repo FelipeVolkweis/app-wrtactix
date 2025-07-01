@@ -10,5 +10,6 @@
 #include "execution/action.hh"
 #include "execution/condition.hh"
 #include "execution/executionnode.hh"
+#include "execution/runlambda.hh"
 
 #endif // BASE_NODES_HH

@@ -25,27 +25,42 @@ GoToLookAt *GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
 }
 
 GoToLookAt *GoToLookAt::avoidTeammates(std::function<bool()> condition) {
-    avoidTeammates_ = condition;
+    avoidTeammatesFn_ = condition;
+    if (avoidTeammatesFn_ == nullptr) {
+        avoidTeammates_ = true;
+    }
     return this;
 }
 
 GoToLookAt *GoToLookAt::avoidOpponents(std::function<bool()> condition) {
-    avoidOpponents_ = condition;
+    avoidOpponentsFn_ = condition;
+    if (avoidOpponentsFn_ == nullptr) {
+        avoidOpponents_ = true;
+    }
     return this;
 }
 
 GoToLookAt *GoToLookAt::avoidBall(std::function<bool()> condition) {
-    avoidBall_ = condition;
+    avoidBallFn_ = condition;
+    if (avoidBallFn_ == nullptr) {
+        avoidBall_ = true;
+    }
     return this;
 }
 
 GoToLookAt *GoToLookAt::avoidOurGoal(std::function<bool()> condition) {
-    avoidOurGoal_ = condition;
+    avoidOurGoalFn_ = condition;
+    if (avoidOurGoalFn_ == nullptr) {
+        avoidOurGoal_ = true;
+    }
     return this;
 }
 
 GoToLookAt *GoToLookAt::avoidTheirGoal(std::function<bool()> condition) {
-    avoidTheirGoal_ = condition;
+    avoidTheirGoalFn_ = condition;
+    if (avoidTheirGoalFn_ == nullptr) {
+        avoidTheirGoal_ = true;
+    }
     return this;
 }
 
@@ -88,20 +103,19 @@ Status GoToLookAt::execute() {
 
 // If no function was provided, simply avoid the obstacle class, else, evaluate the function
 void GoToLookAt::handleObstacles() {
-    if (!avoidTeammates_ || avoidTeammates_()) {
+    if ((avoidTeammatesFn_ && avoidTeammatesFn_()) || avoidTeammates_) {
         obstaclesBuilder_.avoidTeammates();
     }
-    if (!avoidOpponents_ || avoidOpponents_()) {
+    if ((avoidOpponentsFn_ && avoidOpponentsFn_()) || avoidOpponents_) {
         obstaclesBuilder_.avoidOpponents();
     }
-    if (!avoidBall_ || avoidBall_()) {
-        qWarning() << "Avoiding ball";
+    if ((avoidBallFn_ && avoidBallFn_()) || avoidBall_) {
         obstaclesBuilder_.avoidBall();
     }
-    if (!avoidOurGoal_ || avoidOurGoal_()) {
+    if ((avoidOurGoalFn_ && avoidOurGoalFn_()) || avoidOurGoal_) {
         obstaclesBuilder_.avoidOurGoal();
     }
-    if (!avoidTheirGoal_ || avoidTheirGoal_()) {
+    if ((avoidTheirGoalFn_ && avoidTheirGoalFn_()) || avoidTheirGoal_) {
         obstaclesBuilder_.avoidTheirGoal();
     }
 }

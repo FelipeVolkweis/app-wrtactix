@@ -40,6 +40,10 @@ public:
         return rootNode_;
     }
 
+    void setRoot(WRBeT::Node *node) {
+        rootNode_ = node;
+    }
+
 private:
     const PlayerID &playerId_;
     SSLController &controller_;

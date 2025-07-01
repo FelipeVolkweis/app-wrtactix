@@ -29,11 +29,17 @@ private:
     PathPlanner *pathPlanner_;
     ObstaclesBuilder obstaclesBuilder_;
 
-    std::function<bool()> avoidTeammates_;
-    std::function<bool()> avoidOpponents_;
-    std::function<bool()> avoidBall_;
-    std::function<bool()> avoidOurGoal_;
-    std::function<bool()> avoidTheirGoal_;
+    std::function<bool()> avoidTeammatesFn_;
+    std::function<bool()> avoidOpponentsFn_;
+    std::function<bool()> avoidBallFn_;
+    std::function<bool()> avoidOurGoalFn_;
+    std::function<bool()> avoidTheirGoalFn_;
+
+    bool avoidTeammates_ = false;
+    bool avoidOpponents_ = false;
+    bool avoidBall_ = false;
+    bool avoidOurGoal_ = false;
+    bool avoidTheirGoal_ = false;
 
     void handleObstacles();
 };

@@ -34,6 +34,7 @@ private:
     WRBeT::Node *currentBehavior_;
     WRBeT::Node *goTo_;
     WRBeT::Node *idle_;
+    WRBeT::Node *calibrateLinear_;
 };
 
 #endif
