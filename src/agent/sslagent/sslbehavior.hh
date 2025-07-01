@@ -1,8 +1,8 @@
 #ifndef SSLBEHAVIOR_HH
 #define SSLBEHAVIOR_HH
 
-#include "agent/sslagent/conditions/ballinteraction.hh"
 #include "agent/sslagent/conditions/aiming.hh"
+#include "agent/sslagent/conditions/ballinteraction.hh"
 #include "algorithm/behaviortree/behaviortree.hh"
 #include "types/playerid.hh"
 #include "world/world.hh"

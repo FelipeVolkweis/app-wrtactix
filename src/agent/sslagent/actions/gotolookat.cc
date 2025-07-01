@@ -1,7 +1,8 @@
 #include <QLoggingCategory>
 
-#include "gotolookat.hh"
 #include "agent/wrappers/obstaclesbuilder.hh"
+
+#include "gotolookat.hh"
 
 Q_LOGGING_CATEGORY(GOTOLOOKAT, "GoToLookAt")
 

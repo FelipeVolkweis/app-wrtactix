@@ -2,8 +2,8 @@
 #define GOTOLOOKAT_HH
 
 #include "agent/sslagent/sslaction.hh"
-#include "algorithm/pathplanner/pathplanner.hh"
 #include "agent/wrappers/obstaclesbuilder.hh"
+#include "algorithm/pathplanner/pathplanner.hh"
 
 class GoToLookAt : public SSLAction {
 public:

@@ -19,12 +19,8 @@ void PotentialField::addRepulsiveForce(const Obstacle &obstacle) {
         }
     } else if (obstacle.type == ObstacleType::RECTANGLE) {
         // Precisa validar
-        float x = std::clamp(origin_.x(),
-                         obstacle.bottomLeft.x(),
-                         obstacle.topRight.x());
-        float y = std::clamp(origin_.y(),
-                         obstacle.bottomLeft.y(),
-                         obstacle.topRight.y());
+        float x = std::clamp(origin_.x(), obstacle.bottomLeft.x(), obstacle.topRight.x());
+        float y = std::clamp(origin_.y(), obstacle.bottomLeft.y(), obstacle.topRight.y());
         obstacleSurface = Vec2{x, y};
     }
 
@@ -67,9 +63,42 @@ void PotentialField::reset() {
 }
 
 QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
+    return findFullPath(start, end, obstacles);
+}
+
+QVector<Vec2> PotentialField::findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
+    reset();
+
+    origin_ = start;
+    goal_ = end;
+
+    for (const auto &obstacle : obstacles) {
+        addRepulsiveForce(obstacle);
+    }
+    addAttractiveForce();
+
+    auto force = getForce();
+    if (force.norm() < epsilon_) {
+        return {origin_, goal_};
+    }
+    QVector<Vec2> path;
+    path.append(origin_);
+    origin_ += force.normalized() * 0.01f;
+    path.append(origin_);
+
+    return path;
+}
+
+QVector<Vec2> PotentialField::findFullPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
     QVector<Vec2> path;
     origin_ = start;
     goal_ = end;
+
+    if ((goal_ - origin_).norm() < epsilon_) {
+        path.append(origin_);
+        path.append(goal_);
+        return path;
+    }
 
     int it = 0;
 
@@ -95,18 +124,4 @@ QVector<Vec2> PotentialField::findPath(const Vec2 &start, const Vec2 &end, const
     } while (resultantForce_.norm() > epsilon_ && it < maxIts_);
 
     return path;
-}
-
-float PotentialField::findGreedyPath(const Vec2 &start, const Vec2 &end, const QVector<Obstacle> &obstacles) {
-    reset();
-
-    origin_ = start;
-    goal_ = end;
-
-    for (const auto &obstacle : obstacles) {
-        addRepulsiveForce(obstacle);
-    }
-    addAttractiveForce();
-
-    return resultantForce_.norm();
 }

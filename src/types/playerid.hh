@@ -23,7 +23,7 @@ public:
     bool operator==(const PlayerID &other) const {
         return teamNum_ == other.teamNum_ && playerNum_ == other.playerNum_;
     }
-    
+
     bool operator!=(const PlayerID &other) const {
         return !(*this == other);
     }

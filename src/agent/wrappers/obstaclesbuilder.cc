@@ -1,6 +1,6 @@
-#include "obstaclesbuilder.hh"
-
 #include "constants/constants.hh"
+
+#include "obstaclesbuilder.hh"
 
 void ObstaclesBuilder::avoidTeammates() {
     for (const auto &pid : world_.ourAvailablePlayers()) {

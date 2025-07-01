@@ -157,13 +157,11 @@ private:
 
     WorldInfo *info_;
     WorldInfo *infoBuffer_;
-    
+
     GEARSystem::Controller &controller_;
-    
+
     Sides::Side side_;
     Colors::Color color_;
-
-
 
     QMutex mutex_;
 };

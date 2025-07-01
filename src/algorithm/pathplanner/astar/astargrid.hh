@@ -61,7 +61,7 @@ public:
         float Y2 = (maxWY + (H / 2.0) / conversionFactor) * conversionFactor;
 
         int minX = static_cast<int>(std::ceil(X1));
-        int maxX = static_cast<int>(X2);           
+        int maxX = static_cast<int>(X2);
         int minY = static_cast<int>(std::ceil(Y1));
         int maxY = static_cast<int>(Y2);
 

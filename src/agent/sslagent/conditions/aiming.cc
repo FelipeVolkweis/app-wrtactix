@@ -1,6 +1,7 @@
-#include "aiming.hh"
 #include "algorithm/geometry/radialsweep/radialsweep.hh"
 #include "constants/constants.hh"
+
+#include "aiming.hh"
 
 Aiming::Aiming(const World &world) : world_(world) {}
 
@@ -24,14 +25,16 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
     if (w.ourSide() == Sides::LEFT) {
         minInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.rightGoal().rightPost());
         maxInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.rightGoal().leftPost());
-        r = qMax(TwoD::distance(w.ballPosition(), w.rightGoal().rightPost()), TwoD::distance(w.ballPosition(), w.rightGoal().leftPost()));
+        r = qMax(TwoD::distance(w.ballPosition(), w.rightGoal().rightPost()),
+                 TwoD::distance(w.ballPosition(), w.rightGoal().leftPost()));
     } else {
         minInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.leftGoal().rightPost());
         maxInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.leftGoal().leftPost());
-        r = qMax(TwoD::distance(w.ballPosition(), w.leftGoal().leftPost()), TwoD::distance(w.ballPosition(), w.leftGoal().rightPost()));
+        r = qMax(TwoD::distance(w.ballPosition(), w.leftGoal().leftPost()),
+                 TwoD::distance(w.ballPosition(), w.leftGoal().rightPost()));
     }
 
-    RadialSweep radialSweep(observer, obstacles, Const::Physics::robot_radius, { minInterval, maxInterval }, r);
+    RadialSweep radialSweep(observer, obstacles, Const::Physics::robot_radius, {minInterval, maxInterval}, r);
     auto freeAngles = radialSweep.getFreeAngles();
 
     if (freeAngles.isEmpty()) {
@@ -50,6 +53,6 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
 
     float x = w.ourSide() == Sides::LEFT ? w.rightGoal().leftPost().x() : w.leftGoal().leftPost().x();
     float y = m * x + b;
-    
+
     return Vec2(x, y);
 }

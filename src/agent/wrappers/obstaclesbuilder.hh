@@ -5,7 +5,7 @@
 #include "world/world.hh"
 
 class ObstaclesBuilder {
-public: 
+public:
     ObstaclesBuilder(const World &world, const PlayerID &id) : world_(world), id_(id) {}
 
     void avoidTeammates();

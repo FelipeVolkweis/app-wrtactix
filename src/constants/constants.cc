@@ -70,13 +70,17 @@ float System::bezier_control_point;
 // Path planner
 namespace PathPlanner {
 namespace PotentialField {
-    float katt;
-    float krep;
-    float min_rad;
-    float threshold;
-    float epsilon;
-}  // namespace PotentialField
-}  // namespace PathPlanner
+float katt;
+float krep;
+float min_rad;
+float threshold;
+float epsilon;
+} // namespace PotentialField
+
+namespace StarPotential {
+float threshold;
+}
+} // namespace PathPlanner
 
 // Função que efetivamente busca todos os valores em Config e atribui
 void initialize() {
@@ -155,11 +159,20 @@ void initialize() {
     System::bezier_control_point = Config::retrieve<float>(Config::CONFIGS["system"]["bezier_control_point"]);
 
     // Path planner: potential field
-    PathPlanner::PotentialField::katt       = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["katt"]);
-    PathPlanner::PotentialField::krep       = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["krep"]);
-    PathPlanner::PotentialField::min_rad    = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["min_rad"]);
-    PathPlanner::PotentialField::threshold  = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["threshold"]);
-    PathPlanner::PotentialField::epsilon    = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["epsilon"]);
+    PathPlanner::PotentialField::katt =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["katt"]);
+    PathPlanner::PotentialField::krep =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["krep"]);
+    PathPlanner::PotentialField::min_rad =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["min_rad"]);
+    PathPlanner::PotentialField::threshold =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["threshold"]);
+    PathPlanner::PotentialField::epsilon =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["potentialfield"]["epsilon"]);
+
+    // Path planner: star potential
+    PathPlanner::StarPotential::threshold =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["starpotential"]["threshold"]);
 }
 
 } // namespace Const

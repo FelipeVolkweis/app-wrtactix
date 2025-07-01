@@ -8,6 +8,7 @@ public:
     Aiming(const World &world);
 
     Vec2 getEnemyGoalKickPosition(const PlayerID &callerId) const;
+
 private:
     const World &world_;
 };
