@@ -36,6 +36,7 @@ private:
     WRBeT::Node *idle_;
     WRBeT::Node *calibrateLinear_;
     WRBeT::Node *calibrateAngular_;
+    WRBeT::Node *goalie_;
 };
 
 #endif

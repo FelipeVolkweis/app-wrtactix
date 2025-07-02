@@ -164,3 +164,40 @@ QList<PlayerID> World::ourAvailablePlayers() const {
 QList<PlayerID> World::theirAvailablePlayers() const {
     return availablePlayers(theirColor());
 }
+
+PlayerID World::closestPlayerToBall() const {
+    float d = std::numeric_limits<float>::max();
+    PlayerID closestPlayer;
+    for (int i = 0; i < TEAMS; i++) {
+        for (int j = 0; j < PLAYERS; j++) {
+            PlayerID playerId(i, j);
+            if (playerIsActive(playerId)) {
+                float dist = TwoD::distance(playerPosition(playerId), ballPosition());
+                if (dist < d) {
+                    d = dist;
+                    closestPlayer = playerId;
+                }
+            }
+        }
+    }
+
+    return closestPlayer;
+}
+
+PlayerID World::closestPlayerToBall(Colors::Color color) const {
+    float d = std::numeric_limits<float>::max();
+    PlayerID closestPlayer;
+    quint8 teamNum = (color == Colors::BLUE) ? 1 : 0;
+    for (int j = 0; j < PLAYERS; j++) {
+        PlayerID playerId(teamNum, j);
+        if (playerIsActive(playerId)) {
+            float dist = TwoD::distance(playerPosition(playerId), ballPosition());
+            if (dist < d) {
+                d = dist;
+                closestPlayer = playerId;
+            }
+        }
+    }
+
+    return closestPlayer;
+}

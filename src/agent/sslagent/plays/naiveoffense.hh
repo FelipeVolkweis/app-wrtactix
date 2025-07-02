@@ -1,0 +1,13 @@
+#ifndef NAIVEOFFENSE_HH
+#define NAIVEOFFENSE_HH
+
+#include "agent/sslagent/sslplay.hh"
+
+class PlayNaiveOffense : public SSLPlay {
+public:
+    PlayNaiveOffense(const World &worldRef) : SSLPlay(worldRef) {}
+
+    WRBeT::Node *getBehavior(const SSLRole &role, const PlayerID &player, SSLController &controller);
+};
+
+#endif

@@ -90,3 +90,58 @@ Vec2 TwoD::boundedLineIntersection(const Line &line, const Vec2 &center, float r
 
     return NULL_VEC; // Intersection is outside the segment
 }
+
+QPair<Vec2, float> TwoD::findCircleFromThreePoints(const Vec2 &p1, const Vec2 &p2, const Vec2 &p3) {
+    Vec2 mid12((p1.x() + p2.x()) / 2, (p1.y() + p2.y()) / 2);
+    Vec2 mid23((p2.x() + p3.x()) / 2, (p2.y() + p3.y()) / 2);
+
+    float slope12 = (p2.y() - p1.y()) / (p2.x() - p1.x());
+    float slope23 = (p3.y() - p2.y()) / (p3.x() - p2.x());
+
+    float perpSlope12 = -1 / slope12;
+    float perpSlope23 = -1 / slope23;
+
+    float b1 = mid12.y() - perpSlope12 * mid12.x();
+    float b2 = mid23.y() - perpSlope23 * mid23.x();
+
+    float centerX = (b2 - b1) / (perpSlope12 - perpSlope23);
+    float centerY = perpSlope12 * centerX + b1;
+    Vec2 center(centerX, centerY);
+
+    float radius = distance(center, p1);
+
+    return QPair<Vec2, float>(center, radius);
+}
+
+QVector<Vec2> TwoD::findLineCircleIntersections(const Vec2 &center, float radius, float m, float b) {
+    QVector<Vec2> intersections;
+
+    // Coefficients for the quadratic equation
+    float A = 1 + qPow(m, 2);
+    float B = -2 * center.x() + 2 * m * (b - center.y());
+    float C = qPow(center.x(), 2) + qPow(b - center.y(), 2) - qPow(radius, 2);
+
+    // Discriminant
+    float discriminant = qPow(B, 2) - 4 * A * C;
+
+    if (discriminant > 0) {
+        // Two intersection points
+        float x1 = (-B + qSqrt(discriminant)) / (2 * A);
+        float x2 = (-B - qSqrt(discriminant)) / (2 * A);
+
+        // Corresponding y values
+        float y1 = m * x1 + b;
+        float y2 = m * x2 + b;
+
+        intersections.append(Vec2(x1, y1));
+        intersections.append(Vec2(x2, y2));
+    } else if (discriminant == 0) {
+        // One intersection point (tangent)
+        float x = -B / (2 * A);
+        float y = m * x + b;
+
+        intersections.append(Vec2(x, y));
+    }
+
+    return intersections;
+}

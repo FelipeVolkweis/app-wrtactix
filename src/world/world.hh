@@ -79,6 +79,17 @@ public:
         return info_->ballVelocity();
     }
 
+    PlayerID closestPlayerToBall(Colors::Color color) const;
+    PlayerID closestPlayerToBall() const;
+
+    PlayerID ourClosestPlayerToBall() const {
+        return closestPlayerToBall(ourColor());
+    }
+
+    PlayerID theirClosestPlayerToBall() const {
+        return closestPlayerToBall(theirColor());
+    }
+
     const Position &fieldTopRightCorner() const {
         return info_->fieldTopRightCorner();
     }

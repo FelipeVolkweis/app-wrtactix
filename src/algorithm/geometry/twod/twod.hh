@@ -46,6 +46,10 @@ public:
 
     static Vec2 boundedLineIntersection(const Line &line, const Vec2 &center, float radius);
 
+    static QPair<Vec2, float> findCircleFromThreePoints(const Vec2 &p1, const Vec2 &p2, const Vec2 &p3);
+
+    static QVector<Vec2> findLineCircleIntersections(const Vec2 &center, float radius, float m, float b);
+
     static float angleBetweenVectors(const Vec2 &v1, const Vec2 &v2) {
         return atan2f(v2.y() - v1.y(), v2.x() - v1.x());
     }

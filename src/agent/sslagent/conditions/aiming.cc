@@ -56,3 +56,12 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
 
     return Vec2(x, y);
 }
+
+bool Aiming::isAimingAtPosition(const PlayerID &player, const Vec2 &aimTarget) const {
+    auto pos = world_.playerPositionVec2(player);
+    auto ori = world_.playerOrientation(player);
+    float angle = TwoD::angleBetweenVectors(pos, aimTarget);
+    float diff = fabs(TwoD::angleDiff(ori.value(), angle));
+
+    return diff < Const::AI::angle_tolerance;
+}
