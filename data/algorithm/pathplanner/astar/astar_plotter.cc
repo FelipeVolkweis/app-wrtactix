@@ -8,6 +8,7 @@
 using namespace std;
 
 #include "algorithm/pathplanner/astar/astar.hh"
+#include "algorithm/interpolation/interpolation.hh"
 
 #define MM2M 0.001
 

@@ -40,12 +40,11 @@ void PotentialField::addRepulsiveForce(const Obstacle &obstacle) {
 void PotentialField::addAttractiveForce() {
     auto distance = (goal_ - origin_).norm() + EPS;
     Vec2 potentialForce;
-    potentialForce = kAtt_ * (goal_ - origin_);
-    // if (distance <= conicQuadraticThreshold_) { // quadratic
-    //     potentialForce = kAtt_ * (goal_ - origin_);
-    // } else { // conic
-    //     potentialForce = kAtt_ * (goal_ - origin_).normalized() * conicQuadraticThreshold_;
-    // }
+    if (distance <= conicQuadraticThreshold_) { // quadratic
+        potentialForce = kAtt_ * (goal_ - origin_);
+    } else { // conic
+        potentialForce = kAtt_ * (goal_ - origin_).normalized() * conicQuadraticThreshold_;
+    }
 
     addForce(potentialForce);
 }

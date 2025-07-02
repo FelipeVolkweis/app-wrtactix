@@ -69,7 +69,7 @@ Status GoTo::execute() {
     Vec2 goal = goal_();
     Vec2 origin = world().playerPositionVec2(id());
 
-    if ((goal - origin).norm() < 1e-4) {
+    if ((goal - origin).norm() < 1e-2) {
         return Status::SUCCESS;
     }
 

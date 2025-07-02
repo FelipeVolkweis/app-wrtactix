@@ -7,7 +7,7 @@ void ObstaclesBuilder::avoidTeammates() {
         if (pid != id_) {
             const auto &pos = world_.playerPositionVec2(pid);
             float radius = 2 * Const::Physics::robot_radius + 0.1f;
-            obstacles_.push_back(Obstacle(pos, radius));
+            obstacles_.push_back(Obstacle(pos, radius, CircularObstacleType::TEAMMATE));
         }
     }
 }
@@ -16,14 +16,14 @@ void ObstaclesBuilder::avoidOpponents() {
     for (const auto &pid : world_.theirAvailablePlayers()) {
         const auto &pos = world_.playerPositionVec2(pid);
         float radius = 2 * Const::Physics::robot_radius + 0.1f;
-        obstacles_.push_back(Obstacle(pos, radius));
+        obstacles_.push_back(Obstacle(pos, radius, CircularObstacleType::OPPONENT));
     }
 }
 
 void ObstaclesBuilder::avoidBall() {
     const auto &ballPos = world_.ballPositionVec2();
     float radius = Const::Physics::ball_radius + Const::Physics::robot_radius;
-    obstacles_.push_back(Obstacle(ballPos, radius));
+    obstacles_.push_back(Obstacle(ballPos, radius, CircularObstacleType::BALL));
 }
 
 void ObstaclesBuilder::avoidOurGoal() {

@@ -91,6 +91,18 @@ float delta;
 int maxIts;
 float step;
 } // namespace UnivectorField
+
+namespace PFLorinho {
+float ball_repulsive;
+float repulsive;
+float area_repulsive;
+float collision_check_radius;
+float robot_collision_radius;
+float ball_collision_radius;
+float x_shift;
+float y_shift;
+float factor;
+} // namespace PFLorinho
 } // namespace PathPlanner
 
 // Função que efetivamente busca todos os valores em Config e atribui
@@ -199,6 +211,24 @@ void initialize() {
         Config::retrieve<int>(Config::CONFIGS["pathplanner"]["univectorfield"]["maxIts"]);
     PathPlanner::UnivectorField::step =
         Config::retrieve<float>(Config::CONFIGS["pathplanner"]["univectorfield"]["step"]);
+
+    // Path planner: PFLorinho
+    PathPlanner::PFLorinho::ball_repulsive =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["ball_repulsive"]);
+    PathPlanner::PFLorinho::repulsive =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["repulsive"]);
+    PathPlanner::PFLorinho::area_repulsive =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["area_repulsive"]);
+    PathPlanner::PFLorinho::collision_check_radius =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["collision_check_radius"]);
+    PathPlanner::PFLorinho::robot_collision_radius =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["robot_collision_radius"]);
+    PathPlanner::PFLorinho::ball_collision_radius =
+        Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["ball_collision_radius"]);
+    PathPlanner::PFLorinho::x_shift = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["x_shift"]);
+    PathPlanner::PFLorinho::y_shift = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["y_shift"]);
+    PathPlanner::PFLorinho::factor = Config::retrieve<float>(Config::CONFIGS["pathplanner"]["pflorinho"]["factor"]);
+    // Path planner: PFLorinho
 }
 
 } // namespace Const

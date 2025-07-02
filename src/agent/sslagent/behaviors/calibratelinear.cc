@@ -6,10 +6,10 @@
 
 CalibrateLinear::CalibrateLinear(const PlayerID &playerId, SSLController &controller, const World &worldRef)
     : SSLBehavior(playerId, controller, worldRef, "CalibrateLinear") {
-    Vec2 A = {0.0f, 0.0f};
-    Vec2 B = {0.0f, 1.0f};
-    Vec2 C = {1.0f, 1.0f};
-    Vec2 D = {1.0f, 0.0f};
+    Vec2 A = {-0.5f, -2.3f};
+    Vec2 B = {-2.7f, -2.3f};
+    Vec2 C = {-2.7f, 2.3f};
+    Vec2 D = {-0.5f, 2.3f};
 
     auto root = BehaviorTree::Sequence(
         "Calibrate Linear Sequence",

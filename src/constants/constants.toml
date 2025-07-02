@@ -40,9 +40,9 @@ linear_error = 0.015
 angular_error = 4
 
 [control.pid.linear]
-kp = 3
+kp = 2
 ki = 0
-kd = 0
+kd = 1
 max_integral = 1.0
 
 [control.pid.angular]
@@ -64,11 +64,22 @@ max_robots = 11
 bezier_control_point = 2.0
 
 [pathplanner.potentialfield]
-katt = 5
-krep = 0.005
-min_rad = 1
-threshold = 1
+katt = 4
+krep = 0.05
+min_rad = 5
+threshold = 2.5
 epsilon = 0.1
+
+[pathplanner.pflorinho]
+ball_repulsive = 0.5
+repulsive = 0.15
+area_repulsive = 0.15
+collision_check_radius = 1.5
+robot_collision_radius = 0.4
+ball_collision_radius = 0.16
+x_shift = -0.5
+y_shift = 0.0
+factor = 2.0
 
 [pathplanner.starpotential]
 threshold = 0.2

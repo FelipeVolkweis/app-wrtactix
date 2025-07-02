@@ -55,19 +55,22 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
     using QPriorityQueue = std::priority_queue<Node, std::vector<Node>, decltype(cmp)>;
     QPriorityQueue open(cmp);
 
-    auto tmpStart = grid_.convertVec2ToGrid(start);
-    auto tmpEnd = grid_.convertVec2ToGrid(end);
+    auto tmpStart = coarseGrid_.convertVec2ToGrid(start);
+    auto tmpEnd = coarseGrid_.convertVec2ToGrid(end);
     Node startNode(tmpStart.first, tmpStart.second);
     Node endNode(tmpEnd.first, tmpEnd.second);
     startNode.h = h(startNode, endNode);
 
-    grid_.clearGrid();
+    coarseGrid_.clearGrid();
+    // fineGrid_.clearGrid();
 
     for (auto &obstacle : obstacles) {
         if (obstacle.isCircle()) {
-            grid_.setObstacle(obstacle.center, obstacle.radius);
+            coarseGrid_.setObstacle(obstacle.center, obstacle.radius);
+            // fineGrid_.setObstacle(obstacle.center, obstacle.radius);
         } else if (obstacle.isRectangle()) {
-            grid_.setObstacle(obstacle.bottomLeft, obstacle.topRight);
+            coarseGrid_.setObstacle(obstacle.bottomLeft, obstacle.topRight);
+            // fineGrid_.setObstacle(obstacle.bottomLeft, obstacle.topRight);
         }
     }
 
@@ -101,11 +104,11 @@ QVector<Vec2> AStar::findPath(const Vec2 &start, const Vec2 &end, const QVector<
             auto x = current.x + d.first;
             auto y = current.y + d.second;
 
-            if (x < 0 || x >= grid_.width() || y < 0 || y >= grid_.height()) {
+            if (x < 0 || x >= coarseGrid_.width() || y < 0 || y >= coarseGrid_.height()) {
                 continue;
             }
 
-            if (grid_.isObstacle(x, y)) {
+            if (coarseGrid_.isObstacle(x, y)) {
                 continue;
             }
 
@@ -130,11 +133,11 @@ QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const No
     Node tmp = current;
 
     while (cameFrom.contains(tmp)) {
-        path.push_front(grid_.convertGridToVec2(tmp.x, tmp.y));
+        path.push_front(coarseGrid_.convertGridToVec2(tmp.x, tmp.y));
         tmp = cameFrom[tmp];
     }
 
-    path.push_front(grid_.convertGridToVec2(tmp.x, tmp.y));
+    path.push_front(coarseGrid_.convertGridToVec2(tmp.x, tmp.y));
 
     return path;
 }
@@ -145,7 +148,7 @@ QVector<Vec2> AStar::reconstructPath(const QHash<Node, Node> &cameFrom, const No
     Node tmp = current;
 
     while (cameFrom.contains(tmp)) {
-        path.push_front(grid_.convertGridToVec2(tmp.x, tmp.y));
+        path.push_front(coarseGrid_.convertGridToVec2(tmp.x, tmp.y));
         tmp = cameFrom[tmp];
     }
     if (path.isEmpty()) {
@@ -168,9 +171,9 @@ void AStar::writeGridToFile(QFile *file) {
 
     QTextStream out(file);
 
-    for (int i = 0; i < grid_.width(); i++) {
-        for (int j = 0; j < grid_.height(); j++) {
-            if (grid_.isObstacle(i, j)) {
+    for (int i = 0; i < coarseGrid_.width(); i++) {
+        for (int j = 0; j < coarseGrid_.height(); j++) {
+            if (coarseGrid_.isObstacle(i, j)) {
                 out << i << " " << j << "\n";
             }
         }

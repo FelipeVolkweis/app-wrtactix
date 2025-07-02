@@ -9,6 +9,7 @@ public:
 
     Vec2 behindBall(const Vec2 &reference, float distance) const;
     bool isBehindBall(const Vec2 &object, const Vec2 &reference, float distance) const;
+    bool isBehindBall(const Vec2 &object, const Vec2 &reference, float distance, float angleTolerance) const;
 
 private:
     const World &world_;

@@ -27,7 +27,9 @@ private:
 
     float cost(const Node &a, const Node &b);
 
-    AStarGrid<90, 60, 10> grid_;
+    AStarGrid<90, 60, 10> coarseGrid_;
+    // AStarGrid<9000, 6000, 1000> fineGrid_;
+
     const int maxIts_ = 1000;
 };
 

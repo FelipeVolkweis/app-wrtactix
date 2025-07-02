@@ -1,17 +1,22 @@
 #include <QApplication>
 #include <QCommandLineParser>
+#include <QLoggingCategory>
 
 #include "agent/sslagent/sslagent.hh"
 #include "constants/config/config.hh"
 #include "constants/constants.hh"
+#include "utils/logger/logger.hh"
+
+Q_LOGGING_CATEGORY(MAIN, "Main")
 
 int main(int argc, char *argv[]) {
-    Config::initialize();
-    Const::initialize();
-
     QApplication app(argc, argv);
     app.setApplicationName("WRTactix");
     app.setApplicationVersion("0.1");
+
+    Config::initialize();
+    Const::initialize();
+    Logger::init();
 
     QCommandLineParser parser;
     parser.setApplicationDescription("WRCoach application help.");
@@ -71,7 +76,9 @@ int main(int argc, char *argv[]) {
             agent->think();
             agent->act();
         }
-        qInfo() << timer.elapsed() << "ms in total";
+        if (timer.elapsed() > 10) {
+            qCInfo(MAIN) << timer.elapsed() << "ms in total";
+        }
     }
 
     int retn = app.exec();

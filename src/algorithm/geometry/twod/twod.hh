@@ -53,6 +53,21 @@ public:
     static float angleBetweenPositions(const Position &p1, const Position &p2) {
         return atan2f(p2.y() - p1.y(), p2.x() - p1.x());
     }
+
+    static float angleDiff(float a1, float a2) {
+        return angleMinusPiToPi(a1 - a2);
+    }
+
+    static float angleMinusPiToPi(float a) {
+        while (a > M_PI) {
+            a -= 2 * M_PI;
+        }
+        while (a < -M_PI) {
+            a += 2 * M_PI;
+        }
+
+        return a;
+    }
 };
 
 #endif

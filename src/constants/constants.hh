@@ -113,6 +113,18 @@ extern int maxIts;
 extern float step;
 } // namespace UnivectorField
 
+namespace PFLorinho {
+extern float ball_repulsive;
+extern float repulsive;
+extern float area_repulsive;
+extern float collision_check_radius;
+extern float robot_collision_radius;
+extern float ball_collision_radius;
+extern float x_shift;
+extern float y_shift;
+extern float factor;
+} // namespace PFLorinho
+
 } // namespace PathPlanner
 
 /// Inicializa todas as constantes a partir de Config::retrieve<…>()
