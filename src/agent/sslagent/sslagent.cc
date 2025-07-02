@@ -6,46 +6,36 @@
 
 Q_LOGGING_CATEGORY(SSLAGENT, "SSLAgent")
 
-SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller)
-    : id_(id), world_(controller), sslController_(id, controller, world_),
-      referee_(QHostAddress("224.5.23.1"), 10003, world_), currentBehavior_(nullptr) {
+SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller, const World &world, const Referee &referee)
+    : id_(id), world_(world), sslController_(id, controller, world_),
+      referee_(referee), currentBehavior_(nullptr), play_(nullptr), role_(nullptr) {
     Colors::Color ourTeamColor = id.teamNum() == 0 ? Colors::YELLOW : Colors::BLUE;
-    world_.setColor(ourTeamColor);
-    world_.setSide(side);
-    referee_.connect();
 
-    goTo_ = (new ShootToGoal(id_, sslController_, world_))->node();
-    idle_ = (new DoNothing(id_, sslController_, world_))->node();
-    calibrateLinear_ = (new CalibrateLinear(id_, sslController_, world_))->node();
-    calibrateAngular_ = (new CalibrateAngular(id_, sslController_, world_))->node();
-    goalie_ = (new GoalKeeper(id_, sslController_, world_))->node();
-
-    currentBehavior_ = idle_;
+    calibrateLinear_ = (new CalibrateLinear(id_, sslController_, world_));
+    calibrateAngular_ = (new CalibrateAngular(id_, sslController_, world_));
 }
 
-void SSLAgent::observe() {
-    world_.update();
+void SSLAgent::setPlay(SSLPlay *play) {
+    delete play_;
+    play_ = play;
 }
 
-void SSLAgent::listen() {
-    referee_.bufferize();
-    referee_.update();
+void SSLAgent::setRole(SSLRole *role) {
+    delete role_;
+    
+    role_ = role;
 }
+
+void SSLAgent::observe() {}
+
+void SSLAgent::listen() {}
 
 void SSLAgent::think() {
-    if (referee_.hasNewState()) {
-        switch (referee_.state()) {
-        case RefereeStates::STOP:
-        case RefereeStates::HALT:
-            currentBehavior_ = idle_;
-            break;
-        default:
-            // currentBehavior_ = goTo_;
-            // currentBehavior_ = calibrateLinear_;
-            // currentBehavior_ = calibrateAngular_;
-            currentBehavior_ = goalie_;
-            break;
-        }
+    if (play_ && role_) {
+        auto bhv = play_->getBehavior(*role_, id_, sslController_);
+
+        delete currentBehavior_;
+        currentBehavior_ = bhv;
     }
 }
 
@@ -53,7 +43,8 @@ void SSLAgent::act() {
     QElapsedTimer timer;
     timer.start();
     if (currentBehavior_) {
-        currentBehavior_->tick();
+        // qCInfo(SSLAGENT) << "Acting for player" << id_.playerNum();
+        currentBehavior_->root()->tick();
     }
 
     if (timer.elapsed() > 2) {

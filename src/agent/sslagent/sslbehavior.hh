@@ -47,7 +47,7 @@ public:
         return world_;
     }
 
-    WRBeT::Node *node() const {
+    WRBeT::Node *root() const {
         return rootNode_;
     }
 

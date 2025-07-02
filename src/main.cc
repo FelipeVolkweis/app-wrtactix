@@ -3,6 +3,7 @@
 #include <QLoggingCategory>
 
 #include "agent/sslagent/sslagent.hh"
+#include "coach/sslcoach/sslcoach.hh"
 #include "constants/config/config.hh"
 #include "constants/constants.hh"
 #include "utils/logger/logger.hh"
@@ -56,23 +57,36 @@ int main(int argc, char *argv[]) {
     }
 
     GEARSystem::Controller *controller = new GEARSystem::Controller();
+    World world(*controller);
+    world.setColor(ourTeamColor);
+    world.setSide(ourFieldSide);
+
+    Referee referee(QHostAddress(Const::Referee::ip_address), Const::Referee::port, world);
+    referee.connect();
+
     QVector<SSLAgent *> agents;
 
-    for (int i = 0; i < 1; i++) {
+    for (int i = 0; i < 16; i++) {
         PlayerID id(ourTeamColor, i);
-        SSLAgent *agent = new SSLAgent(id, ourFieldSide, *controller);
+        SSLAgent *agent = new SSLAgent(id, ourFieldSide, *controller, world, referee);
         agents.push_back(agent);
     }
+
+    SSLCoach coach(world, referee, agents);
 
     while (true) {
         QElapsedTimer timer;
         timer.start();
+        
+        world.update();
+        referee.bufferize();
+        referee.update();
+        coach.delegatePlaysAndRoles();
+
         for (SSLAgent *agent : agents) {
-            agent->observe();
             if (!agent->isActive()) {
                 continue;
             }
-            agent->listen();
             agent->think();
             agent->act();
         }

@@ -43,7 +43,7 @@ void ObstaclesBuilder::reset() {
 }
 
 Vec2 ObstaclesBuilder::bottomLeftLeftGoal() const {
-    float x = world_.fieldBottomLeftCorner().x();
+    float x = -6;
     float y = -world_.leftGoal().getAreaLength() / 2.0f;
 
     return Vec2(x, y);
@@ -64,7 +64,7 @@ Vec2 ObstaclesBuilder::bottomLeftRightGoal() const {
 }
 
 Vec2 ObstaclesBuilder::topRightRightGoal() const {
-    float x = world_.fieldBottomRightCorner().x();
+    float x = 6;
     float y = world_.rightGoal().getAreaLength() / 2.0f;
 
     return Vec2(x, y);

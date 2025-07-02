@@ -1,11 +1,11 @@
-#ifndef NAIVEOFFENSE_HH
-#define NAIVEOFFENSE_HH
+#ifndef HALT_HH
+#define HALT_HH
 
 #include "agent/sslagent/sslplay.hh"
 
-class PlayNaiveOffense : public SSLPlay {
+class PlayHalt : public SSLPlay {
 public:
-    PlayNaiveOffense(const World &worldRef) : SSLPlay(worldRef) {}
+    PlayHalt(const World &worldRef) : SSLPlay(worldRef) {}
 
     SSLBehavior *getBehavior(const SSLRole &role, const PlayerID &player, SSLController &controller);
 };

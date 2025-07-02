@@ -7,12 +7,14 @@
 #include "referee/referee.hh"
 #include "types/playerid.hh"
 #include "world/world.hh"
+#include "sslplay.hh"
+#include "sslrole.hh"
 
 #include "sslcontroller.hh"
 
 class SSLAgent {
 public:
-    SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller);
+    SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller, const World &world, const Referee &referee);
 
     void observe();
     void listen();
@@ -25,18 +27,22 @@ public:
         return id_;
     }
 
+    void setPlay(SSLPlay *play);
+    void setRole(SSLRole *role);
+
 private:
     PlayerID id_;
-    World world_;
+    const World &world_;
     SSLController sslController_;
-    Referee referee_;
+    const Referee &referee_;
 
-    WRBeT::Node *currentBehavior_;
-    WRBeT::Node *goTo_;
-    WRBeT::Node *idle_;
-    WRBeT::Node *calibrateLinear_;
-    WRBeT::Node *calibrateAngular_;
-    WRBeT::Node *goalie_;
+    SSLPlay *play_;
+    SSLRole *role_;
+
+    SSLBehavior *currentBehavior_;
+
+    SSLBehavior *calibrateLinear_;
+    SSLBehavior *calibrateAngular_;
 };
 
 #endif
