@@ -38,6 +38,7 @@ private:
     const Referee &referee_;
 
     SSLPlay *play_;
+    bool isNewPlay_ = false;
     SSLRole *role_;
 
     SSLBehavior *currentBehavior_;

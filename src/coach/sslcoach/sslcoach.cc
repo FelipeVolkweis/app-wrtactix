@@ -38,6 +38,7 @@ void SSLCoach::setupPlay(SSLPlay *play) {
     const auto &avPlayers = world_.ourAvailablePlayers();
     for (const auto &avPlayer : avPlayers) {
         assignments[avPlayer] = false;
+        agents_[avPlayer.playerNum()]->setPlay(play);
     }
 
     auto &suggestions = play->getSuggestedAssignments();
@@ -71,7 +72,6 @@ void SSLCoach::setupPlay(SSLPlay *play) {
         auto id = role->getRoleAssignment(world_, assignments);
         if (id.isValid()) {
             agents_[id.playerNum()]->setRole(role);
-            agents_[id.playerNum()]->setPlay(play);
             assignments[id] = true;
         } else {
             delete role;

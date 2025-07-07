@@ -18,6 +18,7 @@ SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &contro
 
 void SSLAgent::setPlay(SSLPlay *play) {
     play_ = play;
+    isNewPlay_ = true;
 }
 
 void SSLAgent::setRole(SSLRole *role) {
@@ -31,10 +32,12 @@ void SSLAgent::listen() {}
 
 void SSLAgent::think() {
     if (play_ && role_) {
+        if (!isNewPlay_) return;
         auto bhv = play_->getBehavior(*role_, id_, sslController_);
 
         delete currentBehavior_;
         currentBehavior_ = bhv;
+        isNewPlay_ = false;
     }
 }
 

@@ -10,7 +10,9 @@ PlayNaiveOffense::PlayNaiveOffense(const World &worldRef) : SSLPlay(worldRef) {
          }},
         {1, SSLRoleType::STRIKER,
          [](const PlayerID &player, SSLController &controller, const World &world) {
-             return new ShootToGoal(player, controller, world);
+            return new ShootToGoal(player, controller, world);
+            // return new CalibrateLinear(player, controller, world);
+            // return new CalibrateAngular(player, controller, world);
          }},
     };
     cacheSuggestedAssignments();
