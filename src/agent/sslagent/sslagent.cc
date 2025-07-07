@@ -6,9 +6,10 @@
 
 Q_LOGGING_CATEGORY(SSLAGENT, "SSLAgent")
 
-SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller, const World &world, const Referee &referee)
-    : id_(id), world_(world), sslController_(id, controller, world_),
-      referee_(referee), currentBehavior_(nullptr), play_(nullptr), role_(nullptr) {
+SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller, const World &world,
+                   const Referee &referee)
+    : id_(id), world_(world), sslController_(id, controller, world_), referee_(referee), currentBehavior_(nullptr),
+      play_(nullptr), role_(nullptr) {
     Colors::Color ourTeamColor = id.teamNum() == 0 ? Colors::YELLOW : Colors::BLUE;
 
     calibrateLinear_ = (new CalibrateLinear(id_, sslController_, world_));
@@ -16,13 +17,11 @@ SSLAgent::SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &contro
 }
 
 void SSLAgent::setPlay(SSLPlay *play) {
-    delete play_;
     play_ = play;
 }
 
 void SSLAgent::setRole(SSLRole *role) {
     delete role_;
-    
     role_ = role;
 }
 

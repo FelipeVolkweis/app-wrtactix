@@ -1,24 +1,26 @@
 #ifndef SSLCOACH_HH
 #define SSLCOACH_HH
 
-#include "world/world.hh"
-#include "referee/referee.hh"
-#include "agent/sslagent/sslagent.hh"
-
 #include <QVector>
 
-class SSLCoach {    
+#include "agent/sslagent/sslagent.hh"
+#include "agent/sslagent/sslplay.hh"
+#include "referee/referee.hh"
+#include "world/world.hh"
+
+class SSLCoach {
 public:
     SSLCoach(const World &world, const Referee &referee, QVector<SSLAgent *> &agents);
 
     void delegatePlaysAndRoles();
+
 private:
     const World &world_;
     const Referee &referee_;
     QVector<SSLAgent *> &agents_;
+    SSLPlay *play_ = nullptr;
 
-    void setupHalt();
-    void setupNaiveOffense();
+    void setupPlay(SSLPlay *playFactory);
 };
 
 #endif

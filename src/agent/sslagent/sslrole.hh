@@ -1,6 +1,9 @@
 #ifndef SSLROLE_HH
 #define SSLROLE_HH
 
+#include "types/types.hh"
+#include "world/world.hh"
+
 enum class SSLRoleType { UNKNOWN, GOALKEEPER, STRIKER };
 
 class SSLRole {
@@ -15,6 +18,8 @@ public:
     void setType(SSLRoleType type) {
         type_ = type;
     }
+
+    virtual PlayerID getRoleAssignment(const World &world, const QHash<PlayerID, bool> &assignmentTable) = 0;
 
 private:
     SSLRoleType type_;

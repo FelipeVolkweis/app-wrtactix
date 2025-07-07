@@ -1,15 +1,17 @@
-#include "naiveoffense.hh"
 #include "agent/sslagent/behaviors/behaviors.hh"
 
-SSLBehavior *PlayNaiveOffense::getBehavior(const SSLRole &role, const PlayerID &player, SSLController &controller) {
-    switch (role.getType()) {
-    case SSLRoleType::GOALKEEPER:
-        return new GoalKeeper(player, controller, world_);
-    case SSLRoleType::STRIKER:
-        return new ShootToGoal(player, controller, world_);
-    default:
-        return new DoNothing(player, controller, world_);
-        break;
-    }
-    return nullptr;
+#include "naiveoffense.hh"
+
+PlayNaiveOffense::PlayNaiveOffense(const World &worldRef) : SSLPlay(worldRef) {
+    roleDefinitions_ = {
+        {0, SSLRoleType::GOALKEEPER,
+         [](const PlayerID &player, SSLController &controller, const World &world) {
+             return new GoalKeeper(player, controller, world);
+         }},
+        {1, SSLRoleType::STRIKER,
+         [](const PlayerID &player, SSLController &controller, const World &world) {
+             return new ShootToGoal(player, controller, world);
+         }},
+    };
+    cacheSuggestedAssignments();
 }

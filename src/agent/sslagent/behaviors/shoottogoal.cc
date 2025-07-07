@@ -35,7 +35,7 @@ ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, co
                      //      Const::PathPlanner::PotentialField::epsilon))
                      ->setPathPlanner(new PFLorinho())
                      ->setGoal([this]() {
-                         return ballInteraction().behindBall(aiming().getEnemyGoalKickPosition(player()), 0.1f);
+                         return ballInteraction().behindBall(aiming().getEnemyGoalKickPosition(player()), Const::Skills::Kicking::optimal_distance);
                      })
                      ->setLookAt([this]() { return aiming().getEnemyGoalKickPosition(player()); })
                      ->avoidTeammates()

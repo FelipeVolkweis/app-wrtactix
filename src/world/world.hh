@@ -158,6 +158,24 @@ public:
         return info_->fieldCenterRadius();
     }
 
+    void setOurGoalieId(PlayerID goalie) {
+        QMutexLocker locker(&refereeMutex_);
+        ourGoalieId_ = goalie;
+    }
+
+    void setTheirGoalieId(PlayerID goalie) {
+        QMutexLocker locker(&refereeMutex_);
+        theirGoalieId_ = goalie;
+    }
+
+    const PlayerID &ourGoalieId() const {
+        return ourGoalieId_;
+    }
+
+    const PlayerID &theirGoalieId() const {
+        return theirGoalieId_;
+    }
+
 private:
     void update(WorldInfo &info);
     void bufferizeBall(WorldInfo &info, uint8 ballNum);
@@ -169,12 +187,17 @@ private:
     WorldInfo *info_;
     WorldInfo *infoBuffer_;
 
+    PlayerID ourGoalieId_;
+    PlayerID theirGoalieId_;
+
     GEARSystem::Controller &controller_;
 
     Sides::Side side_;
     Colors::Color color_;
 
     QMutex mutex_;
+
+    QMutex refereeMutex_;
 };
 
 #endif

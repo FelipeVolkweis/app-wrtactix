@@ -11,7 +11,7 @@
 
 class Referee {
 public:
-    Referee(QHostAddress address, uint16_t port, const World &world);
+    Referee(QHostAddress address, uint16_t port, World &world);
 
     bool connect();
     bool bufferize();
@@ -53,6 +53,8 @@ private:
     const int sizeofPacket = 65536;
 
     QMutex _mutex;
+
+    World &_world;
 };
 
 #endif // REFEREE_HH

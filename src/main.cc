@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
     while (true) {
         QElapsedTimer timer;
         timer.start();
-        
+
         world.update();
         referee.bufferize();
         referee.update();

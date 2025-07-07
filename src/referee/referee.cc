@@ -5,8 +5,8 @@
 
 Q_LOGGING_CATEGORY(REFEREE, "Referee")
 
-Referee::Referee(QHostAddress address, uint16_t port, const World &world)
-    : _address(address), _port(port), _connected(false), _updatePending(false), _gameState(world) {
+Referee::Referee(QHostAddress address, uint16_t port, World &world)
+    : _address(address), _port(port), _connected(false), _updatePending(false), _gameState(world), _world(world) {
     _buffer = new RefereeMap();
     _refereeMap = new RefereeMap();
 }
@@ -59,6 +59,12 @@ void Referee::update() {
     }
 
     _updatePending = false;
+
+    // Setting goalies
+    PlayerID ourGoalieId(_world.ourColor(), _buffer->teamInfoGoalie(_world.ourColor()));
+    PlayerID theirGoalieId(_world.theirColor(), _buffer->teamInfoGoalie(_world.theirColor()));
+    _world.setOurGoalieId(ourGoalieId);
+    _world.setTheirGoalieId(theirGoalieId);
 
     _mutex.lock();
     qSwap(_buffer, _refereeMap);

@@ -7,14 +7,15 @@
 #include "referee/referee.hh"
 #include "types/playerid.hh"
 #include "world/world.hh"
+
+#include "sslcontroller.hh"
 #include "sslplay.hh"
 #include "sslrole.hh"
 
-#include "sslcontroller.hh"
-
 class SSLAgent {
 public:
-    SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller, const World &world, const Referee &referee);
+    SSLAgent(PlayerID id, Sides::Side side, GEARSystem::Controller &controller, const World &world,
+             const Referee &referee);
 
     void observe();
     void listen();

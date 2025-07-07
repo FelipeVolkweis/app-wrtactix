@@ -1,6 +1,7 @@
 #ifndef PLAYERID_HH
 #define PLAYERID_HH
 
+#include <QHash>
 #include <QString>
 #include <QtGlobal>
 
@@ -38,9 +39,17 @@ public:
         return static_cast<quint8>(-1);
     }
 
+    static PlayerID invalid() {
+        return PlayerID(invalidNum(), invalidNum());
+    }
+
 private:
     quint8 teamNum_;
     quint8 playerNum_;
 };
+
+inline uint qHash(const PlayerID &id, uint seed = 0) {
+    return qHash((static_cast<quint16>(id.teamNum()) << 8) | id.playerNum(), seed);
+}
 
 #endif
