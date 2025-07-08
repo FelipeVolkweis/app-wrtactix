@@ -63,6 +63,9 @@ void SSLCoach::setupPlay(SSLPlay *play) {
         case SSLRoleType::STRIKER:
             role = new SSLStriker();
             break;
+        case SSLRoleType::BARRIER:
+            role = new SSLBarrier();
+            break;
         default:
             continue;
         }

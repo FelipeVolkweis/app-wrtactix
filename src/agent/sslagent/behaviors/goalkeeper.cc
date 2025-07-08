@@ -9,7 +9,7 @@ GoalKeeper::GoalKeeper(const PlayerID &playerId,
                const World &worldRef)
   : SSLBehavior(playerId, controller, worldRef, "GoalKeeper")
 {
-    // TEM QUE PENSAR EM ALGO NA SITUAÇÂO QUE A BOLA TA ATRAS DO GOLEIRO PRA 
+    // TODO: TEM QUE PENSAR EM ALGO NA SITUAÇÂO QUE A BOLA TA ATRAS DO GOLEIRO PRA 
     // ELE NAO EMPURRA E FAZER GOL CONTRA POR ACIDENTE!!!!!
     auto removeBallFromOurArea = BehaviorTree::Sequence(
         "RemoveBallFromOurArea",
@@ -28,20 +28,20 @@ GoalKeeper::GoalKeeper(const PlayerID &playerId,
                                                 [this]() {
                                                     return ballInteraction().isBehindBall(
                                                         world().playerPositionVec2(player()),
-                                                        keeper().getKickOutOfOurArea(player()), 0.105f);
+                                                        block().getKickOutOfOurArea(player()), 0.105f);
                                                 }),
                         action<GoToLookAt>()
                             ->setPathPlanner(new PFLorinho())
                             ->setGoal([this]() {
-                                return ballInteraction().behindBall(keeper().getKickOutOfOurArea(player()), 0.1f);
+                                return ballInteraction().behindBall(block().getKickOutOfOurArea(player()), 0.1f);
                             })
-                            ->setLookAt([this]() { return keeper().getKickOutOfOurArea(player()); })
+                            ->setLookAt([this]() { return block().getKickOutOfOurArea(player()); })
                             ->avoidTeammates()
                             ->avoidOpponents()
                             ->avoidTheirGoal()
                             ->avoidBall([this]() {
                                 return !ballInteraction().isBehindBall(world().playerPositionVec2(player()),
-                                                                        keeper().getKickOutOfOurArea(player()), 0.4f,
+                                                                        block().getKickOutOfOurArea(player()), 0.4f,
                                                                         1.0f);
                             }),
                     }),
@@ -57,7 +57,7 @@ GoalKeeper::GoalKeeper(const PlayerID &playerId,
             }),
             action<GoToLookAt>()
                 ->setGoal([this]() {
-                    return keeper().getGoaliePosition();
+                    return block().getGoaliePosition();
                 })
                 ->setLookAt([this]() {
                     return world().ballPositionVec2();

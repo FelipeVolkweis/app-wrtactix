@@ -1,12 +1,12 @@
 #include "algorithm/geometry/radialsweep/radialsweep.hh"
 #include "constants/constants.hh"
 
-#include "keeper.hh"
+#include "block.hh"
 #include "locations.hh"
 
-Keeper::Keeper(const World &world) : world_(world) {}
+Block::Block(const World &world) : world_(world) {}
 
-Vec2 Keeper::getGoaliePosition() const {
+Vec2 Block::getGoaliePosition() const {
     auto l = getBallImpactLine();
     float mfinal = l.m;
     float bfinal = l.b;
@@ -14,7 +14,17 @@ Vec2 Keeper::getGoaliePosition() const {
     return getGoaliePositionInCircumference(mfinal, bfinal);
 }
 
-Keeper::Line Keeper::getBallImpactLine() const {
+Vec2 Block::getBarrierPosition() const {
+    auto l = getBallImpactLine();
+
+    float distance = world_.leftGoal().getDepth() + Const::Physics::robot_radius*2;
+    float xCoordinate = world_.ourSide() == Sides::LEFT ? world_.leftGoal().leftPost().x() + distance : world_.rightGoal().leftPost().x() - distance;
+    float yCoordinate = l.m * xCoordinate + l.b;
+
+    return Vec2(xCoordinate, yCoordinate);
+}
+
+Block::Line Block::getBallImpactLine() const {
     Line lfinal;
     auto ball = world_.ballPositionVec2();
 
@@ -44,6 +54,7 @@ Keeper::Line Keeper::getBallImpactLine() const {
         auto attacker = world_.playerPositionVec2(attackerId);
 
         if (TwoD::distance(attacker, ball) < 0.2f) {
+            
             const Angle &attackerOrientation = world_.playerOrientation(attackerId);
             float m = tanf(attackerOrientation.value());
             float b = attacker.y() - m * attacker.x();
@@ -70,7 +81,7 @@ Keeper::Line Keeper::getBallImpactLine() const {
     return lfinal;
 }
 
-QPair<Vec2, float> Keeper::getGoalieCircumference() const {
+QPair<Vec2, float> Block::getGoalieCircumference() const {
     const auto &w = world_;
     if (w.ourSide() == Sides::LEFT) {
         Vec2 p1 = TwoD::positionToVector(w.leftGoal().leftPost());
@@ -87,7 +98,7 @@ QPair<Vec2, float> Keeper::getGoalieCircumference() const {
     }
 }
 
-Vec2 Keeper::getGoaliePositionInCircumference(float m, float b) const {
+Vec2 Block::getGoaliePositionInCircumference(float m, float b) const {
     auto circumference = getGoalieCircumference();
     auto intersections = TwoD::findLineCircleIntersections(circumference.first, circumference.second, m, b);
 
@@ -114,7 +125,7 @@ Vec2 Keeper::getGoaliePositionInCircumference(float m, float b) const {
     }
 }
 
-bool Keeper::hitsOurGoal(float m, float b) const {
+bool Block::hitsOurGoal(float m, float b) const {
     const auto &w = world_;
     if (m != m || b != b) { // NaN
         return false;
@@ -128,7 +139,7 @@ bool Keeper::hitsOurGoal(float m, float b) const {
     }
 }
 
-Vec2 Keeper::getKickOutOfOurArea(const PlayerID &callerId) const {
+Vec2 Block::getKickOutOfOurArea(const PlayerID &callerId) const {
     // begin Preparing FANA call
     QVector<Vec2> obstacles;
     const auto &w = world_;
