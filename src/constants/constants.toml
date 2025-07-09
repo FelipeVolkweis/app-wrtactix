@@ -12,7 +12,6 @@ kicking_device_distance = 0.08
 minimum_ball_velocity_to_consider_movement = 0.05
 
 [ai]
-max_roles = 6
 role_swap_hysteresis = 20
 distance_tolerance = 0.015
 angle_tolerance = 0.175
@@ -23,15 +22,14 @@ max_power = 7.5
 optimal_distance = 0.08
 enable_distance = 0.15
 max_velocity = 6.5
-min_velocity = 1
+min_velocity = 8
 enable_duration = 500
-spare_time_to_intercept_ball = 0.3
+min_angle_to_shoot_to_goal = 0.524 # 30 graus
+min_angle_to_pass = 0.524 
 
 [skills.dribbling]
 max_push_distance = 0.9
-barrier_distance = 0.3
 behind_ball_distance = 0.30
-minkowski_distance = 0.1
 
 [control.movement]
 max_linear_speed = 2.4
@@ -39,8 +37,6 @@ min_linear_speed = 0.0
 max_linear_accel = 2.3
 max_angular_speed = 5.497787
 min_angular_speed = 0
-linear_error = 0.015
-angular_error = 4
 
 [control.pid.linear]
 kp = 2.1
@@ -72,7 +68,6 @@ thread_frequency = 60
 invalid_id = 0xFF
 game_off_max_speed = 0.35
 max_robots = 11
-bezier_control_point = 2.0
 
 [pathplanner.potentialfield]
 katt = 4

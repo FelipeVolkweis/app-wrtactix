@@ -2,6 +2,7 @@
 #include "types/angle.hh"
 
 #include "ballinteraction.hh"
+#include <limits>
 
 BallInteraction::BallInteraction(const World &world) : world_(world) {}
 
@@ -55,4 +56,34 @@ Vec2 BallInteraction::getPositionToInterceptMovingBall(const PlayerID &playerId)
     auto proj = ballToPlayer.dot(ballVel) * ballVel / ballVel.squaredNorm();
 
     return ballPos + proj;
-}   
+}
+
+bool BallInteraction::isClosestToBallByMargin(const PlayerID &playerId, float margin, Colors::Color color) const {
+    const auto ballPos = world_.ballPositionVec2();
+
+    const auto it = std::find_if(world_.availablePlayers(color).begin(), world_.availablePlayers(color).end(),
+                                 [&](const PlayerID &p) { return p == playerId; });
+    if (it == world_.availablePlayers(color).end()) {
+        return false;
+    }
+    float targetDist = (ballPos - world_.playerPositionVec2(playerId)).norm();
+
+    for (const auto &p : world_.availablePlayers(color)) {
+        if (p == playerId)
+            continue;
+        float d = (ballPos - world_.playerPositionVec2(p)).norm();
+        if (targetDist + margin >= d) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+bool BallInteraction::isOurClosestToBallByMargin(const PlayerID &playerId, float margin) const {
+    return isClosestToBallByMargin(playerId, margin, world_.ourColor());
+}
+
+bool BallInteraction::isTheirsClosestToBallByMargin(const PlayerID &playerId, float margin) const {
+    return isClosestToBallByMargin(playerId, margin, world_.theirColor());
+}

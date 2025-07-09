@@ -8,5 +8,6 @@
 #include "goalkeeper.hh"
 #include "pass.hh"
 #include "receivepass.hh"
+#include "preciseshoottogoal.hh"
 
 #endif // BEHAVIORS_HH

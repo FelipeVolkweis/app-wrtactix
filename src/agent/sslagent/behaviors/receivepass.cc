@@ -18,7 +18,9 @@ ReceivePass::ReceivePass(const PlayerID &playerId, SSLController &controller, co
                     action<GoToLookAt>()
                         ->setPathPlanner(new PFLorinho())
                         ->setGoal([this]() {
-                            return Vec2(-1.5, 1);
+                            if (player() == PlayerID(0, 1))
+                                return Vec2(-1.5, 1);
+                            return Vec2(-1.5, -1);
                         })
                         ->setLookAt([this]() {
                             return world().ballPositionVec2();

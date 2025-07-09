@@ -17,7 +17,6 @@ float Physics::off_field_tolerance;
 float Physics::kicking_device_distance;
 float Physics::minimum_ball_velocity_to_consider_movement;
 
-int AI::max_roles;
 int AI::role_swap_hysteresis;
 float AI::distance_tolerance;
 float AI::angle_tolerance;
@@ -31,14 +30,13 @@ float enable_distance;
 float max_velocity;
 float min_velocity;
 int enable_duration;
-float spare_time_to_intercept_ball;
+float min_angle_to_shoot_to_goal;
+float min_angle_to_pass;
 } // namespace Kicking
 
 namespace Dribbling {
 float max_push_distance;
-float barrier_distance;
 float behind_ball_distance;
-float minkowski_distance;
 } // namespace Dribbling
 } // namespace Skills
 
@@ -49,8 +47,6 @@ float min_linear_speed;
 float max_linear_accel;
 float max_angular_speed;
 float min_angular_speed;
-float linear_error;
-float angular_error;
 } // namespace Movement
 
 namespace PID {
@@ -69,7 +65,6 @@ int System::thread_frequency;
 int System::invalid_id;
 float System::game_off_max_speed;
 int System::max_robots;
-float System::bezier_control_point;
 
 // Path planner
 namespace PathPlanner {
@@ -125,7 +120,6 @@ void initialize() {
         Config::retrieve<float>(Config::CONFIGS["physics"]["minimum_ball_velocity_to_consider_movement"]);
 
     // AI
-    AI::max_roles = Config::retrieve<int>(Config::CONFIGS["ai"]["max_roles"]);
     AI::role_swap_hysteresis = Config::retrieve<int>(Config::CONFIGS["ai"]["role_swap_hysteresis"]);
     AI::distance_tolerance = Config::retrieve<float>(Config::CONFIGS["ai"]["distance_tolerance"]);
     AI::angle_tolerance = Config::retrieve<float>(Config::CONFIGS["ai"]["angle_tolerance"]);
@@ -139,18 +133,16 @@ void initialize() {
     Skills::Kicking::max_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["max_velocity"]);
     Skills::Kicking::min_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_velocity"]);
     Skills::Kicking::enable_duration = Config::retrieve<int>(Config::CONFIGS["skills"]["kicking"]["enable_duration"]);
-    Skills::Kicking::spare_time_to_intercept_ball =
-        Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["spare_time_to_intercept_ball"]);
+    Skills::Kicking::min_angle_to_shoot_to_goal =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_angle_to_shoot_to_goal"]);
+    Skills::Kicking::min_angle_to_pass =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_angle_to_pass"]);
 
     // Skills::Dribbling
     Skills::Dribbling::max_push_distance =
         Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["max_push_distance"]);
-    Skills::Dribbling::barrier_distance =
-        Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["barrier_distance"]);
     Skills::Dribbling::behind_ball_distance =
         Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["behind_ball_distance"]);
-    Skills::Dribbling::minkowski_distance =
-        Config::retrieve<float>(Config::CONFIGS["skills"]["dribbling"]["minkowski_distance"]);
 
     // Control::Movement
     Control::Movement::max_linear_speed =
@@ -163,8 +155,6 @@ void initialize() {
         Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_angular_speed"]);
     Control::Movement::min_angular_speed =
         Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["min_angular_speed"]);
-    Control::Movement::linear_error = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["linear_error"]);
-    Control::Movement::angular_error = Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["angular_error"]);
 
     // Control::PID
     Control::PID::linear.kp = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["kp"]);
@@ -189,7 +179,6 @@ void initialize() {
     System::invalid_id = Config::retrieve<int>(Config::CONFIGS["system"]["invalid_id"]);
     System::game_off_max_speed = Config::retrieve<float>(Config::CONFIGS["system"]["game_off_max_speed"]);
     System::max_robots = Config::retrieve<int>(Config::CONFIGS["system"]["max_robots"]);
-    System::bezier_control_point = Config::retrieve<float>(Config::CONFIGS["system"]["bezier_control_point"]);
 
     // Path planner: potential field
     PathPlanner::PotentialField::katt =

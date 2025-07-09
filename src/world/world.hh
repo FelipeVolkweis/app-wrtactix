@@ -80,7 +80,7 @@ public:
         return info_->ballVelocity();
     }
 
-    const Vec2 ballVelocityVec2() const { 
+    const Vec2 ballVelocityVec2() const {
         return TwoD::velocityToVector(info_->ballVelocity());
     }
 

@@ -6,6 +6,11 @@
 Aiming::Aiming(const World &world) : world_(world) {}
 
 Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
+    bool trash;
+    return getEnemyGoalKickPosition(callerId, trash);
+}
+
+Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOpening) const {
     QVector<Vec2> obstacles;
     const auto &w = world_;
     for (auto p : w.availablePlayers(w.ourColor())) {
@@ -36,6 +41,11 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
 
     RadialSweep radialSweep(observer, obstacles, Const::Physics::robot_radius, {minInterval, maxInterval}, r);
     auto freeAngles = radialSweep.getFreeAngles();
+    auto largestInterval = RadialSweep::getLargestAngleInterval(freeAngles);
+
+    if (largestInterval.size() < Const::Skills::Kicking::min_angle_to_shoot_to_goal) {
+        hasValidOpening = false;
+    }
 
     if (freeAngles.isEmpty()) {
         if (w.ourSide() == Sides::LEFT) {
@@ -45,7 +55,6 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
         }
     }
 
-    auto largestInterval = RadialSweep::getLargestAngleInterval(freeAngles);
     auto centerAngle = RadialSweep::getCenterOfInterval(largestInterval);
 
     float m = tan(centerAngle.radians());
@@ -53,7 +62,7 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
 
     float x = w.ourSide() == Sides::LEFT ? w.rightGoal().leftPost().x() : w.leftGoal().leftPost().x();
     float y = m * x + b;
-
+    hasValidOpening = true;
     return Vec2(x, y);
 }
 
