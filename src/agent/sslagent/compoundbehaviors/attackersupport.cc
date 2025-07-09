@@ -1,7 +1,11 @@
+#include <QLoggingCategory>
+
 #include "attackersupport.hh"
 #include "agent/sslagent/behaviors/shoottogoal.hh"
 #include "agent/sslagent/behaviors/pass.hh"
 #include "agent/sslagent/behaviors/receivepass.hh"
+
+Q_LOGGING_CATEGORY(ATTACKERSUPPORT, "AttackerSupport")
 
 AttackerSupport::AttackerSupport(const PlayerID &playerId, SSLController &controller, const World &worldRef) 
     : SSLBehavior(playerId, controller, worldRef, "SupportAttacker") {

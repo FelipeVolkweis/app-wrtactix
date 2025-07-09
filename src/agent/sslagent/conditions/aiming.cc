@@ -3,6 +3,8 @@
 
 #include "aiming.hh"
 
+Q_LOGGING_CATEGORY(AIMING, "Aiming")
+
 Aiming::Aiming(const World &world) : world_(world) {}
 
 Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
@@ -45,6 +47,8 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOp
 
     if (largestInterval.size() < Const::Skills::Kicking::min_angle_to_shoot_to_goal) {
         hasValidOpening = false;
+    } else {
+        hasValidOpening = true;
     }
 
     if (freeAngles.isEmpty()) {
@@ -62,7 +66,7 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOp
 
     float x = w.ourSide() == Sides::LEFT ? w.rightGoal().leftPost().x() : w.leftGoal().leftPost().x();
     float y = m * x + b;
-    hasValidOpening = true;
+
     return Vec2(x, y);
 }
 

@@ -19,13 +19,13 @@ min_velocity_threshold = 0.1
 
 [skills.kicking]
 max_power = 7.5
-optimal_distance = 0.08
+optimal_distance = 0.09
 enable_distance = 0.15
 max_velocity = 6.5
-min_velocity = 8
+min_velocity = 1
 enable_duration = 500
-min_angle_to_shoot_to_goal = 0.524 # 30 graus
-min_angle_to_pass = 0.524 
+min_angle_to_shoot_to_goal = 0.07
+min_angle_to_pass = 0.10
 
 [skills.dribbling]
 max_push_distance = 0.9
@@ -39,7 +39,7 @@ max_angular_speed = 5.497787
 min_angular_speed = 0
 
 [control.pid.linear]
-kp = 2.1
+kp = 2.0
 ki = 0
 kd = 0.0
 max_integral = 1.0

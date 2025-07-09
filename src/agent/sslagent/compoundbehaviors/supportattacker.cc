@@ -17,6 +17,11 @@ SupportAttacker::SupportAttacker(const PlayerID &playerId, SSLController &contro
                     aiming().getEnemyGoalKickPosition(player(), flag);
                     return flag;
                 }),
+            BehaviorTree::Condition(
+                "IsTheBallComingAtMe",
+                [this]() {
+                    return !ballInteraction().isTheBallInCollisionRoute(world().playerPositionVec2(player()));
+                }),
             BehaviorTree::ForceSuccess((new ShootToGoal(playerId, controller, worldRef))->root())
         }),
         BehaviorTree::Sequence("PassingSequence", {
