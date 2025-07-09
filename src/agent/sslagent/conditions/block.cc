@@ -16,6 +16,7 @@ Vec2 Block::getGoaliePosition() const {
     return getGoaliePositionInCircumference(mfinal, bfinal);
 }
 
+// TODO: Tratar caso em que a bola está dentro da nossa área de defesa
 Vec2 Block::getBarrierPosition() const {
     auto l = getBallImpactLine();
     
@@ -24,9 +25,6 @@ Vec2 Block::getBarrierPosition() const {
      (world_.rightGoal().leftPost().x() - distance);
     float yThreshold = (world_.ballPosition().y() > 0) ? (world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2) : 
      -(world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2);
-
-    float yCoordinate;
-    float xCoordinate;
 
     // Create Goal area lines
     Line areaHorizontalLine1;
@@ -46,17 +44,17 @@ Vec2 Block::getBarrierPosition() const {
     Vec2 intersectionHorizontal2 = Vec2((-yThreshold - l.b) / l.m, -yThreshold);
     Vec2 intersectionVertical = Vec2(areaVerticalLine.x0, l.m * areaVerticalLine.x0 + l.b);
 
-    // Get interction point closest to goal
-    float goalCenterX =
-        world_.ourSide() == Sides::LEFT ? world_.leftGoal().leftPost().x() : world_.rightGoal().leftPost().x();
-    float goalCenterY = 0;
-    Vec2 goalCenter(goalCenterX, goalCenterY);
+    // Get interction point closest to center of defense area
+    Vec2 referencePoint = (world_.ourSide() == Sides::LEFT) ? 
+     (Vec2(world_.leftGoal().leftPost().x() + world_.leftGoal().getAreaWidth()/2, 0.0f)) : 
+     (Vec2(world_.rightGoal().leftPost().x() - world_.leftGoal().getAreaWidth()/2, 0.0f));
+    
+    float dh1 = TwoD::distance(intersectionHorizontal1, referencePoint);
+    float dh2 = TwoD::distance(intersectionHorizontal2, referencePoint);
+    float dv = TwoD::distance(intersectionVertical, referencePoint);
 
-    // Vec2 referencePoint = ()
-    float dh1 = TwoD::distance(intersectionHorizontal1, goalCenter);
-    float dh2 = TwoD::distance(intersectionHorizontal2, goalCenter);
-    float dv = TwoD::distance(intersectionVertical, goalCenter);
-
+    float yCoordinate;
+    float xCoordinate;
     float smaller = dh1;
     xCoordinate = intersectionHorizontal1.x();
     yCoordinate = intersectionHorizontal1.y();
