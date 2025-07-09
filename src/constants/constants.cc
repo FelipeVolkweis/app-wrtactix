@@ -47,6 +47,7 @@ float min_linear_speed;
 float max_linear_accel;
 float max_angular_speed;
 float min_angular_speed;
+float speed_boost;
 } // namespace Movement
 
 namespace PID {
@@ -155,6 +156,8 @@ void initialize() {
         Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["max_angular_speed"]);
     Control::Movement::min_angular_speed =
         Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["min_angular_speed"]);
+    Control::Movement::speed_boost =
+        Config::retrieve<float>(Config::CONFIGS["control"]["movement"]["speed_boost"]);
 
     // Control::PID
     Control::PID::linear.kp = Config::retrieve<float>(Config::CONFIGS["control"]["pid"]["linear"]["kp"]);

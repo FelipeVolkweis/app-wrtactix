@@ -37,6 +37,7 @@ min_linear_speed = 0.0
 max_linear_accel = 2.3
 max_angular_speed = 5.497787
 min_angular_speed = 0
+speed_boost = 0.0
 
 [control.pid.linear]
 kp = 2.0

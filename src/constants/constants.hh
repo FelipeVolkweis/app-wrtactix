@@ -58,6 +58,7 @@ extern float min_linear_speed;
 extern float max_linear_accel;
 extern float max_angular_speed;
 extern float min_angular_speed;
+extern float speed_boost;
 } // namespace Movement
 
 namespace PID {

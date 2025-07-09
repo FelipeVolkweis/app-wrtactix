@@ -21,14 +21,25 @@ ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, co
                         return ballInteraction().behindBall(aiming().getEnemyGoalKickPosition(player()), Const::Skills::Kicking::optimal_distance);
                     })
                     ->setLookAt([this]() { return aiming().getEnemyGoalKickPosition(player()); })
+                    ->setWaypoint([this]() {
+                        return ballInteraction().behindBall(aiming().getEnemyGoalKickPosition(player()), 2 * Const::Skills::Kicking::optimal_distance);
+                    })
                     ->avoidTeammates()
                     ->avoidOpponents()
                     ->avoidTheirGoal()
                     ->avoidBall([this]() {
                         return !ballInteraction().isBehindBall(world().playerPositionVec2(player()),
-                                                            aiming().getEnemyGoalKickPosition(player()), 0.4f,
-                                                            1.0f);
+                                                            aiming().getEnemyGoalKickPosition(player()), 0.25f,
+                                                            0.7f);
                     }),
+                // action<RotateAround>()
+                //     ->setLookAt([this]() {
+                //         return aiming().getEnemyGoalKickPosition(player());
+                //     })
+                //     ->setPoint([this]() {
+                //         return world().ballPositionVec2();
+                //     })
+                //     ->setRadius(0.15f)
              }),
          action<Kick>()->setPower(10.f)});
 

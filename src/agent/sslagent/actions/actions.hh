@@ -10,5 +10,6 @@
 #include "agent/sslagent/actions/lookat.hh"
 #include "agent/sslagent/actions/tackle.hh"
 #include "agent/sslagent/actions/trap.hh"
+#include "agent/sslagent/actions/rotatearound.hh"
 
 #endif // SSLACTIONS_HH
