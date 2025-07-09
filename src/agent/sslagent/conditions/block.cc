@@ -4,6 +4,8 @@
 #include "block.hh"
 #include "locations.hh"
 
+Q_LOGGING_CATEGORY(CONDITIONS_BLOCK, "CONDITIONS_BLOCK")
+
 Block::Block(const World &world) : world_(world) {}
 
 Vec2 Block::getGoaliePosition() const {
@@ -16,10 +18,63 @@ Vec2 Block::getGoaliePosition() const {
 
 Vec2 Block::getBarrierPosition() const {
     auto l = getBallImpactLine();
+    
+    float distance = world_.leftGoal().getAreaWidth() + Const::Physics::robot_radius*2;
+    float xThreshold = (world_.ourSide() == Sides::LEFT) ? (world_.leftGoal().leftPost().x() + distance) : 
+     (world_.rightGoal().leftPost().x() - distance);
+    float yThreshold = (world_.ballPosition().y() > 0) ? (world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2) : 
+     -(world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2);
 
-    float distance = world_.leftGoal().getDepth() + Const::Physics::robot_radius*2;
-    float xCoordinate = world_.ourSide() == Sides::LEFT ? world_.leftGoal().leftPost().x() + distance : world_.rightGoal().leftPost().x() - distance;
-    float yCoordinate = l.m * xCoordinate + l.b;
+    float yCoordinate;
+    float xCoordinate;
+
+    // Create Goal area lines
+    Line areaHorizontalLine1;
+    areaHorizontalLine1.b = yThreshold;
+    areaHorizontalLine1.m = 0;
+
+    Line areaHorizontalLine2;
+    areaHorizontalLine2.b = -yThreshold;
+    areaHorizontalLine2.m = 0;
+
+    Line areaVerticalLine;
+    areaVerticalLine.x0 = xThreshold;
+    areaVerticalLine.vertical = true;
+
+    // Calculate the intersections between goal area lines and ball line
+    Vec2 intersectionHorizontal1 = Vec2((yThreshold - l.b) / l.m , yThreshold);
+    Vec2 intersectionHorizontal2 = Vec2((-yThreshold - l.b) / l.m, -yThreshold);
+    Vec2 intersectionVertical = Vec2(areaVerticalLine.x0, l.m * areaVerticalLine.x0 + l.b);
+
+    // Get interction point closest to goal
+    float goalCenterX =
+        world_.ourSide() == Sides::LEFT ? world_.leftGoal().leftPost().x() : world_.rightGoal().leftPost().x();
+    float goalCenterY = 0;
+    Vec2 goalCenter(goalCenterX, goalCenterY);
+
+    // Vec2 referencePoint = ()
+    float dh1 = TwoD::distance(intersectionHorizontal1, goalCenter);
+    float dh2 = TwoD::distance(intersectionHorizontal2, goalCenter);
+    float dv = TwoD::distance(intersectionVertical, goalCenter);
+
+    float smaller = dh1;
+    xCoordinate = intersectionHorizontal1.x();
+    yCoordinate = intersectionHorizontal1.y();
+    if(smaller > dh2) {
+        smaller = dh2;
+        xCoordinate = intersectionHorizontal2.x();
+        yCoordinate = intersectionHorizontal2.y();
+    }
+    if(smaller > dv) {
+        smaller = dv;
+        xCoordinate = intersectionVertical.x();
+        yCoordinate = intersectionVertical.y();
+    }
+
+    // Check for NaN
+    if ((xCoordinate != xCoordinate) || (yCoordinate != yCoordinate)) {
+        qCCritical(CONDITIONS_BLOCK) << "X or Y coordinate is not a number";
+    }
 
     return Vec2(xCoordinate, yCoordinate);
 }

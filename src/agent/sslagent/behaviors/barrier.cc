@@ -11,7 +11,7 @@ Barrier::Barrier(const PlayerID &playerId,
                const World &worldRef)
   : SSLBehavior(playerId, controller, worldRef, "Barrier")
 {
-    auto goToPosition = BehaviorTree::Sequence(
+    auto root = BehaviorTree::Sequence(
         "GoTo",
         {
             action<GoToLookAt>()
@@ -24,4 +24,5 @@ Barrier::Barrier(const PlayerID &playerId,
                 ->setPathPlanner(new PFLorinho())
         }
     );
+    setRoot(root);
 }
