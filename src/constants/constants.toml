@@ -8,6 +8,8 @@ ball_radius = 0.0215
 robot_radius = 0.09
 stop_game_distance = 0.55
 off_field_tolerance = 0.06
+kicking_device_distance = 0.08
+minimum_ball_velocity_to_consider_movement = 0.05
 
 [ai]
 max_roles = 6
@@ -18,11 +20,12 @@ min_velocity_threshold = 0.1
 
 [skills.kicking]
 max_power = 7.5
-optimal_distance = 0.09
+optimal_distance = 0.08
 enable_distance = 0.15
 max_velocity = 6.5
-min_velocity = 2.0
+min_velocity = 1
 enable_duration = 500
+spare_time_to_intercept_ball = 0.3
 
 [skills.dribbling]
 max_push_distance = 0.9
@@ -40,9 +43,9 @@ linear_error = 0.015
 angular_error = 4
 
 [control.pid.linear]
-kp = 1.9
+kp = 2.1
 ki = 0
-kd = 0.1
+kd = 0.0
 max_integral = 1.0
 #kp = 0.22
 #ki = 1
@@ -50,9 +53,9 @@ max_integral = 1.0
 #max_integral = 0.4
 
 [control.pid.angular]
-kp = 3
+kp = 3.4
 ki = 0.0
-kd = 0.0
+kd = 0.1
 max_integral = 0.5
 #kp = 1
 #ki = 1
@@ -81,7 +84,7 @@ epsilon = 0.1
 [pathplanner.pflorinho]
 ball_repulsive = 0.5
 repulsive = 0.15
-area_repulsive = 0.15
+area_repulsive = 0.25
 collision_check_radius = 1.5
 robot_collision_radius = 0.4
 ball_collision_radius = 0.16

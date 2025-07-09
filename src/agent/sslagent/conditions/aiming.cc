@@ -65,3 +65,44 @@ bool Aiming::isAimingAtPosition(const PlayerID &player, const Vec2 &aimTarget) c
 
     return diff < Const::AI::angle_tolerance;
 }
+
+Vec2 Aiming::getPassTarget(const PlayerID &player, const PlayerID &receiver) const {
+    Vec2 target = world_.playerPositionVec2(receiver);
+    Vec2 playerPos = world_.playerPositionVec2(player);
+    Vec2 dir = target - playerPos;
+    dir.normalize();
+
+    return target + dir * Const::Physics::kicking_device_distance;
+}
+
+Vec2 Aiming::getPassTarget(const PlayerID &player) const {
+    return getPassTarget(player, getBestReceiver());
+}
+
+PlayerID Aiming::getBestReceiver() const {
+    return PlayerID(0, 1);
+}
+
+bool Aiming::canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &receiver) const {
+    float cosineThreshold = -0.9f;
+    Vec2 receiverPos = world_.playerPositionVec2(receiver);
+    Vec2 playerPos = world_.playerPositionVec2(player);
+    Vec2 ballPos = world_.ballPositionVec2();
+
+    Vec2 receiverToBallDir = (ballPos - receiverPos).normalized();
+    Vec2 playerToBallDir = (ballPos - playerPos).normalized();
+
+    auto cosine = receiverToBallDir.dot(playerToBallDir) / (receiverToBallDir.norm() * playerToBallDir.norm());
+    if (cosine > cosineThreshold) {
+        return false;
+    }
+
+    float rcvOri = world_.playerOrientation(receiver).value();
+    Vec2 receiverOrientation = Vec2(cosf(rcvOri), sinf(rcvOri));
+    cosine = receiverOrientation.dot(playerToBallDir) / (receiverOrientation.norm() * playerToBallDir.norm());
+    if (cosine > cosineThreshold) {
+        return false;
+    }
+
+    return true;
+}

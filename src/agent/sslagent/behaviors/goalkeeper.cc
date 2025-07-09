@@ -1,6 +1,4 @@
 #include "goalkeeper.hh"
-#include "agent/sslagent/actions/actions.hh"
-#include "algorithm/behaviortree/behaviortree.hh"
 #include "constants/constants.hh"
 #include "algorithm/pathplanner/pflorinho/pflorinho.hh"
 

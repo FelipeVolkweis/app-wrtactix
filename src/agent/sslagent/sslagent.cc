@@ -22,7 +22,6 @@ void SSLAgent::setPlay(SSLPlay *play) {
 }
 
 void SSLAgent::setRole(SSLRole *role) {
-    delete role_;
     role_ = role;
 }
 
@@ -32,7 +31,8 @@ void SSLAgent::listen() {}
 
 void SSLAgent::think() {
     if (play_ && role_) {
-        if (!isNewPlay_) return;
+        if (!isNewPlay_)
+            return;
         auto bhv = play_->getBehavior(*role_, id_, sslController_);
 
         delete currentBehavior_;

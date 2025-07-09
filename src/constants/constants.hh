@@ -19,6 +19,8 @@ extern float ball_radius;
 extern float robot_radius;
 extern float stop_game_distance;
 extern float off_field_tolerance;
+extern float kicking_device_distance;
+extern float minimum_ball_velocity_to_consider_movement;
 } // namespace Physics
 
 // AI configuration
@@ -39,6 +41,7 @@ extern float enable_distance;
 extern float max_velocity;
 extern float min_velocity;
 extern int enable_duration;
+extern float spare_time_to_intercept_ball;
 } // namespace Kicking
 
 namespace Dribbling {

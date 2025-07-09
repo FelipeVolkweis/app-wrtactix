@@ -13,11 +13,11 @@ Vec2 AccelerationRamp::fitSpeedToRamp(const Vec2 &currentSpeed, const Vec2 &targ
 
     Vec2 dv = desired - currentSpeed;
 
-    float maxDeltaV = maxAcceleration_ * dt_;
-    float dvNorm = dv.norm();
-    if (dvNorm > maxDeltaV) {
-        dv = dv.normalized() * maxDeltaV;
-    }
+    // float maxDeltaV = maxAcceleration_ * dt_;
+    // float dvNorm = dv.norm();
+    // if (dvNorm > maxDeltaV) {
+    //     dv = dv.normalized() * maxDeltaV;
+    // }
 
     Vec2 newSpeed = currentSpeed + dv;
 

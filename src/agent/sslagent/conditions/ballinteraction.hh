@@ -2,6 +2,7 @@
 #define BALLINTERACTION_HH
 
 #include "world/world.hh"
+#include "types/playerid.hh"
 
 class BallInteraction {
 public:
@@ -10,6 +11,8 @@ public:
     Vec2 behindBall(const Vec2 &reference, float distance) const;
     bool isBehindBall(const Vec2 &object, const Vec2 &reference, float distance) const;
     bool isBehindBall(const Vec2 &object, const Vec2 &reference, float distance, float angleTolerance) const;
+    bool isTheBallInCollisionRoute(const Vec2 &object) const;
+    Vec2 getPositionToInterceptMovingBall(const PlayerID &playerId) const;
 
 private:
     const World &world_;

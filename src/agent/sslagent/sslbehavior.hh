@@ -1,6 +1,7 @@
 #ifndef SSLBEHAVIOR_HH
 #define SSLBEHAVIOR_HH
 
+#include "agent/sslagent/actions/actions.hh"
 #include "agent/sslagent/conditions/aiming.hh"
 #include "agent/sslagent/conditions/ballinteraction.hh"
 #include "agent/sslagent/conditions/keeper.hh"

@@ -6,5 +6,7 @@
 #include "donothing.hh"
 #include "shoottogoal.hh"
 #include "goalkeeper.hh"
+#include "pass.hh"
+#include "receivepass.hh"
 
 #endif // BEHAVIORS_HH

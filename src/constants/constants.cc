@@ -14,6 +14,8 @@ float Physics::ball_radius;
 float Physics::robot_radius;
 float Physics::stop_game_distance;
 float Physics::off_field_tolerance;
+float Physics::kicking_device_distance;
+float Physics::minimum_ball_velocity_to_consider_movement;
 
 int AI::max_roles;
 int AI::role_swap_hysteresis;
@@ -29,6 +31,7 @@ float enable_distance;
 float max_velocity;
 float min_velocity;
 int enable_duration;
+float spare_time_to_intercept_ball;
 } // namespace Kicking
 
 namespace Dribbling {
@@ -117,6 +120,9 @@ void initialize() {
     Physics::robot_radius = Config::retrieve<float>(Config::CONFIGS["physics"]["robot_radius"]);
     Physics::stop_game_distance = Config::retrieve<float>(Config::CONFIGS["physics"]["stop_game_distance"]);
     Physics::off_field_tolerance = Config::retrieve<float>(Config::CONFIGS["physics"]["off_field_tolerance"]);
+    Physics::kicking_device_distance = Config::retrieve<float>(Config::CONFIGS["physics"]["kicking_device_distance"]);
+    Physics::minimum_ball_velocity_to_consider_movement =
+        Config::retrieve<float>(Config::CONFIGS["physics"]["minimum_ball_velocity_to_consider_movement"]);
 
     // AI
     AI::max_roles = Config::retrieve<int>(Config::CONFIGS["ai"]["max_roles"]);
@@ -133,6 +139,8 @@ void initialize() {
     Skills::Kicking::max_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["max_velocity"]);
     Skills::Kicking::min_velocity = Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_velocity"]);
     Skills::Kicking::enable_duration = Config::retrieve<int>(Config::CONFIGS["skills"]["kicking"]["enable_duration"]);
+    Skills::Kicking::spare_time_to_intercept_ball =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["spare_time_to_intercept_ball"]);
 
     // Skills::Dribbling
     Skills::Dribbling::max_push_distance =
