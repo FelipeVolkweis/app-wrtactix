@@ -2,6 +2,7 @@
 #define AIMING_HH
 
 #include "world/world.hh"
+#include "algorithm/geometry/radialsweep/radialsweep.hh"
 
 class Aiming {
 public:
@@ -16,8 +17,14 @@ public:
     PlayerID getBestReceiver() const;
     bool canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &receiver) const;
 
+    Vec2 getEnemyGoalDeflectPosition(const PlayerID &callerId, bool &hasValidOpening) const;
+    Vec2 getEnemyGoalDeflectPosition(const PlayerID &callerId) const;
+
 private:
     const World &world_;
+
+    RadialSweep getEnemyGoalSweep(const PlayerID &callerId) const;
+    bool isValidDeflectInterval(const PlayerID &callerId, const AngleInterval &interval) const;
 };
 
 #endif

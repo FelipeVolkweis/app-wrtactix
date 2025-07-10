@@ -112,7 +112,7 @@ Status GoToLookAt::execute() {
     } else if ((waypoint - origin).norm() < 0.1) {
         waypoint = goal;
     }
-    qCInfo(GOTOLOOKAT) << speedBoost;
+
     auto obs = obstaclesBuilder_.obstacles();
     auto path = pathPlanner_->findPath(origin, waypoint, obs);
     obstaclesBuilder_.reset();

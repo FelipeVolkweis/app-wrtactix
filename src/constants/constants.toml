@@ -22,10 +22,11 @@ max_power = 7.5
 optimal_distance = 0.09
 enable_distance = 0.15
 max_velocity = 6.5
-min_velocity = 1
+min_velocity = 8
 enable_duration = 500
 min_angle_to_shoot_to_goal = 0.07
 min_angle_to_pass = 0.10
+deflect_angle = 2
 
 [skills.dribbling]
 max_push_distance = 0.9
@@ -44,7 +45,7 @@ kp = 2.0
 ki = 0
 kd = 0.0
 max_integral = 1.0
-#kp = 0.22
+#kp = 0.35
 #ki = 1
 #kd = 0.1
 #max_integral = 0.4
@@ -55,7 +56,7 @@ ki = 0.0
 kd = 0.1
 max_integral = 0.5
 #kp = 1
-#ki = 1
+#ki = 0.7
 #kd = 0.0
 #max_integral = 2.5
 

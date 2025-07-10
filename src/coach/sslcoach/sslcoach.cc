@@ -20,8 +20,8 @@ void SSLCoach::delegatePlaysAndRoles() {
             play_ = new PlayHalt(world_);
             break;
         default:
-            play_ = new PlayNaiveOffense(world_);
-            // play_ = new PlaySupportStrikerOffense(world_);
+            // play_ = new PlayNaiveOffense(world_);
+            play_ = new PlaySupportStrikerOffense(world_);
             break;
         }
 

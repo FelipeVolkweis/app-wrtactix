@@ -32,6 +32,7 @@ float min_velocity;
 int enable_duration;
 float min_angle_to_shoot_to_goal;
 float min_angle_to_pass;
+float deflect_angle;
 } // namespace Kicking
 
 namespace Dribbling {
@@ -138,6 +139,8 @@ void initialize() {
         Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_angle_to_shoot_to_goal"]);
     Skills::Kicking::min_angle_to_pass =
         Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["min_angle_to_pass"]);
+    Skills::Kicking::min_angle_to_pass =
+        Config::retrieve<float>(Config::CONFIGS["skills"]["kicking"]["deflect_angle"]);
 
     // Skills::Dribbling
     Skills::Dribbling::max_push_distance =

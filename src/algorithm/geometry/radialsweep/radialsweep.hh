@@ -27,6 +27,10 @@ struct AngleInterval {
     float size() const {
         return WRAngle::size(start, end);
     }
+
+    bool isInsideInterval(const WRAngle &angle) const {
+        return WRAngle::isBetween(angle, start, end);
+    }
 };
 
 struct AngleEvent {

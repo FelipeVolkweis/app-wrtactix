@@ -29,7 +29,7 @@ ShootToGoal::ShootToGoal(const PlayerID &playerId, SSLController &controller, co
                     ->avoidTheirGoal()
                     ->avoidBall([this]() {
                         return !ballInteraction().isBehindBall(world().playerPositionVec2(player()),
-                                                            aiming().getEnemyGoalKickPosition(player()), 0.25f,
+                                                            aiming().getEnemyGoalKickPosition(player()), 0.3f,
                                                             0.7f);
                     }),
                 // action<RotateAround>()

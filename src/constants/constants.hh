@@ -42,6 +42,7 @@ extern float min_velocity;
 extern int enable_duration;
 extern float min_angle_to_shoot_to_goal;
 extern float min_angle_to_pass;
+extern float deflect_angle;
 } // namespace Kicking
 
 namespace Dribbling {

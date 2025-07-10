@@ -12,8 +12,8 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
     return getEnemyGoalKickPosition(callerId, trash);
 }
 
-Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOpening) const {
-    QVector<Vec2> obstacles;
+RadialSweep Aiming::getEnemyGoalSweep(const PlayerID &callerId) const {
+ QVector<Vec2> obstacles;
     const auto &w = world_;
     for (auto p : w.availablePlayers(w.ourColor())) {
         if (p != callerId) {
@@ -42,6 +42,14 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOp
     }
 
     RadialSweep radialSweep(observer, obstacles, Const::Physics::robot_radius, {minInterval, maxInterval}, r);
+    return radialSweep;
+}
+
+Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOpening) const {
+    const auto &w = world_;
+    const Vec2 &observer = w.ballPositionVec2();
+
+    auto radialSweep = getEnemyGoalSweep(callerId);
     auto freeAngles = radialSweep.getFreeAngles();
     auto largestInterval = RadialSweep::getLargestAngleInterval(freeAngles);
 
@@ -118,4 +126,66 @@ bool Aiming::canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &r
     }
 
     return true;
+}
+
+Vec2 Aiming::getEnemyGoalDeflectPosition(const PlayerID &callerId, bool &hasValidOpening) const {
+    auto ballVel = world_.ballVelocityVec2();
+    auto radialSweep = getEnemyGoalSweep(callerId);
+    auto intervals = radialSweep.getFreeAngles();
+
+    if (intervals.empty()) {
+        hasValidOpening = false;
+        return Vec2();
+    }
+
+    for (int i = 0; i < intervals.size() - 1; i++) {
+        if (intervals[i].end == intervals[i + 1].start) {
+            intervals[i].end = intervals[i + 1].end;
+            intervals.remove(i + 1);
+            i--;
+        }
+    }
+
+    AngleInterval largest = intervals[0];
+    float largestSize = WRAngle::size(largest.start, largest.end);
+    for (const AngleInterval &interval : intervals) {
+        float currentSize = WRAngle::size(interval.start, interval.end);
+        if (currentSize > largestSize && isValidDeflectInterval(callerId, interval)) {
+            largest = interval;
+            largestSize = currentSize;
+            hasValidOpening = true;
+        }
+    }
+    const auto &w = world_;
+    const auto &observer = w.ballPositionVec2();
+
+    auto centerAngle = RadialSweep::getCenterOfInterval(largest);
+
+    float m = tan(centerAngle.radians());
+    float b = observer.y() - m * observer.x();
+
+    float x = w.ourSide() == Sides::LEFT ? w.rightGoal().leftPost().x() : w.leftGoal().leftPost().x();
+    float y = m * x + b;
+
+    return Vec2(x, y);
+}
+
+Vec2 Aiming::getEnemyGoalDeflectPosition(const PlayerID &callerId) const { 
+    bool trash;
+    return getEnemyGoalDeflectPosition(callerId, trash);
+}
+
+bool Aiming::isValidDeflectInterval(const PlayerID &callerId, const AngleInterval &interval) const {
+    const auto &w = world_;
+    const auto &observer = w.ballPositionVec2();
+
+    float defAngle = Const::Skills::Kicking::deflect_angle;
+    const auto &ballVelInv = -w.ballVelocityVec2();
+    auto vecPos = TwoD::rotateVec2(ballVelInv, defAngle); 
+    auto vecNeg = TwoD::rotateVec2(ballVelInv, -defAngle); 
+
+    auto angPos = WRAngle(atan2f(vecPos.y(), vecPos.x()));
+    auto angNeg = WRAngle(atan2f(vecNeg.y(), vecNeg.x()));
+
+    return interval.isInsideInterval(angPos) || interval.isInsideInterval(angNeg);
 }
