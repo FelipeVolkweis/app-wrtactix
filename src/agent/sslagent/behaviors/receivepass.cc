@@ -6,39 +6,45 @@ Q_LOGGING_CATEGORY(RECEIVEPASS, "ReceivePass")
 
 ReceivePass::ReceivePass(const PlayerID &playerId, SSLController &controller, const World &worldRef) : 
     SSLBehavior(playerId, controller, worldRef, "ReceivePass") {
-    auto root = BehaviorTree::Sequence("ReceivePassSequence", {
-            BehaviorTree::Fallback("PositionToReceiveFallback", {
-                BehaviorTree::Condition("IsTheBallComingAtMe",
+    auto root = BehaviorTree::Fallback("ReceivePassFallback", {
+            BehaviorTree::Sequence("PositionToReceiveSequence", {
+                BehaviorTree::Condition("IsTheBallNotComingAtMe",
                     [this]() {
-                        return ballInteraction().isTheBallInCollisionRoute(world().playerPositionVec2(player()));
+                        return !ballInteraction().isTheBallInCollisionRoute(world().playerPositionVec2(player()));
                     }),
-                action<GoToLookAt>()
-                    ->setPathPlanner(new PFLorinho())
-                    ->setGoal([this]() {
-                        if (player() == PlayerID(0, 1))
-                            return Vec2(-0.5, 0);
-                        return Vec2(-1.5, -1);
-                    })
-                    ->setLookAt([this]() {
-                        return world().ballPositionVec2();
-                    })
-                    ->avoidTeammates()
-                    ->avoidOpponents()
-                    ->avoidTheirGoal()
-                    ->avoidBall()
+                BehaviorTree::ForceSuccess(
+                    action<GoToLookAt>()
+                        ->setPathPlanner(new PFLorinho())
+                        ->setGoal([this]() {
+                            if (player() == PlayerID(0, 1))
+                                return Vec2(-0.5, 0);
+                            return Vec2(-1.5, -1);
+                        })
+                        ->setLookAt([this]() {
+                            bool hasValidOpening = false;
+                            auto posToDeflectTo = aiming().getEnemyGoalDeflectPosition(player(), hasValidOpening);
+                            
+                            if (hasValidOpening) {
+                                return posToDeflectTo;
+                            }
+                            return world().ballPositionVec2();
+                        })
+                        ->avoidTeammates()
+                        ->avoidOpponents()
+                        ->avoidTheirGoal()
+                        ->avoidBall()
+                ),
             }),
-            BehaviorTree::Fallback("PositionToDeflectFallback", {
+            BehaviorTree::Sequence("PositionToDeflectSequence", {
                 BehaviorTree::Condition("CanTheBallBeDeflected",
                     [this]() {
                         bool hasValidOpening = false;
                         aiming().getEnemyGoalDeflectPosition(player(), hasValidOpening);
-                        qCInfo(RECEIVEPASS) << hasValidOpening;
-                        return !hasValidOpening;
+                        bool isComingAtMe = ballInteraction().isTheBallInCollisionRoute(world().playerPositionVec2(player()));
+                        return hasValidOpening && isComingAtMe;
                     }),
-                BehaviorTree::ForceFailure(
-                    action<Kick>()
-                        ->setPower(10)
-                ),
+                action<Kick>()
+                    ->setPower(10),
                 BehaviorTree::ForceSuccess(
                     action<GoToLookAt>()
                         ->setPathPlanner(new PFLorinho())

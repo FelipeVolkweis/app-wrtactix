@@ -1,5 +1,6 @@
 #include "algorithm/geometry/radialsweep/radialsweep.hh"
 #include "constants/constants.hh"
+#include <algorithm>
 
 #include "aiming.hh"
 
@@ -12,8 +13,9 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId) const {
     return getEnemyGoalKickPosition(callerId, trash);
 }
 
-RadialSweep Aiming::getEnemyGoalSweep(const PlayerID &callerId) const {
- QVector<Vec2> obstacles;
+RadialSweep Aiming::getEnemyGoalSweep(const PlayerID &callerId, const Vec2 &observer) const {
+    QVector<Vec2> obstacles;
+    const auto &pos = TwoD::vectorToPosition(observer);
     const auto &w = world_;
     for (auto p : w.availablePlayers(w.ourColor())) {
         if (p != callerId) {
@@ -24,21 +26,19 @@ RadialSweep Aiming::getEnemyGoalSweep(const PlayerID &callerId) const {
         obstacles.push_back(w.playerPositionVec2(p));
     }
 
-    const Vec2 &observer = w.ballPositionVec2();
-
     float minInterval, maxInterval;
     float r;
 
     if (w.ourSide() == Sides::LEFT) {
-        minInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.rightGoal().rightPost());
-        maxInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.rightGoal().leftPost());
-        r = qMax(TwoD::distance(w.ballPosition(), w.rightGoal().rightPost()),
-                 TwoD::distance(w.ballPosition(), w.rightGoal().leftPost()));
+        minInterval = TwoD::angleBetweenPositions(pos, w.rightGoal().rightPost());
+        maxInterval = TwoD::angleBetweenPositions(pos, w.rightGoal().leftPost());
+        r = qMax(TwoD::distance(pos, w.rightGoal().rightPost()),
+                 TwoD::distance(pos, w.rightGoal().leftPost()));
     } else {
-        minInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.leftGoal().rightPost());
-        maxInterval = TwoD::angleBetweenPositions(w.ballPosition(), w.leftGoal().leftPost());
-        r = qMax(TwoD::distance(w.ballPosition(), w.leftGoal().leftPost()),
-                 TwoD::distance(w.ballPosition(), w.leftGoal().rightPost()));
+        minInterval = TwoD::angleBetweenPositions(pos, w.leftGoal().rightPost());
+        maxInterval = TwoD::angleBetweenPositions(pos, w.leftGoal().leftPost());
+        r = qMax(TwoD::distance(pos, w.leftGoal().leftPost()),
+                 TwoD::distance(pos, w.leftGoal().rightPost()));
     }
 
     RadialSweep radialSweep(observer, obstacles, Const::Physics::robot_radius, {minInterval, maxInterval}, r);
@@ -49,7 +49,7 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOp
     const auto &w = world_;
     const Vec2 &observer = w.ballPositionVec2();
 
-    auto radialSweep = getEnemyGoalSweep(callerId);
+    auto radialSweep = getEnemyGoalSweep(callerId, observer);
     auto freeAngles = radialSweep.getFreeAngles();
     auto largestInterval = RadialSweep::getLargestAngleInterval(freeAngles);
 
@@ -60,11 +60,7 @@ Vec2 Aiming::getEnemyGoalKickPosition(const PlayerID &callerId, bool &hasValidOp
     }
 
     if (freeAngles.isEmpty()) {
-        if (w.ourSide() == Sides::LEFT) {
-            return Vec2(w.rightGoal().leftPost().x(), 0);
-        } else {
-            return Vec2(w.leftGoal().leftPost().x(), 0);
-        }
+        return theirMiddleGoal();
     }
 
     auto centerAngle = RadialSweep::getCenterOfInterval(largestInterval);
@@ -105,7 +101,7 @@ PlayerID Aiming::getBestReceiver() const {
 }
 
 bool Aiming::canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &receiver) const {
-    float cosineThreshold = -0.9f;
+    float cosineThreshold = cosf(Const::Skills::Kicking::min_angle_to_pass);
     Vec2 receiverPos = world_.playerPositionVec2(receiver);
     Vec2 playerPos = world_.playerPositionVec2(player);
     Vec2 ballPos = world_.ballPositionVec2();
@@ -129,44 +125,61 @@ bool Aiming::canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &r
 }
 
 Vec2 Aiming::getEnemyGoalDeflectPosition(const PlayerID &callerId, bool &hasValidOpening) const {
-    auto ballVel = world_.ballVelocityVec2();
-    auto radialSweep = getEnemyGoalSweep(callerId);
+    const auto &w = world_;
+    auto player = w.playerPositionVec2(callerId);
+
+    auto ballDir = w.playerPositionVec2(callerId) - w.ballPositionVec2();
+
+    auto radialSweep = getEnemyGoalSweep(callerId, player);
     auto intervals = radialSweep.getFreeAngles();
 
-    if (intervals.empty()) {
-        hasValidOpening = false;
-        return Vec2();
+    QVector<AngleEvent> events;
+    
+    WRAngle angle(atan2f(ballDir.y(), ballDir.x()));
+    float alpha = Const::Skills::Kicking::deflect_angle;
+
+    WRAngle a1 = angle - WRAngle(alpha);
+    WRAngle a2 = angle + WRAngle(alpha);
+
+    if (a1.quadrant() == Quadrant::IV &&
+            a2.quadrant() == Quadrant::I) { // Checks if the obstacle is in the border of 0, 2pi
+            events.push_back({0, true});
+            events.push_back({M_2_PI_EXCLUSIVE, false});
+        }
+
+        events.push_back({a1, true});
+        events.push_back({a2, false});
+
+    std::sort(events.begin(), events.end(), [](const AngleEvent &a, const AngleEvent &b) { return a.angle < b.angle; });
+
+    QVector<AngleInterval> deflectAngles;
+    for (int i = 0; i < events.size() / 2; i++) {
+        deflectAngles.push_back(AngleInterval(events[i].angle, events[i + 1].angle));
     }
 
-    for (int i = 0; i < intervals.size() - 1; i++) {
-        if (intervals[i].end == intervals[i + 1].start) {
-            intervals[i].end = intervals[i + 1].end;
-            intervals.remove(i + 1);
-            i--;
+    QVector<AngleInterval> validDeflectAngles;
+    for (auto &defAngle : deflectAngles) {
+        for (auto &freeAngle : intervals) {
+            auto intersection = freeAngle.getIntervalIntersection(defAngle);
+            if (intersection.size() > Const::Skills::Kicking::min_angle_to_deflect) {
+                validDeflectAngles.push_back(intersection);
+                hasValidOpening = true;
+            }
         }
     }
 
-    AngleInterval largest = intervals[0];
-    float largestSize = WRAngle::size(largest.start, largest.end);
-    for (const AngleInterval &interval : intervals) {
-        float currentSize = WRAngle::size(interval.start, interval.end);
-        if (currentSize > largestSize && isValidDeflectInterval(callerId, interval)) {
-            largest = interval;
-            largestSize = currentSize;
-            hasValidOpening = true;
-        }
+    if (validDeflectAngles.isEmpty() || !hasValidOpening) {
+        return theirMiddleGoal();
     }
-    const auto &w = world_;
-    const auto &observer = w.ballPositionVec2();
 
-    auto centerAngle = RadialSweep::getCenterOfInterval(largest);
-
+    auto largestInterval = RadialSweep::getLargestAngleInterval(validDeflectAngles);
+    auto centerAngle = RadialSweep::getCenterOfInterval(largestInterval);
     float m = tan(centerAngle.radians());
-    float b = observer.y() - m * observer.x();
+    float b = player.y() - m * player.x();
 
     float x = w.ourSide() == Sides::LEFT ? w.rightGoal().leftPost().x() : w.leftGoal().leftPost().x();
     float y = m * x + b;
-
+    hasValidOpening = true;
     return Vec2(x, y);
 }
 
@@ -175,17 +188,11 @@ Vec2 Aiming::getEnemyGoalDeflectPosition(const PlayerID &callerId) const {
     return getEnemyGoalDeflectPosition(callerId, trash);
 }
 
-bool Aiming::isValidDeflectInterval(const PlayerID &callerId, const AngleInterval &interval) const {
+Vec2 Aiming::theirMiddleGoal() const {
     const auto &w = world_;
-    const auto &observer = w.ballPositionVec2();
 
-    float defAngle = Const::Skills::Kicking::deflect_angle;
-    const auto &ballVelInv = -w.ballVelocityVec2();
-    auto vecPos = TwoD::rotateVec2(ballVelInv, defAngle); 
-    auto vecNeg = TwoD::rotateVec2(ballVelInv, -defAngle); 
-
-    auto angPos = WRAngle(atan2f(vecPos.y(), vecPos.x()));
-    auto angNeg = WRAngle(atan2f(vecNeg.y(), vecNeg.x()));
-
-    return interval.isInsideInterval(angPos) || interval.isInsideInterval(angNeg);
+    if (w.ourSide() == Sides::LEFT) {
+        return Vec2(w.rightGoal().leftPost().x(), 0);
+    } 
+    return Vec2(w.leftGoal().leftPost().x(), 0);
 }

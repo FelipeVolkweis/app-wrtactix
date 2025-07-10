@@ -23,10 +23,11 @@ optimal_distance = 0.09
 enable_distance = 0.15
 max_velocity = 6.5
 min_velocity = 8
-enable_duration = 500
+enable_duration = 250
 min_angle_to_shoot_to_goal = 0.07
-min_angle_to_pass = 0.10
-deflect_angle = 2
+min_angle_to_pass = 0.20
+deflect_angle = 0.5
+min_angle_to_deflect = 0.14
 
 [skills.dribbling]
 max_push_distance = 0.9

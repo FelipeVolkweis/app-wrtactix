@@ -31,6 +31,8 @@ struct AngleInterval {
     bool isInsideInterval(const WRAngle &angle) const {
         return WRAngle::isBetween(angle, start, end);
     }
+
+    AngleInterval getIntervalIntersection(const AngleInterval &other) const;
 };
 
 struct AngleEvent {

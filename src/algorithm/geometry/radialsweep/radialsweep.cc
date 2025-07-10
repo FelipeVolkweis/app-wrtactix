@@ -182,3 +182,34 @@ AngleInterval RadialSweep::getLargestAngleInterval(QVector<AngleInterval> interv
 WRAngle RadialSweep::getCenterOfInterval(const AngleInterval &interval) {
     return (interval.start + WRAngle::size(interval.start, interval.end) / 2.0f);
 }
+
+// Ver se o maior start esta dentro do intervalo que contem o menor start
+// Ver se o menor end esta dentro do intervalo que contem o maior end
+AngleInterval AngleInterval::getIntervalIntersection(const AngleInterval &other) const {
+    // Check start
+    AngleInterval interval;
+
+    const AngleInterval &lesserStartInterval = this->start < other.start ? *this : other;
+    const AngleInterval &biggerStartInterval = this->start < other.start ? other : *this;
+
+    const WRAngle &biggerStart = biggerStartInterval.start;
+
+    if (lesserStartInterval.isInsideInterval(biggerStart)) {
+        interval.start = biggerStart;
+    } else {
+        return AngleInterval();
+    }
+
+    const AngleInterval &lesserEndInterval = this->end < other.end ? *this : other;
+    const AngleInterval &biggerEndInterval = this->end < other.end ? other : *this;
+    
+    const WRAngle &lesserEnd = lesserEndInterval.end;
+
+    if (biggerEndInterval.isInsideInterval(lesserEnd)) {
+        interval.end = lesserEnd;
+    } else {
+        return AngleInterval();
+    }
+
+    return interval;
+}

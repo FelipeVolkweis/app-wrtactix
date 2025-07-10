@@ -23,8 +23,9 @@ public:
 private:
     const World &world_;
 
-    RadialSweep getEnemyGoalSweep(const PlayerID &callerId) const;
-    bool isValidDeflectInterval(const PlayerID &callerId, const AngleInterval &interval) const;
+    RadialSweep getEnemyGoalSweep(const PlayerID &callerId, const Vec2 &observer) const;
+
+    Vec2 theirMiddleGoal() const;
 };
 
 #endif

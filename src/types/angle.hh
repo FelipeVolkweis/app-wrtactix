@@ -121,6 +121,9 @@ public:
     }
 
     static float size(const WRAngle &start, const WRAngle &end) {
+        if (start == end) {
+            return 0;
+        }
         if (start < end) {
             return end.radians() - start.radians();
         } else {
