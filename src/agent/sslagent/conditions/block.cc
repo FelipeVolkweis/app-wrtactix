@@ -17,34 +17,36 @@ Vec2 Block::getGoaliePosition() const {
 }
 
 // TODO: Tratar caso em que a bola está dentro da nossa área de defesa
-Vec2 Block::getBarrierPosition() const {
+Vec2 Block::getBarrierPosition(float positionOffset) const {    
     auto l = getBallImpactLine();
-    
-    float distance = world_.leftGoal().getAreaWidth() + Const::Physics::robot_radius*2;
-    float xThreshold = (world_.ourSide() == Sides::LEFT) ? (world_.leftGoal().leftPost().x() + distance) : 
-     (world_.rightGoal().leftPost().x() - distance);
-    float yThreshold = (world_.ballPosition().y() > 0) ? (world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2) : 
-     -(world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2);
 
-    // Create Goal area lines
+    // Create our goal area lines
+    float horizontalLineHeight = world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2; 
     Line areaHorizontalLine1;
-    areaHorizontalLine1.b = yThreshold;
+    areaHorizontalLine1.b = horizontalLineHeight;
     areaHorizontalLine1.m = 0;
 
     Line areaHorizontalLine2;
-    areaHorizontalLine2.b = -yThreshold;
+    areaHorizontalLine2.b = -horizontalLineHeight;
     areaHorizontalLine2.m = 0;
 
     Line areaVerticalLine;
-    areaVerticalLine.x0 = xThreshold;
+    float const distance = world_.leftGoal().getAreaWidth() + Const::Physics::robot_radius*2;
+    areaVerticalLine.x0 = (world_.ourSide() == Sides::LEFT) ? (world_.leftGoal().leftPost().x() + distance) : 
+     (world_.rightGoal().leftPost().x() - distance);
     areaVerticalLine.vertical = true;
 
+    // TODO trocar a implementação da interseção pelo intersection da classe Hyperplane do Eigen. 
+    // Reta == Hyperplane<float,2>
     // Calculate the intersections between goal area lines and ball line
-    Vec2 intersectionHorizontal1 = Vec2((yThreshold - l.b) / l.m , yThreshold);
-    Vec2 intersectionHorizontal2 = Vec2((-yThreshold - l.b) / l.m, -yThreshold);
+    if (l.m == 0.0f) { // Deal with l.m equal to 0 because it will divide numbers later
+        l.m = std::numeric_limits<float>::epsilon();
+    }
+    Vec2 intersectionHorizontal1 = Vec2((horizontalLineHeight - l.b) / l.m , horizontalLineHeight);
+    Vec2 intersectionHorizontal2 = Vec2((-horizontalLineHeight - l.b) / l.m, -horizontalLineHeight);
     Vec2 intersectionVertical = Vec2(areaVerticalLine.x0, l.m * areaVerticalLine.x0 + l.b);
 
-    // Get interction point closest to center of defense area
+    // Get intersection point closest to the center of our defense area
     Vec2 referencePoint = (world_.ourSide() == Sides::LEFT) ? 
      (Vec2(world_.leftGoal().leftPost().x() + world_.leftGoal().getAreaWidth()/2, 0.0f)) : 
      (Vec2(world_.rightGoal().leftPost().x() - world_.leftGoal().getAreaWidth()/2, 0.0f));
@@ -53,20 +55,20 @@ Vec2 Block::getBarrierPosition() const {
     float dh2 = TwoD::distance(intersectionHorizontal2, referencePoint);
     float dv = TwoD::distance(intersectionVertical, referencePoint);
 
-    float yCoordinate;
-    float xCoordinate;
+    // Factor to avoid robots switching places when on postive or negative side in y when there is a double barrier
+    float sideFactor = (world_.ourSide() == Sides::LEFT) ? 1.0f : -1.0f;
     float smaller = dh1;
-    xCoordinate = intersectionHorizontal1.x();
-    yCoordinate = intersectionHorizontal1.y();
+    float xCoordinate = intersectionHorizontal1.x() + positionOffset;
+    float yCoordinate = intersectionHorizontal1.y();
     if(smaller > dh2) {
         smaller = dh2;
-        xCoordinate = intersectionHorizontal2.x();
+        xCoordinate = intersectionHorizontal2.x() - positionOffset;
         yCoordinate = intersectionHorizontal2.y();
     }
     if(smaller > dv) {
         smaller = dv;
         xCoordinate = intersectionVertical.x();
-        yCoordinate = intersectionVertical.y();
+        yCoordinate = intersectionVertical.y() - (sideFactor * positionOffset);
     }
 
     // Check for NaN

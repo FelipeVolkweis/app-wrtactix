@@ -1,11 +1,11 @@
-#ifndef SSLBARRIER_HH
-#define SSLBARRIER_HH
+#ifndef SSLBARRIERLEFT_HH
+#define SSLBARRIERLEFT_HH
 
 #include "agent/sslagent/sslrole.hh"
 
-class SSLBarrier : public SSLRole {
+class SSLBarrierLeft : public SSLRole {
 public:
-    SSLBarrier();
+    SSLBarrierLeft();
     PlayerID getRoleAssignment(const World &world, const QHash<PlayerID, bool> &assignmentTable);
 };
 

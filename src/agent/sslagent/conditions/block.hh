@@ -10,7 +10,7 @@ public:
     bool hitsOurGoal(float m, float b) const;
     Vec2 getGoaliePosition() const;
     Vec2 getKickOutOfOurArea(const PlayerID &callerId) const;
-    Vec2 getBarrierPosition() const;
+    Vec2 getBarrierPosition(float positionOffset) const;
 
 private:
     struct Line {
