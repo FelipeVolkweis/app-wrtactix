@@ -97,7 +97,7 @@ Vec2 Aiming::getPassTarget(const PlayerID &player) const {
 }
 
 PlayerID Aiming::getBestReceiver() const {
-    return PlayerID(0, 1);
+    return PlayerID(world_.ourColor(), 4);
 }
 
 bool Aiming::canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &receiver) const {
@@ -173,7 +173,7 @@ Vec2 Aiming::getEnemyGoalDeflectPosition(const PlayerID &callerId, bool &hasVali
     }
 
     auto largestInterval = RadialSweep::getLargestAngleInterval(validDeflectAngles);
-    auto centerAngle = RadialSweep::getCenterOfInterval(largestInterval);
+    auto centerAngle = largestInterval.end;
     float m = tan(centerAngle.radians());
     float b = player.y() - m * player.x();
 

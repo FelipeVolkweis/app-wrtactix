@@ -51,10 +51,15 @@ Vec2 BallInteraction::getPositionToInterceptMovingBall(const PlayerID &playerId)
     Vec2 ballPos = world_.ballPositionVec2();
     Vec2 ballVel = world_.ballVelocityVec2();
     Vec2 playerPos = world_.playerPositionVec2(playerId);
-    float ori = world_.playerOrientation(playerId).value();
-    Vec2 kickingDevicePos = Vec2(cosf(ori), sinf(ori)).normalized() * Const::Physics::kicking_device_distance + playerPos;
 
-    Vec2 ballToPlayer = kickingDevicePos - ballPos;
+    if (ballVel.norm() < Const::Physics::minimum_ball_velocity_to_consider_movement) {
+        return playerPos;
+    }
+
+    float ori = world_.playerOrientation(playerId).value();
+    Vec2 kickingDevicePos = (Vec2(cosf(ori), sinf(ori))).normalized() * (Const::Physics::kicking_device_distance) + playerPos;
+
+    Vec2 ballToPlayer = playerPos - ballPos;
     auto proj = ballToPlayer.dot(ballVel) * ballVel / ballVel.squaredNorm();
 
     return ballPos + proj;

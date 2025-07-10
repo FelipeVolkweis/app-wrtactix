@@ -8,7 +8,7 @@ ball_radius = 0.0215
 robot_radius = 0.09
 stop_game_distance = 0.55
 off_field_tolerance = 0.06
-kicking_device_distance = 0.08
+kicking_device_distance = 0.07
 minimum_ball_velocity_to_consider_movement = 0.05
 
 [ai]
@@ -22,11 +22,11 @@ max_power = 7.5
 optimal_distance = 0.09
 enable_distance = 0.15
 max_velocity = 6.5
-min_velocity = 8
+min_velocity = 0.3
 enable_duration = 250
 min_angle_to_shoot_to_goal = 0.07
-min_angle_to_pass = 0.20
-deflect_angle = 0.5
+min_angle_to_pass = 0.10
+deflect_angle = 0.55
 min_angle_to_deflect = 0.14
 
 [skills.dribbling]
@@ -82,7 +82,7 @@ epsilon = 0.1
 [pathplanner.pflorinho]
 ball_repulsive = 0.5
 repulsive = 0.15
-area_repulsive = 0.25
+area_repulsive = 0.2
 collision_check_radius = 1.5
 robot_collision_radius = 0.4
 ball_collision_radius = 0.16

@@ -16,7 +16,7 @@ ReceivePass::ReceivePass(const PlayerID &playerId, SSLController &controller, co
                     action<GoToLookAt>()
                         ->setPathPlanner(new PFLorinho())
                         ->setGoal([this]() {
-                            if (player() == PlayerID(0, 1))
+                            if (player() == PlayerID(world().ourColor(), 4))
                                 return Vec2(-0.5, 0);
                             return Vec2(-1.5, -1);
                         })
