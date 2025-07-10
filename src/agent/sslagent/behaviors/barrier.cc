@@ -51,6 +51,8 @@ BarrierLeft::BarrierLeft(const PlayerID &playerId,
                     return world().ballPositionVec2();
                 })
                 ->setPathPlanner(new PFLorinho())
+                ->avoidTeammates()
+                ->avoidOurGoal()
         }
     );
     setRoot(root);

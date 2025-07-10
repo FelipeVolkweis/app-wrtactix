@@ -16,25 +16,15 @@ Vec2 Block::getGoaliePosition() const {
     return getGoaliePositionInCircumference(mfinal, bfinal);
 }
 
-// TODO: Tratar caso em que a bola está dentro da nossa área de defesa
 Vec2 Block::getBarrierPosition(float positionOffset) const {    
     auto l = getBallImpactLine();
 
+    static const float verticalLineOffset = world_.leftGoal().getAreaWidth() + Const::Physics::robot_radius*2;
+    
     // Create our goal area lines
-    float horizontalLineHeight = world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2; 
-    Line areaHorizontalLine1;
-    areaHorizontalLine1.b = horizontalLineHeight;
-    areaHorizontalLine1.m = 0;
-
-    Line areaHorizontalLine2;
-    areaHorizontalLine2.b = -horizontalLineHeight;
-    areaHorizontalLine2.m = 0;
-
-    Line areaVerticalLine;
-    float const distance = world_.leftGoal().getAreaWidth() + Const::Physics::robot_radius*2;
-    areaVerticalLine.x0 = (world_.ourSide() == Sides::LEFT) ? (world_.leftGoal().leftPost().x() + distance) : 
-     (world_.rightGoal().leftPost().x() - distance);
-    areaVerticalLine.vertical = true;
+    static const float areaHorizontalLineY = world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2; 
+    static const float areaVerticalLineX = (world_.ourSide() == Sides::LEFT) ? (world_.leftGoal().leftPost().x() + verticalLineOffset) : 
+     (world_.rightGoal().leftPost().x() - verticalLineOffset);
 
     // TODO trocar a implementação da interseção pelo intersection da classe Hyperplane do Eigen. 
     // Reta == Hyperplane<float,2>
@@ -42,31 +32,32 @@ Vec2 Block::getBarrierPosition(float positionOffset) const {
     if (l.m == 0.0f) { // Deal with l.m equal to 0 because it will divide numbers later
         l.m = std::numeric_limits<float>::epsilon();
     }
-    Vec2 intersectionHorizontal1 = Vec2((horizontalLineHeight - l.b) / l.m , horizontalLineHeight);
-    Vec2 intersectionHorizontal2 = Vec2((-horizontalLineHeight - l.b) / l.m, -horizontalLineHeight);
-    Vec2 intersectionVertical = Vec2(areaVerticalLine.x0, l.m * areaVerticalLine.x0 + l.b);
+    const Vec2 intersectionHorizontalUpper = Vec2((areaHorizontalLineY - l.b) / l.m , areaHorizontalLineY);
+    const Vec2 intersectionHorizontalLower = Vec2((-areaHorizontalLineY - l.b) / l.m, -areaHorizontalLineY);
+    const Vec2 intersectionVertical = Vec2(areaVerticalLineX, l.m * areaVerticalLineX + l.b);
 
     // Get intersection point closest to the center of our defense area
-    Vec2 referencePoint = (world_.ourSide() == Sides::LEFT) ? 
+    static const Vec2 referencePoint = (world_.ourSide() == Sides::LEFT) ? 
      (Vec2(world_.leftGoal().leftPost().x() + world_.leftGoal().getAreaWidth()/2, 0.0f)) : 
      (Vec2(world_.rightGoal().leftPost().x() - world_.leftGoal().getAreaWidth()/2, 0.0f));
     
-    float dh1 = TwoD::distance(intersectionHorizontal1, referencePoint);
-    float dh2 = TwoD::distance(intersectionHorizontal2, referencePoint);
-    float dv = TwoD::distance(intersectionVertical, referencePoint);
+    const float distanceHU = TwoD::distance(intersectionHorizontalUpper, referencePoint);
+    const float distanceHL = TwoD::distance(intersectionHorizontalLower, referencePoint);
+    const float distanceV = TwoD::distance(intersectionVertical, referencePoint);
 
-    // Factor to avoid robots switching places when on postive or negative side in y when there is a double barrier
-    float sideFactor = (world_.ourSide() == Sides::LEFT) ? 1.0f : -1.0f;
-    float smaller = dh1;
-    float xCoordinate = intersectionHorizontal1.x() + positionOffset;
-    float yCoordinate = intersectionHorizontal1.y();
-    if(smaller > dh2) {
-        smaller = dh2;
-        xCoordinate = intersectionHorizontal2.x() - positionOffset;
-        yCoordinate = intersectionHorizontal2.y();
+    static const float sideFactor = (world_.ourSide() == Sides::LEFT) ? 1.0f : -1.0f; // Factor to avoid robots switching places 
+                                                                                      // on y when there is a double barrier
+
+    float smaller = distanceHU;
+    float xCoordinate = intersectionHorizontalUpper.x() + positionOffset;
+    float yCoordinate = intersectionHorizontalUpper.y();
+    if(smaller > distanceHL) {
+        smaller = distanceHL;
+        xCoordinate = intersectionHorizontalLower.x() - positionOffset;
+        yCoordinate = intersectionHorizontalLower.y();
     }
-    if(smaller > dv) {
-        smaller = dv;
+    if(smaller > distanceV) {
+        smaller = distanceV;
         xCoordinate = intersectionVertical.x();
         yCoordinate = intersectionVertical.y() - (sideFactor * positionOffset);
     }
