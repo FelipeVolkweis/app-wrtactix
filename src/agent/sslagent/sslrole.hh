@@ -4,7 +4,7 @@
 #include "types/types.hh"
 #include "world/world.hh"
 
-enum class SSLRoleType { UNKNOWN, GOALKEEPER, STRIKER, SUPPORT };
+enum class SSLRoleType { UNKNOWN, GOALKEEPER, STRIKER, BARRIERLEFT, BARRIERRIGHT, BARRIERMIDDLE };
 
 class SSLRole {
 public:

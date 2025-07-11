@@ -6,6 +6,7 @@
 #include "donothing.hh"
 #include "shoottogoal.hh"
 #include "goalkeeper.hh"
+#include "barrier.hh"
 #include "pass.hh"
 #include "receivepass.hh"
 #include "preciseshoottogoal.hh"

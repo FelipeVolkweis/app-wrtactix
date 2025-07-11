@@ -1,17 +1,16 @@
-#ifndef KEEPER_HH
-#define KEEPER_HH
+#ifndef BLOCK_HH
+#define BLOCK_HH
 
 #include "world/world.hh"
 
-class Keeper {
+class Block {
 public:
-    Keeper(const World &world);
+    Block(const World &world);
 
     bool hitsOurGoal(float m, float b) const;
-    QPair<Vec2, float> getGoalieCircumference() const;
-    Vec2 getGoaliePositionInCircumference(float m, float b) const;
     Vec2 getGoaliePosition() const;
     Vec2 getKickOutOfOurArea(const PlayerID &callerId) const;
+    Vec2 getBarrierPosition(float positionOffset) const;
 
 private:
     struct Line {
@@ -24,6 +23,8 @@ private:
     const World &world_;
 
     Line getBallImpactLine() const;
+    QPair<Vec2, float> getGoalieCircumference() const;
+    Vec2 getGoaliePositionInCircumference(float m, float b) const;
 };
 
 #endif

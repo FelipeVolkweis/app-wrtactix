@@ -4,7 +4,7 @@
 #include "agent/sslagent/actions/actions.hh"
 #include "agent/sslagent/conditions/aiming.hh"
 #include "agent/sslagent/conditions/ballinteraction.hh"
-#include "agent/sslagent/conditions/keeper.hh"
+#include "agent/sslagent/conditions/block.hh"
 #include "agent/sslagent/conditions/locations.hh"
 #include "algorithm/behaviortree/behaviortree.hh"
 #include "types/playerid.hh"
@@ -18,7 +18,7 @@ class SSLBehavior {
 public:
     SSLBehavior(const PlayerID &playerId, SSLController &controller, const World &worldRef, const QString &name)
         : playerId_(playerId), controller_(controller), world_(worldRef), ballInteraction_(world_), aiming_(world_),
-          keeper_(world_), locations_(world_) {}
+          block_(world_), locations_(world_) {}
 
     template <typename ActionType, typename... Args> ActionType *action(Args &&...args) {
         return new ActionType(playerId_, controller_, world_, std::forward<Args>(args)...);
@@ -32,8 +32,8 @@ public:
         return aiming_;
     }
 
-    const Keeper &keeper() const {
-        return keeper_;
+    const Block &block() const {
+        return block_;
     }
 
     const Locations &locations() const {
@@ -63,7 +63,7 @@ private:
 
     const BallInteraction ballInteraction_;
     const Aiming aiming_;
-    const Keeper keeper_;
+    const Block block_;
     const Locations locations_;
 
 protected:

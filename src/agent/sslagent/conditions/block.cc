@@ -1,12 +1,14 @@
 #include "algorithm/geometry/radialsweep/radialsweep.hh"
 #include "constants/constants.hh"
 
-#include "keeper.hh"
+#include "block.hh"
 #include "locations.hh"
 
-Keeper::Keeper(const World &world) : world_(world) {}
+Q_LOGGING_CATEGORY(CONDITIONS_BLOCK, "CONDITIONS_BLOCK")
 
-Vec2 Keeper::getGoaliePosition() const {
+Block::Block(const World &world) : world_(world) {}
+
+Vec2 Block::getGoaliePosition() const {
     auto l = getBallImpactLine();
     float mfinal = l.m;
     float bfinal = l.b;
@@ -14,7 +16,61 @@ Vec2 Keeper::getGoaliePosition() const {
     return getGoaliePositionInCircumference(mfinal, bfinal);
 }
 
-Keeper::Line Keeper::getBallImpactLine() const {
+Vec2 Block::getBarrierPosition(float positionOffset) const {    
+    auto l = getBallImpactLine();
+
+    static const float verticalLineOffset = world_.leftGoal().getAreaWidth() + Const::Physics::robot_radius*2;
+    
+    // Create our goal area lines
+    static const float areaHorizontalLineY = world_.leftGoal().getAreaLength()/2 + Const::Physics::robot_radius*2; 
+    static const float areaVerticalLineX = (world_.ourSide() == Sides::LEFT) ? (world_.leftGoal().leftPost().x() + verticalLineOffset) : 
+     (world_.rightGoal().leftPost().x() - verticalLineOffset);
+
+    // TODO trocar a implementação da interseção pelo intersection da classe Hyperplane do Eigen. 
+    // Reta == Hyperplane<float,2>
+    // Calculate the intersections between goal area lines and ball line
+    if (l.m == 0.0f) { // Deal with l.m equal to 0 because it will divide numbers later
+        l.m = std::numeric_limits<float>::epsilon();
+    }
+    const Vec2 intersectionHorizontalUpper = Vec2((areaHorizontalLineY - l.b) / l.m , areaHorizontalLineY);
+    const Vec2 intersectionHorizontalLower = Vec2((-areaHorizontalLineY - l.b) / l.m, -areaHorizontalLineY);
+    const Vec2 intersectionVertical = Vec2(areaVerticalLineX, l.m * areaVerticalLineX + l.b);
+
+    // Get intersection point closest to the center of our defense area
+    static const Vec2 referencePoint = (world_.ourSide() == Sides::LEFT) ? 
+     (Vec2(world_.leftGoal().leftPost().x() + world_.leftGoal().getAreaWidth()/2, 0.0f)) : 
+     (Vec2(world_.rightGoal().leftPost().x() - world_.leftGoal().getAreaWidth()/2, 0.0f));
+    
+    const float distanceHU = TwoD::distance(intersectionHorizontalUpper, referencePoint);
+    const float distanceHL = TwoD::distance(intersectionHorizontalLower, referencePoint);
+    const float distanceV = TwoD::distance(intersectionVertical, referencePoint);
+
+    static const float sideFactor = (world_.ourSide() == Sides::LEFT) ? 1.0f : -1.0f; // Factor to avoid robots switching places 
+                                                                                      // on y when there is a double barrier
+
+    float smaller = distanceHU;
+    float xCoordinate = intersectionHorizontalUpper.x() + positionOffset;
+    float yCoordinate = intersectionHorizontalUpper.y();
+    if(smaller > distanceHL) {
+        smaller = distanceHL;
+        xCoordinate = intersectionHorizontalLower.x() - positionOffset;
+        yCoordinate = intersectionHorizontalLower.y();
+    }
+    if(smaller > distanceV) {
+        smaller = distanceV;
+        xCoordinate = intersectionVertical.x();
+        yCoordinate = intersectionVertical.y() - (sideFactor * positionOffset);
+    }
+
+    // Check for NaN
+    if ((xCoordinate != xCoordinate) || (yCoordinate != yCoordinate)) {
+        qCCritical(CONDITIONS_BLOCK) << "X or Y coordinate is not a number";
+    }
+
+    return Vec2(xCoordinate, yCoordinate);
+}
+
+Block::Line Block::getBallImpactLine() const {
     Line lfinal;
     auto ball = world_.ballPositionVec2();
 
@@ -44,6 +100,7 @@ Keeper::Line Keeper::getBallImpactLine() const {
         auto attacker = world_.playerPositionVec2(attackerId);
 
         if (TwoD::distance(attacker, ball) < 0.2f) {
+            
             const Angle &attackerOrientation = world_.playerOrientation(attackerId);
             float m = tanf(attackerOrientation.value());
             float b = attacker.y() - m * attacker.x();
@@ -70,7 +127,7 @@ Keeper::Line Keeper::getBallImpactLine() const {
     return lfinal;
 }
 
-QPair<Vec2, float> Keeper::getGoalieCircumference() const {
+QPair<Vec2, float> Block::getGoalieCircumference() const {
     const auto &w = world_;
     if (w.ourSide() == Sides::LEFT) {
         Vec2 p1 = TwoD::positionToVector(w.leftGoal().leftPost());
@@ -87,7 +144,7 @@ QPair<Vec2, float> Keeper::getGoalieCircumference() const {
     }
 }
 
-Vec2 Keeper::getGoaliePositionInCircumference(float m, float b) const {
+Vec2 Block::getGoaliePositionInCircumference(float m, float b) const {
     auto circumference = getGoalieCircumference();
     auto intersections = TwoD::findLineCircleIntersections(circumference.first, circumference.second, m, b);
 
@@ -114,7 +171,7 @@ Vec2 Keeper::getGoaliePositionInCircumference(float m, float b) const {
     }
 }
 
-bool Keeper::hitsOurGoal(float m, float b) const {
+bool Block::hitsOurGoal(float m, float b) const {
     const auto &w = world_;
     if (m != m || b != b) { // NaN
         return false;
@@ -128,7 +185,7 @@ bool Keeper::hitsOurGoal(float m, float b) const {
     }
 }
 
-Vec2 Keeper::getKickOutOfOurArea(const PlayerID &callerId) const {
+Vec2 Block::getKickOutOfOurArea(const PlayerID &callerId) const {
     // begin Preparing FANA call
     QVector<Vec2> obstacles;
     const auto &w = world_;
