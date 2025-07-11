@@ -66,6 +66,7 @@ public:
     QList<PlayerID> availablePlayers(Colors::Color color) const;
     QList<PlayerID> ourAvailablePlayers() const;
     QList<PlayerID> theirAvailablePlayers() const;
+    QList<PlayerID> ourPlayers() const;
 
     const Position ballPosition() const {
         return info_->ballPosition();
@@ -77,6 +78,10 @@ public:
 
     const Velocity ballVelocity() const {
         return info_->ballVelocity();
+    }
+
+    const Vec2 ballVelocityVec2() const {
+        return TwoD::velocityToVector(info_->ballVelocity());
     }
 
     PlayerID closestPlayerToBall(Colors::Color color) const;
@@ -196,7 +201,6 @@ private:
     Colors::Color color_;
 
     QMutex mutex_;
-
     QMutex refereeMutex_;
 };
 

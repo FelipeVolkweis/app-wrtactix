@@ -19,11 +19,12 @@ extern float ball_radius;
 extern float robot_radius;
 extern float stop_game_distance;
 extern float off_field_tolerance;
+extern float kicking_device_distance;
+extern float minimum_ball_velocity_to_consider_movement;
 } // namespace Physics
 
 // AI configuration
 namespace AI {
-extern int max_roles;
 extern int role_swap_hysteresis;
 extern float distance_tolerance;
 extern float angle_tolerance;
@@ -39,13 +40,15 @@ extern float enable_distance;
 extern float max_velocity;
 extern float min_velocity;
 extern int enable_duration;
+extern float min_angle_to_shoot_to_goal;
+extern float min_angle_to_pass;
+extern float deflect_angle;
+extern float min_angle_to_deflect;
 } // namespace Kicking
 
 namespace Dribbling {
 extern float max_push_distance;
-extern float barrier_distance;
 extern float behind_ball_distance;
-extern float minkowski_distance;
 } // namespace Dribbling
 } // namespace Skills
 
@@ -57,8 +60,7 @@ extern float min_linear_speed;
 extern float max_linear_accel;
 extern float max_angular_speed;
 extern float min_angular_speed;
-extern float linear_error;
-extern float angular_error;
+extern float speed_boost;
 } // namespace Movement
 
 namespace PID {
@@ -86,7 +88,6 @@ extern int thread_frequency;
 extern int invalid_id;
 extern float game_off_max_speed;
 extern int max_robots;
-extern float bezier_control_point;
 } // namespace System
 
 // Path planner

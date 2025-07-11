@@ -17,6 +17,8 @@ public:
     SSLController(const PlayerID &id, GEARSystem::Controller &controller, const World &world);
 
     void move(const QVector<Vec2> &path, const Vec2 &lookAt);
+    void move(const QVector<Vec2> &path, const Vec2 &lookAt, float speedBoost);
+    void rotateAroundPoint(const Vec2 &point, const Vec2 &lookAt, float r);
     void kick();
     void kick(float force);
     void dribble();

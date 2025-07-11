@@ -23,6 +23,16 @@ struct AngleInterval {
     bool operator!=(const AngleInterval &other) const {
         return !(*this == other);
     }
+
+    float size() const {
+        return WRAngle::size(start, end);
+    }
+
+    bool isInsideInterval(const WRAngle &angle) const {
+        return WRAngle::isBetween(angle, start, end);
+    }
+
+    AngleInterval getIntervalIntersection(const AngleInterval &other) const;
 };
 
 struct AngleEvent {

@@ -3,5 +3,6 @@
 
 #include "halt.hh"
 #include "naiveoffense.hh"
+#include "supportstrikeroffense.hh"
 
 #endif

@@ -72,6 +72,15 @@ public:
 
         return a;
     }
+
+    static Vec2 rotateVec2(const Vec2 &v, float thetaRad) {
+        float cosTheta = cosf(thetaRad);
+        float sinTheta = sinf(thetaRad);
+        return Vec2(
+            v.x() * cosTheta - v.y() * sinTheta,
+            v.x() * sinTheta + v.y() * cosTheta
+        );
+    }
 };
 
 #endif

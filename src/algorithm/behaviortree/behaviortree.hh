@@ -39,11 +39,15 @@ public:
     }
 
     static inline ForceFailure *ForceFailure(Node *child) {
-        return new WRBeT::ForceFailure("ForceFailure for " + child->name(), *child);
+        return new WRBeT::ForceFailure("ForceFailure for " + child->name(), child);
     }
 
     static inline ForceSuccess *ForceSuccess(Node *child) {
-        return new WRBeT::ForceSuccess("ForceSuccess for " + child->name(), *child);
+        return new WRBeT::ForceSuccess("ForceSuccess for " + child->name(), child);
+    }
+
+    static inline SimpleReturn *SimpleReturn(Node *child) {
+        return new WRBeT::SimpleReturn("SimpleReturn for " + child->name(), child);
     }
 };
 } // namespace WRBeT

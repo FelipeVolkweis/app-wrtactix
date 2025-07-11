@@ -93,6 +93,10 @@ int main(int argc, char *argv[]) {
         if (timer.elapsed() > 10) {
             qCInfo(MAIN) << timer.elapsed() << "ms in total";
         }
+        if (timer.elapsed() < Const::Control::Timing::max_dt * 1000) {
+            int sleepTime = Const::Control::Timing::max_dt * 1000 - timer.elapsed();
+            QThread::msleep(sleepTime);
+        }
     }
 
     int retn = app.exec();

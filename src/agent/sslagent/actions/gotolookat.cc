@@ -24,6 +24,16 @@ GoToLookAt *GoToLookAt::setLookAt(std::function<Vec2()> lookAt) {
     return this;
 }
 
+GoToLookAt *GoToLookAt::setWaypoint(std::function<Vec2()> waypoint) {
+    waypoint_ = waypoint;
+    return this;
+}
+
+GoToLookAt *GoToLookAt::setSpeedBoost(std::function<float()> speedBoost) {
+    speedBoost_ = speedBoost;
+    return this;
+}
+
 GoToLookAt *GoToLookAt::avoidTeammates(std::function<bool()> condition) {
     avoidTeammatesFn_ = condition;
     if (avoidTeammatesFn_ == nullptr) {
@@ -77,13 +87,11 @@ Status GoToLookAt::execute() {
         return Status::FAILURE;
     }
 
+    float speedBoost = speedBoost_ ? speedBoost_() : 0.0f;
     Vec2 goal = goal_();
     Vec2 lookAt = lookAt_();
     Vec2 origin = world().playerPositionVec2(id());
     Vec2 direction = lookAt - origin;
-    // qCInfo(GOTOLOOKAT) << "Origin:" << vec2ToString(origin) << "Goal:" << vec2ToString(goal) << "LookAt:" <<
-    // vec2ToString(lookAt)
-    //                  << "Direction:" << vec2ToString(direction);
     float angle = atan2f(direction.y(), direction.x());
     float orientation = world().playerOrientation(id()).value();
 
@@ -92,11 +100,24 @@ Status GoToLookAt::execute() {
     }
 
     handleObstacles();
+    Vec2 waypoint = waypoint_ ? waypoint_() : goal;
+
+    Vec2 waypointDir = waypoint - origin;
+    Vec2 goalDir = goal - origin;
+
+    if ((waypoint - goal).norm() < 0.1) {
+        waypoint = goal;
+    } else if (goalDir.dot(waypointDir) < 0) {
+        waypoint = goal;
+    } else if ((waypoint - origin).norm() < 0.1) {
+        waypoint = goal;
+    }
+
     auto obs = obstaclesBuilder_.obstacles();
-    auto path = pathPlanner_->findPath(origin, goal, obs);
+    auto path = pathPlanner_->findPath(origin, waypoint, obs);
     obstaclesBuilder_.reset();
 
-    controller().move(path, lookAt);
+    controller().move(path, lookAt, speedBoost);
 
     return Status::RUNNING;
 }

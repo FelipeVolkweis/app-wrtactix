@@ -19,8 +19,9 @@ private:
     const Referee &referee_;
     QVector<SSLAgent *> &agents_;
     SSLPlay *play_ = nullptr;
+    QHash<PlayerID, SSLRole *> roleDefinitions_;
 
-    void setupPlay(SSLPlay *playFactory);
+    void setupPlay(SSLPlay *play);
 };
 
 #endif

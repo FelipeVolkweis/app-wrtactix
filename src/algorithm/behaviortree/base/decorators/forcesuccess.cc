@@ -7,7 +7,7 @@ Q_LOGGING_CATEGORY(ALWAYSTRUE, "AlwaysTrue")
 using namespace WRBeT;
 
 Status ForceSuccess::tick() {
-    _child.tick();
+    _child->tick();
     status_ = Status::SUCCESS;
     return status_;
 }

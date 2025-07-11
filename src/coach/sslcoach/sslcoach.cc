@@ -21,6 +21,7 @@ void SSLCoach::delegatePlaysAndRoles() {
             break;
         default:
             play_ = new PlayNaiveOffense(world_);
+            // play_ = new PlaySupportStrikerOffense(world_);
             break;
         }
 
@@ -53,6 +54,9 @@ void SSLCoach::setupPlay(SSLPlay *play) {
         qCWarning(SSLCOACH) << "Fewer suggested assignments than available agents";
     }
 
+    qDeleteAll(roleDefinitions_);
+    roleDefinitions_.clear();
+
     for (const auto &suggestion : suggestions) {
         const auto &suggestedRole = suggestion.second;
         SSLRole *role = nullptr;
@@ -80,8 +84,10 @@ void SSLCoach::setupPlay(SSLPlay *play) {
             continue;
         auto id = role->getRoleAssignment(world_, assignments);
         if (id.isValid()) {
+            role->setPlayerID(id);
             agents_[id.playerNum()]->setRole(role);
             assignments[id] = true;
+            roleDefinitions_[id] = role;
         } else {
             delete role;
         }

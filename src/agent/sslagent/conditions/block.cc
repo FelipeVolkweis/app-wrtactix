@@ -113,7 +113,7 @@ Block::Line Block::getBallImpactLine() const {
         }
     }
 
-    if (ballVelocity.abs() >= 0.1) {
+    if (ballVelocity.abs() >= Const::Physics::minimum_ball_velocity_to_consider_movement) {
         float m = ballVelocity.y() / ballVelocity.x();
         float b = ball.y() - m * ball.x();
 

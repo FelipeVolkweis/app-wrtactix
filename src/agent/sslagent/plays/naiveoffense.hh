@@ -6,8 +6,6 @@
 class PlayNaiveOffense : public SSLPlay {
 public:
     PlayNaiveOffense(const World &worldRef);
-
-    SSLBehavior *getBehavior(const SSLRole &role, const PlayerID &player, SSLController &controller);
 };
 
 #endif

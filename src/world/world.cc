@@ -201,3 +201,12 @@ PlayerID World::closestPlayerToBall(Colors::Color color) const {
 
     return closestPlayer;
 }
+
+QList<PlayerID> World::ourPlayers() const {
+    QList<PlayerID> players;
+    quint8 teamNum = ourColor() == Colors::BLUE ? 1 : 0;
+    for (int i = 0; i < PLAYERS; i++) {
+        players.append(PlayerID(teamNum, i));
+    }
+    return players;
+}

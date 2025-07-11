@@ -14,6 +14,8 @@ public:
     GoToLookAt *setGoal(std::function<Vec2()> goal);
     GoToLookAt *setPathPlanner(PathPlanner *pathPlanner);
     GoToLookAt *setLookAt(std::function<Vec2()> lookAt);
+    GoToLookAt *setWaypoint(std::function<Vec2()> waypoint);
+    GoToLookAt *setSpeedBoost(std::function<float()> speedBoost);
 
     GoToLookAt *avoidTeammates(std::function<bool()> condition = nullptr);
     GoToLookAt *avoidOpponents(std::function<bool()> condition = nullptr);
@@ -26,6 +28,8 @@ public:
 private:
     std::function<Vec2()> goal_;
     std::function<Vec2()> lookAt_;
+    std::function<Vec2()> waypoint_;
+    std::function<float()> speedBoost_;
     PathPlanner *pathPlanner_;
     ObstaclesBuilder obstaclesBuilder_;
 

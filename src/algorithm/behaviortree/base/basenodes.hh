@@ -7,6 +7,7 @@
 #include "controlflow/sequence.hh"
 #include "decorators/forcefailure.hh"
 #include "decorators/forcesuccess.hh"
+#include "decorators/simplereturn.hh"
 #include "execution/action.hh"
 #include "execution/condition.hh"
 #include "execution/executionnode.hh"
