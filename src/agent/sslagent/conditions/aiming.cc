@@ -97,7 +97,7 @@ Vec2 Aiming::getPassTarget(const PlayerID &player) const {
 }
 
 PlayerID Aiming::getBestReceiver() const {
-    return PlayerID(world_.ourColor(), 4);
+    return PlayerID(world_.ourColor(), 1);
 }
 
 bool Aiming::canTheReceiverTrapTheBall(const PlayerID &player, const PlayerID &receiver) const {

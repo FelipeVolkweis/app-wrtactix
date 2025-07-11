@@ -9,5 +9,6 @@
 #include "pass.hh"
 #include "receivepass.hh"
 #include "preciseshoottogoal.hh"
+#include "fastshoottogoal.hh"
 
 #endif // BEHAVIORS_HH

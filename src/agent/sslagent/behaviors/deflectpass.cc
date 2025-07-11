@@ -1,12 +1,12 @@
-#include "receivepass.hh"
+#include "deflectpass.hh"
 
 #include "algorithm/pathplanner/pflorinho/pflorinho.hh"
 
-Q_LOGGING_CATEGORY(RECEIVEPASS, "ReceivePass")
+Q_LOGGING_CATEGORY(DEFLECTPASS, "DeflectPass")
 
-ReceivePass::ReceivePass(const PlayerID &playerId, SSLController &controller, const World &worldRef) : 
-    SSLBehavior(playerId, controller, worldRef, "ReceivePass") {
-    auto root = BehaviorTree::Sequence("ReceivePassSequence", {
+DeflectPass::DeflectPass(const PlayerID &playerId, SSLController &controller, const World &worldRef) : 
+    SSLBehavior(playerId, controller, worldRef, "DeflectPass") {
+    auto root = BehaviorTree::Sequence("DeflectPassSequence", {
             BehaviorTree::Fallback("PositionToReceiveFallback", {
                 BehaviorTree::Condition("IsTheBallComingAtMe",
                     [this]() {
@@ -20,6 +20,11 @@ ReceivePass::ReceivePass(const PlayerID &playerId, SSLController &controller, co
                         return Vec2(-1.5, -1);
                     })
                     ->setLookAt([this]() {
+                        bool canDeflect = false;
+                        auto posToDeflectTo = aiming().getEnemyGoalDeflectPosition(player(), canDeflect);
+                        if (canDeflect) {
+                            return posToDeflectTo;
+                        }
                         return world().ballPositionVec2();
                     })
                     ->avoidTeammates()
@@ -27,12 +32,19 @@ ReceivePass::ReceivePass(const PlayerID &playerId, SSLController &controller, co
                     ->avoidTheirGoal()
                     ->avoidBall()
             }),
+            action<Kick>()
+                ->setPower(10),
             action<GoToLookAt>()
                 ->setPathPlanner(new PFLorinho())
                 ->setGoal([this]() {
                     return ballInteraction().getPositionToInterceptMovingBall(player());
                 })
                 ->setLookAt([this]() {
+                    bool canDeflect = false;
+                    auto posToDeflectTo = aiming().getEnemyGoalDeflectPosition(player(), canDeflect);
+                    if (canDeflect) {
+                        return posToDeflectTo;
+                    }
                     auto pos = world().playerPositionVec2(player());
                     pos -= world().ballVelocityVec2().normalized();
                     return pos;
